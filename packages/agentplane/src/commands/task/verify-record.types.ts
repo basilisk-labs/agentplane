@@ -53,4 +53,6 @@ export type ExecuteVerifyRecordCommandOptions = {
   verificationSnapshot?: VerificationSnapshot;
   beforePersist?: PreparedTaskMutationObserver;
   allowCanonicalProjection?: boolean;
+  /** Internal controller policy. This is not a CLI flag or a persisted Task setting. */
+  projectionPolicy?: "task-only";
 };

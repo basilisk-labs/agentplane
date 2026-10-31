@@ -2,6 +2,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 import type { DirectTaskVerificationResult } from "./direct-task-verification-checks.js";
 import { isInfrastructureVerification } from "./verification-infrastructure.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+import { writeNewStableRegularFileNoFollow } from "../../shared/stable-file.js";
 import {
   runProcess,
   runProcessSync,
@@ -169,24 +170,99 @@ export function verificationObservationEnv(
   };
 }
 
+/** A retry key selects a new receipt slot, never a caller-supplied path. */
+export function verificationRetryArtifactPath(workflowDir: string, taskId: string, key: string) {
+  if (!/^[a-f0-9]{64}$/u.test(key) || !/^[A-Za-z0-9_-]+$/u.test(taskId))
+    throw new Error("Invalid verification retry artifact identity.");
+  const workflow = workflowDir.replaceAll("\\", "/");
+  if (
+    path.isAbsolute(workflow) ||
+    workflow.split("/").some((part) => !part || part === "." || part === "..")
+  )
+    throw new Error("Invalid verification retry workflow directory.");
+  return path.join(
+    workflow,
+    taskId,
+    "supervision",
+    "verification-retries",
+    key,
+    "declared-checks.json",
+  );
+}
+
+/** Refuse occupied or unsafe slots before any check process starts. */
+export async function prepareVerificationRetryArtifact(
+  command: CommandContext,
+  taskId: string,
+  key: string,
+) {
+  const relative = verificationRetryArtifactPath(command.config.paths.workflow_dir, taskId, key);
+  const root = command.resolvedProject.gitRoot;
+  const absolute = path.join(root, relative);
+  let directory = root;
+  for (const component of path.relative(root, path.dirname(absolute)).split(path.sep)) {
+    directory = path.join(directory, component);
+    try {
+      await mkdir(directory, { mode: 0o700 });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
+    const entry = await lstat(directory);
+    if (!entry.isDirectory() || entry.isSymbolicLink())
+      throw new Error("Unsafe verification retry artifact directory.");
+  }
+  try {
+    await lstat(absolute);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return relative;
+    throw error;
+  }
+  throw new Error("Refusing pre-existing verification retry result.");
+}
+
+/** Validate the receipt policy before a verifier can launch any process. */
+export async function preflightVerificationRetryArtifact(opts: {
+  command: CommandContext;
+  task_id: string;
+  retry_artifact_key?: string;
+  retain_infrastructure_failure?: unknown;
+}) {
+  if (opts.retry_artifact_key === undefined) return;
+  if (opts.retain_infrastructure_failure)
+    throw new Error("Retry result cannot use an alternate failure artifact writer.");
+  await prepareVerificationRetryArtifact(opts.command, opts.task_id, opts.retry_artifact_key);
+}
+
 export async function writeCheckArtifact(opts: {
   command: CommandContext;
   task_id: string;
   result: Omit<DirectTaskVerificationResult, "artifact_path">;
+  retry_artifact_key?: string;
   retain_infrastructure_failure?: (
     result: Omit<DirectTaskVerificationResult, "artifact_path">,
   ) => Promise<string>;
 }): Promise<string> {
   if (opts.retain_infrastructure_failure && isInfrastructureVerification(opts.result))
     return opts.retain_infrastructure_failure(opts.result);
-  const relative = path.join(
-    opts.command.config.paths.workflow_dir,
-    opts.task_id,
-    "supervision",
-    "declared-checks.json",
-  );
+  const relative =
+    opts.retry_artifact_key === undefined
+      ? path.join(
+          opts.command.config.paths.workflow_dir,
+          opts.task_id,
+          "supervision",
+          "declared-checks.json",
+        )
+      : verificationRetryArtifactPath(
+          opts.command.config.paths.workflow_dir,
+          opts.task_id,
+          opts.retry_artifact_key,
+        );
   const absolute = path.join(opts.command.resolvedProject.gitRoot, relative);
-  await mkdir(path.dirname(absolute), { recursive: true });
+  if (opts.retry_artifact_key !== undefined) {
+    await prepareVerificationRetryArtifact(opts.command, opts.task_id, opts.retry_artifact_key);
+  } else {
+    await mkdir(path.dirname(absolute), { recursive: true });
+  }
   const artifact = {
     schema_version: 1,
     kind: "direct_task_declared_checks",
@@ -197,7 +273,16 @@ export async function writeCheckArtifact(opts: {
   };
   // Equal commands and exit codes do not identify an equal execution or implementation.
   // Persist this run's observations. The writer already avoids byte-identical rewrites.
-  await writeJsonStableIfChanged(absolute, artifact);
+  if (opts.retry_artifact_key !== undefined) {
+    // Existing default callers keep their replaceable projection. Retry receipts are append-only.
+    await writeNewStableRegularFileNoFollow(
+      absolute,
+      `${JSON.stringify(artifact, null, 2)}\n`,
+      "verification retry result",
+    );
+  } else {
+    await writeJsonStableIfChanged(absolute, artifact);
+  }
   return relative;
 }
 

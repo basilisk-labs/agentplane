@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { configureGitUser, mockConfig, tempRepo } from "@agentplane/testkit";
 import { makeTaskFixture } from "@agentplane/testkit/task";
+import { parseTaskReadme, taskKernel } from "@agentplaneorg/core/tasks";
+import { isRecord } from "../../shared/guards.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { createCanonicalTask } from "./kernel-create.js";
 import { cmdTaskComment } from "./comment.js";
@@ -43,13 +45,42 @@ describe("canonical bookkeeping command routes", { timeout: 120_000 }, () => {
     );
     const body = "Exact audit value  \r\nsecond line\t\n" + String.raw`literal\n\nvalue` + "\n\n";
     const bodyFile = path.join(repo.root, "audit-body.txt");
+    const readme = path.join(repo.root, ".agentplane", "tasks", taskId, "README.md");
     await writeFile(bodyFile, body);
     const cli = fileURLToPath(new URL("../../../bin/agentplane.js", import.meta.url));
-    const run = async (args: string[]) =>
-      await git(process.execPath, [cli, "task", ...args, "--root", repo.root], {
-        cwd: repo.root,
-        env: { ...process.env, AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0" },
-      });
+    const run = async (args: string[]) => {
+      try {
+        return await git(process.execPath, [cli, "task", ...args, "--root", repo.root], {
+          cwd: repo.root,
+          env: { ...process.env, AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0" },
+        });
+      } catch (error) {
+        let diagnostic: Record<string, unknown> = { task_readme: "unavailable" };
+        try {
+          const parsed = parseTaskReadme(await readFile(readme, "utf8"));
+          const extensions = parsed.frontmatter.extensions;
+          const record = isRecord(extensions) ? extensions.task_kernel : null;
+          if (isRecord(record)) {
+            const { digest, ...contents } = record;
+            const comments = isRecord(record.aggregate) ? record.aggregate.audit_comments : null;
+            const observedBody =
+              Array.isArray(comments) && isRecord(comments[0]) ? comments[0].body : null;
+            diagnostic = {
+              stored_digest: digest,
+              observed_digest: taskKernel.kernelDigest(contents),
+              audit_body_exact: observedBody === body,
+              audit_body: typeof observedBody === "string" ? observedBody : null,
+            };
+          }
+        } catch {
+          // Keep the original command failure when its partial afterimage cannot be decoded.
+        }
+        throw new Error(
+          `${error instanceof Error ? error.message : String(error)}\nBody-file readback: ${JSON.stringify(diagnostic)}`,
+          { cause: error },
+        );
+      }
+    };
     const coldRead = async () => {
       const result = await run(["show", taskId]);
       const observed: unknown = JSON.parse(result.stdout);
@@ -73,7 +104,6 @@ describe("canonical bookkeeping command routes", { timeout: 120_000 }, () => {
     expect(second.aggregate.revision).toBe(first.aggregate.revision + 1);
     expect(second.aggregate.audit_comments).toHaveLength(2);
     expect(second.aggregate.mutation_receipts[firstMutation]).toEqual(firstReceipt);
-    const readme = path.join(repo.root, ".agentplane", "tasks", taskId, "README.md");
     const beforeReplay = await readFile(readme);
     await run(["comment", taskId, "--author", "ORCHESTRATOR", "--body-file", bodyFile]);
     const replayed = await coldRead();

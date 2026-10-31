@@ -6,12 +6,7 @@ import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { gitRevParse } from "@agentplaneorg/core/git";
 
-import {
-  canonicalizeJson,
-  taskCentricAggregateFromExtensions,
-  taskExecutionBaseFromExtensions,
-  withTaskCentricAggregate,
-} from "@agentplaneorg/core/tasks";
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
@@ -74,6 +69,7 @@ import {
   appendDecisionContextReference,
 } from "./verify-record-references.js";
 import { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
+import { projectVerificationExtensions } from "./verify-record-terminal-projection.js";
 
 export { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
 
@@ -118,6 +114,7 @@ async function recordVerificationResult(opts: {
   verificationSnapshot?: ExecuteVerifyRecordCommandOptions["verificationSnapshot"];
   beforePersist?: ExecuteVerifyRecordCommandOptions["beforePersist"];
   allowCanonicalProjection?: ExecuteVerifyRecordCommandOptions["allowCanonicalProjection"];
+  projectionPolicy?: ExecuteVerifyRecordCommandOptions["projectionPolicy"];
 }): Promise<void> {
   const initialCtx =
     opts.ctx ??
@@ -400,34 +397,11 @@ async function recordVerificationResult(opts: {
           id: "verification-record",
           result: opts.state === "ok" ? "pass" : "fail",
         });
-        const previousExecutionBase = taskExecutionBaseFromExtensions(current.extensions);
-        const preserveExecutionSource =
-          previousExecutionBase !== null &&
-          previousExecutionBase.repository_identity !== null &&
-          previousExecutionBase.base_ref === verificationExecutionContext.base_ref &&
-          previousExecutionBase.base_sha === verificationExecutionContext.base_sha &&
-          previousExecutionBase.source !== "legacy";
-        let nextExtensions: Record<string, unknown> = {
-          ...current.extensions,
-          task_execution_context: {
-            schema_version: 1,
-            base_ref: verificationExecutionContext.base_ref,
-            base_sha: verificationExecutionContext.base_sha,
-            repository_identity: previousExecutionBase?.repository_identity ?? null,
-            // Provenance belongs to the frozen identity, not a newly resolved verification base.
-            ...(preserveExecutionSource ? { source: previousExecutionBase.source } : {}),
-          },
-        };
-        if (opts.state !== "ok") {
-          Reflect.deleteProperty(nextExtensions, "implementation_commit");
-          const aggregate = taskCentricAggregateFromExtensions(nextExtensions);
-          if (aggregate?.lifecycle === "COMPLETED") {
-            nextExtensions = withTaskCentricAggregate(nextExtensions, {
-              ...aggregate,
-              lifecycle: "ACTIVE",
-            });
-          }
-        }
+        const nextExtensions = projectVerificationExtensions({
+          task: current,
+          execution: verificationExecutionContext,
+          state: opts.state,
+        });
         const reconciledContract = reconcileVerificationExecutionContract({
           contract: {
             ...observedExecutionContract,
@@ -507,7 +481,8 @@ async function recordVerificationResult(opts: {
     throw error;
   }
 
-  if (workflowMode === "branch_pr") await syncRecordedVerificationArtifacts({ ...opts, ctx, at });
+  if (workflowMode === "branch_pr" && opts.projectionPolicy !== "task-only")
+    await syncRecordedVerificationArtifacts({ ...opts, ctx, at });
 
   let incidentSummary: string | null = null;
   if (opts.collectIncidents === true) {
@@ -589,6 +564,7 @@ export async function executeVerifyRecordCommand(
       verificationSnapshot: opts.verificationSnapshot,
       beforePersist: opts.beforePersist,
       allowCanonicalProjection: opts.allowCanonicalProjection,
+      projectionPolicy: opts.projectionPolicy,
     });
     return 0;
   } catch (err) {
