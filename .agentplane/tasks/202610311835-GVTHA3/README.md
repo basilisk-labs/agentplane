@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -33,18 +33,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-31T19:51:56.004Z"
+  updated_at: "2026-10-31T21:16:58.520Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "a236843edf03fa1352e0f902dbb713b6d455d070"
-  review_identity_digest: "sha256:e03cab18dc0ae88b7f69a6c7c78620390b98acccc2b8cfbc0952be77a5bd373a"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "78e3cdcc5b6155f7f2efdbb66e7b0a75adfad1b8"
+  review_identity_digest: "sha256:7e41656d1fddb5b275e3898ced5382a5c9633c080a3f7eb4e8ea032e98a13690"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610311835-GVTHA3/44599ac4315e97e2622e79a91b28c9efbd73534580b64ae6f64fead5d4a66b63/quality-report.json"
+    - ".agentplane/tasks/202610311835-GVTHA3/quality/20261031-210431240-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610311835-GVTHA3/quality/20261031-210431240-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/23cfac5c3a394051eb543b0ad6c6cdcf4ad076d57f123f6cd3d1529aaf667796.md"
+    - ".agentplane/tasks/202610311835-GVTHA3/quality/20261031-210431240-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610311835-GVTHA3/quality/20261031-210431240-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610311835-GVTHA3/quality/20261031-210431240-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610311835-GVTHA3/README.md"
+    - ".agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/7a3dce0eca3f2040af0783866f5e298aa1a709a3f3cea4befef95015fc29a780.patch"
+    - ".agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/a6837cfcabc161078e68d712512f35752a9ad2741ac8df1c755528132029e4a5.json"
+    - ".agentplane/tasks/202610311835-GVTHA3/verification/20261031210358848-2da9cd74b9c3c03f.json"
+    - ".agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/86f1c159cfe392cb2144b4a565d1d5c4465bb1e2d5a542a1d10d626886033350.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Validated all 14 required context blocks and all five required input digests. Native repository evidence matches the current commit, tree, frozen base and every admitted source-file hash. No foreign Task artifacts or source paths were imported."
-    - "Reviewed strict request and completed-Kernel admission, exact approved command/scope and source binding, supervisor lease, durable intent/prepared/result replay, historical evidence preservation and containment refusal. Actual public CLI coverage proves fresh EVALUATOR admission after successful retry. Generic no-source-change, frozen-base, Task ownership and provider guards are unchanged."
-    - "Inspected the controller-owned native-validation receipt: full ci:local:full passed in 1236294ms, focused checks passed60, and public CLI checks passed2. Independently verified 23 retained observation manifests and 69 stream files against their hashes. Four nested nonzero observations are exact intentional process.exit2/3 verification-contract fixtures, not failed mandatory commands."
-    - "Confirmed verify-record-execute.ts has574 lines with the unchanged600 limit. The extracted helper preserves existing extension projection. Every original body-file expect assertion, two distinct writes, cold reads and duplicate replay remains. Diagnostic handling rethrows the original failure and performs no retry or success conversion."
+    - "Source inspection confirms verificationRetryArtifactPath remains a local helper with the same body and two local callers. Removing its unused export fixes the actual zero-budget violation without deleting required code, adding a compatibility wrapper or changing a baseline. Evidence: .agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/7a3dce0eca3f2040af0783866f5e298aa1a709a3f3cea4befef95015fc29a780.patch"
+    - "All15source hashes match the reviewed implementation after the single7byte correction;14files are unchanged. Strict request, approved source/command/scope binding, existing lease, durable one-shot recovery, artifact containment and historical evidence preservation remain in place. The574/600 module budget and exact CR/LF body-file assertions are unchanged. Evidence: .agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/7a3dce0eca3f2040af0783866f5e298aa1a709a3f3cea4befef95015fc29a780.patch"
+    - "Verified the frozen task, approved native identity, policy, diff, observation and verification-record hashes. Evaluated78e3 is the actual code commit; observed-check head1ab759 and current9d547f are metadata-only descendants in the same Task. No foreign Task artifacts or source drift were accepted. Evidence: .agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/86f1c159cfe392cb2144b4a565d1d5c4465bb1e2d5a542a1d10d626886033350.json"
+    - "Read the fresh native receipt: full CI1182529ms,60focused tests,2publicCLI tests, routing andDoctor all passed. Integrity checks verified25retained manifests and75streams; four nested failed observations are the exact intentional process.exit2/3 contract fixtures. Evidence: .agentplane/tasks/202610311835-GVTHA3/verification/20261031210358848-2da9cd74b9c3c03f.json"
+    - "Residual risk: Wait for successful hosted checks on the new exact head and use protected native integration."
+    - "Residual risk: Retain historical failures; a future body-file recurrence needs its diagnostic evidence rather than rewriting an old result."
+    - "Residual risk: Factory four-intent retirement, deployment, credentials and SB live acceptance remain outside this source review."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -425,7 +442,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-10-31T21:04:04.203Z"
+doc_updated_at: "2026-10-31T21:16:58.528Z"
 doc_updated_by: "CODER"
 description: "The user authorized all eight SB recovery items, native code fixes, PR/merge, deployment and live acceptance while preserving data, credentials and runtime guards. Deliver the already approved terminal verification retry feature from current canonical main f89d603f7fa9b70bca5896fef42212c4c1590fe8. The reviewed candidate is the exact 13-source-file diff from that base to 7e8a77981dd9ab67ac9f2771988e613017306831. Preserve original VPB Task 202610280840-VPBGBK, immutable completed Kernel 43c0045943740ec27078f9b25cf0e9a5168f011e6c2e01a1a712f0812b5405df, PR6957, failed native run015 and all source evidence. The old branch imports canonical Task artifacts relative to its older frozen base and the ownership guard refuses publication. Do not relax that guard, rebuild or reset the old branch, include unrelated Tasks in a fake batch, copy protected proofs, or assign a new result to the old Task. This is a genuine current-main implementation Task with its own source diff, tests, review and publication. Import source code only. Keep one typed verification_retry_request through the existing public task advance workflow recovery. Authenticate exact repository, approved completed Kernel and command contracts, source or audited metadata descendant, and retained real supervisor failure. Execute all mandatory real checks once under the existing lease. Preserve old Kernel, original failed journal, prior EVAL, PR artifacts and receipts. Reconcile interruption from exact durable before/afterimages. Refuse unknown outcomes, duplicate execution, source/command/scope drift, and provider or frozen-base guard changes. Require a fresh EVALUATOR after actual native success. Keep default and configured workflow directories, containment and symlink guards. Address the actual merged-candidate hotspots failure: verify-record-execute.ts has 602 lines against the existing 600-line limit. Do not waive budgets. Investigate the full-suite kernel-bookkeeping body-file cold-read readback_mismatch without weakening its exact CR/LF, two-write or duplicate-replay checks. Independent canonical and merged focused tests passed4 each, and related full-config tests passed60; those diagnostics are not native acceptance. Use full native CI and the current source review before canonical protected PR/merge. Do not modify Factory, SB runtime, credentials, global files, old worktrees, branches or archives. Native retirement of four historical Factory intents is a separate pending user scope decision and is excluded."
 sections:
@@ -823,6 +840,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-31T21:16:58.520Z"
+    kernel_digest: "sha256:ed870a8160217b92095989d7908268c97b071b4512692203a61c8800750710b2"
+    quality_digest: "sha256:6486a6bf2b23e32a58dfac30197cd716d83eac86ad2ffa01eba31746a8a04730"
+    result_digest: "sha256:c2a821142db62e51f91e352738aa0c9a143e96de8decc55f73fa7c0ec369b4d2"
+    schema_version: 1
+    state_fingerprint: "sha256:95658be72627ed69c2dddd9325b986d91b62ee01733e238fe1b52b288c17fc60"
+    transition_id: "tr_420ff437ff565436a68ec5c277039182"
   agentplane.kernel_operational_projection:
     digest: "sha256:7084de163ab05106268b6d3d645412eb3f194b8f2d7f61d444882b68b6c35d1a"
     evidence_refs:
