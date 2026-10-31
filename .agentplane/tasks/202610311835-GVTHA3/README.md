@@ -1,10 +1,11 @@
 ---
 id: "202610311835-GVTHA3"
 title: "Deliver terminal verification retry from current canonical main"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "Reviewed strict request and completed-Kernel admission, exact approved command/scope and source binding, supervisor lease, durable intent/prepared/result replay, historical evidence preservation and containment refusal. Actual public CLI coverage proves fresh EVALUATOR admission after successful retry. Generic no-source-change, frozen-base, Task ownership and provider guards are unchanged."
     - "Inspected the controller-owned native-validation receipt: full ci:local:full passed in 1236294ms, focused checks passed60, and public CLI checks passed2. Independently verified 23 retained observation manifests and 69 stream files against their hashes. Four nested nonzero observations are exact intentional process.exit2/3 verification-contract fixtures, not failed mandatory commands."
     - "Confirmed verify-record-execute.ts has574 lines with the unchanged600 limit. The extracted helper preserves existing extension projection. Every original body-file expect assertion, two distinct writes, cold reads and duplicate replay remains. Diagnostic handling rethrows the original failure and performs no retry or success conversion."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:ed9c8c8e6369a588de5086d182233bdce8d1ab06d13b7dbb07f1f7500febf592"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-31T20:17:04.816Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -382,9 +399,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a236843edf03fa1352e0f902dbb713b6d455d070"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "6abac79e88ffbba5d097a00a62b5819791c43e3b"
+  message: "🧩 GVTHA3 task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -392,9 +412,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-31T20:17:04.816Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "6abac79e88ffbba5d097a00a62b5819791c43e3b"
 doc_version: 3
-doc_updated_at: "2026-10-31T20:13:01.241Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-31T20:17:04.816Z"
+doc_updated_by: "CODER"
 description: "The user authorized all eight SB recovery items, native code fixes, PR/merge, deployment and live acceptance while preserving data, credentials and runtime guards. Deliver the already approved terminal verification retry feature from current canonical main f89d603f7fa9b70bca5896fef42212c4c1590fe8. The reviewed candidate is the exact 13-source-file diff from that base to 7e8a77981dd9ab67ac9f2771988e613017306831. Preserve original VPB Task 202610280840-VPBGBK, immutable completed Kernel 43c0045943740ec27078f9b25cf0e9a5168f011e6c2e01a1a712f0812b5405df, PR6957, failed native run015 and all source evidence. The old branch imports canonical Task artifacts relative to its older frozen base and the ownership guard refuses publication. Do not relax that guard, rebuild or reset the old branch, include unrelated Tasks in a fake batch, copy protected proofs, or assign a new result to the old Task. This is a genuine current-main implementation Task with its own source diff, tests, review and publication. Import source code only. Keep one typed verification_retry_request through the existing public task advance workflow recovery. Authenticate exact repository, approved completed Kernel and command contracts, source or audited metadata descendant, and retained real supervisor failure. Execute all mandatory real checks once under the existing lease. Preserve old Kernel, original failed journal, prior EVAL, PR artifacts and receipts. Reconcile interruption from exact durable before/afterimages. Refuse unknown outcomes, duplicate execution, source/command/scope drift, and provider or frozen-base guard changes. Require a fresh EVALUATOR after actual native success. Keep default and configured workflow directories, containment and symlink guards. Address the actual merged-candidate hotspots failure: verify-record-execute.ts has 602 lines against the existing 600-line limit. Do not waive budgets. Investigate the full-suite kernel-bookkeeping body-file cold-read readback_mismatch without weakening its exact CR/LF, two-write or duplicate-replay checks. Independent canonical and merged focused tests passed4 each, and related full-config tests passed60; those diagnostics are not native acceptance. Use full native CI and the current source review before canonical protected PR/merge. Do not modify Factory, SB runtime, credentials, global files, old worktrees, branches or archives. Native retirement of four historical Factory intents is a separate pending user scope decision and is excluded."
 sections:
   Summary: |-
@@ -623,6 +651,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:ac2d16355bcb4f2ce3718d94724127c7e2c7bfbb82128e3f5f0fbedf9b0eb2f6"
     work_order_id: "sha256:3aa6347ee1165712f2de4818b7692ce2f7efd222742031322ba7d890f3473a0b"
+  implementation_commit:
+    hash: "a236843edf03fa1352e0f902dbb713b6d455d070"
+    message: "🚧 GVTHA3 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "f89d603f7fa9b70bca5896fef42212c4c1590fe8"
@@ -1492,3 +1523,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:ed9c8c8e6369a588de5086d182233bdce8d1ab06d13b7dbb07f1f7500febf592`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-31T20:17:04.816Z`
