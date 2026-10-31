@@ -11,7 +11,7 @@ import {
   taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
 
-import type { TaskSummary } from "../../backends/task-backend.js";
+import { LocalBackend, type TaskSummary } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import { listTaskProjection, type CommandContext } from "../shared/task-backend.js";
 
@@ -298,16 +298,23 @@ export async function checkTaskCentricProjectionIntegrityState(
         ? backendRoot
         : path.join(repoRoot, ctx?.config.paths.workflow_dir ?? ".agentplane/tasks"),
   });
+  const historyRoot = ctx?.taskBackend instanceof LocalBackend ? ctx.taskBackend.historyRoot : null;
+  const historyStore = historyRoot ? new LocalTaskByteStore({ root: historyRoot }) : null;
   const identity = await resolveLogicalRepositoryIdentity({ git_root: repoRoot, task: {} });
   for (const task of quarantined) {
     let verified = false;
     try {
+      // Match current-first backend ownership. A bad local source must not fall back to history.
+      const taskId = String(task.id);
+      const selectedStore =
+        historyStore && (await store.read(taskId)) === null ? historyStore : store;
       const inspected = await inspectLifecycleOwnerMigration({
-        store,
+        store: selectedStore,
         repository_identity: identity as taskKernel.Sha256Digest,
-        task_id: String(task.id),
+        task_id: taskId,
       });
       verified = inspected.kind === "ready" && inspected.quarantine !== null;
+      if (selectedStore === historyStore && (await store.read(taskId)) !== null) verified = false;
     } catch {
       /* A missing or changed backup cannot be accepted as retained evidence. */
     }
