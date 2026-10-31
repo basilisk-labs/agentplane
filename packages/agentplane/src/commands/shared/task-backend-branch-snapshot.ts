@@ -1,3 +1,4 @@
+import { parseTaskScopeExtensionRequestState } from "./task-scope-extension-request-state.js";
 import { lstat } from "node:fs/promises";
 import path from "node:path";
 
@@ -64,15 +65,19 @@ export async function readCompletedScopeCommandSource(
 }
 
 function needsCompletedScopeAuthentication(task: TaskData): boolean {
-  const record = task.extensions?.task_kernel as
-    { aggregate?: { authority_lineage?: { observation?: { kind?: string } }[] } } | undefined;
+  if (Object.hasOwn(task.extensions ?? {}, COMPLETED_SCOPE_ADMISSIONS)) return true;
+  const request = parseTaskScopeExtensionRequestState(task);
+  // A legacy partial is an applied external repair with no Kernel WorkItem.
+  // Ordinary historical WorkItem scope lineage is not a completed-scope proof.
+  const record = task.extensions?.task_kernel as { aggregate?: { state?: string } } | undefined;
   return (
-    Object.hasOwn(task.extensions ?? {}, COMPLETED_SCOPE_ADMISSIONS) ||
-    record?.aggregate?.authority_lineage?.some(
-      (entry) => entry.observation?.kind === "prospective_scope_request",
-    ) === true
+    task.status === "DONE" &&
+    record?.aggregate?.state === "COMPLETED" &&
+    request?.status === "applied" &&
+    request.work_item_id === null
   );
 }
+
 async function authenticateSource(
   ctx: CommandContext,
   task: TaskData,
@@ -170,7 +175,10 @@ export async function authenticateTaskMetadataProjection(ctx: CommandContext, ta
       code: "E_VALIDATION",
       message: "Completed scope metadata projection differs from its current authenticated source.",
     });
-  return transferCompletedScopePermit(source, task);
+  // Command contexts can cross separately bundled Node entry points. Authenticate
+  // the exact bytes here; a permit in another bundle's WeakMap is not transferable.
+  const current = await readCompletedScopeCommandSource(ctx, task.id);
+  return await authenticateSource(ctx, task, current.raw, current.readme_path);
 }
 
 function backendSupportsTaskBranchSnapshots(ctx: CommandContext): boolean {
