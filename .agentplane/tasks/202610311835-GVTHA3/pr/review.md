@@ -6,7 +6,7 @@ Created: 2026-10-31T19:27:17.303Z
 
 - Task: `202610311835-GVTHA3`
 - Title: Deliver terminal verification retry from current canonical main
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610311835-GVTHA3/deliver-terminal-verification-retry-from-current`
 - Canonical task record: `.agentplane/tasks/202610311835-GVTHA3/README.md`
 
