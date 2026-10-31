@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 58
+revision: 59
 origin:
   system: "manual"
 depends_on: []
@@ -59,19 +59,21 @@ quality_review:
     - "The fresh native run-014 executed bun run ci:local:full and passed in 1118213 ms. The frozen verification record and quality identity bind implementation 8527b4f9d3d8d7c6c37d638a834d7635afcf9801. The reviewed source delta closes the previous custom-workflow rework finding."
     - "Residual risk: Hosted publication, frozen-base reconciliation, provider checks and integration remain separate controller-owned gates. This local quality verdict does not establish deployed or live SB behavior."
 token_usage:
-  agent_runs: 0
+  agent_runs: 6
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: null
+  journal_digest: "sha256:769ebc1aad2b521c177c18d65bdcc3806b6efa65d81d517bcae4fd93f19908d2"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
-  source: "unavailable"
+  source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-10-29T09:03:20.590Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-31T17:26:05.646Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -4946,8 +4948,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1a5c608730f9fcc4701f08db7ba8b29fa4d6c097"
-  message: "📝 VPBGBK task: link canonical PR #6957"
+  hash: "17047bc05e61c56850311a58ee409ba16d8200c9"
+  message: "🚧 VPBGBK task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -4958,6 +4960,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts; repository effects: unchanged."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -4997,9 +5002,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-10-31T17:26:05.646Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "17047bc05e61c56850311a58ee409ba16d8200c9"
 doc_version: 3
-doc_updated_at: "2026-10-31T17:24:36.926Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-10-31T17:26:05.660Z"
+doc_updated_by: "CODER"
 description: "Actual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f393 message01a181a3-ef22-7af0-b6ce-e9f9b00f8d23: narrow AgentPlane fix, separate Task ID, checks and PR/merge, then sb recovery preserving data credentials runtime guards. Exact reviewed design SHA9bda08b6d37c2badb985ac8c8c823651cd0a5edcfd0db8c856dfdedf68964794 in Factory YMR EVID sb-post121845-terminal-verification-retry-reviewable-design.json. Real case Factory completedKernel DRG36R, source48a/currentmanagedhead d906: native run028failed environmental localhost proxy501; corrected commandlocaltransport and actual canonical72PASS685.829/5441/4partitions, but completed no-source-change rework84699 refuses; legacy recovery requires missing current_plan. First qualify CURRENTcanonical d514 mechanisms; do not duplicate a newly existing supported route. Implement one public typed verification_retry_request through existing task advance workflow recovery. Controller authenticates exact repository/terminalKernel digest/approvedcheckcontract/realfailedsupervisorattempt/source or audited managedmetadata-only descendant; when bindingmissing create fresh controller adoption observation, never backfill oldreceipt. One statebound durable retry/attempt, all original mandatorychecks actualnativeexecutor once, fresh before/after source/scope/contract pins; PASS only after actualsuccess, then freshEVALUATOR current-source. Immutable completedKernel/plan/workitems/oldEVAL/failed028 remain byteexact. No general reopen/forceOK/internalAPIcaller/manualTaskJSON/fake sourcediff/import of independentPASS as authority. Drift/unknown/interrupt/duplicate refuse, old no-diff and publicationfrozenbaseguards unchanged. Publicationbase mismatch3f31-vs94 is separate blocker, not permission to disable it. Nearest fault/CLI tests cover canonicalcompleted/no legacy/envfail recovery and exactKernel preservation, source/head/scope/command drift, oldevidence non-adoption, interrupted/failed idempotence/no duplicateexecutor, unchangedlegacy/no-diff/provider guard. Scope exacteight listed roots; native plan may narrow or propose necessary bounded refinement under actual user authorization, not silently broaden. Preserve all originalAP/Factory worktrees and untracked native artifacts, foreignFactoryshim cfab, all privateTMP; no install/globalenv/auth/credential/ACL/runtime effects. Only source repair/checks/authorizedcanonicalGitHubPRmerge in this APTask; no Beta host access. Full mandatory native validation and independent review before publication. Existing source/currentbase CDC stale; canonicalremote d514 verified by ls-remote+scopedfetch. Base pinned d514. Previous N1E7M3 scope is not reused/reopened. This is genuinely new framework repair, not replacementFactoryTask or fakeclosure."
 sections:
   Summary: |-
@@ -5481,6 +5494,7 @@ extensions:
     work_item_id: null
   implementation_commit:
     hash: "8527b4f9d3d8d7c6c37d638a834d7635afcf9801"
+    message: "🚧 VPBGBK task: apply external agent result"
   task_execution_context:
     base_ref: "d51453363dbafa18b79f4c35ed9cc7e76f25b867"
     base_sha: "d51453363dbafa18b79f4c35ed9cc7e76f25b867"
@@ -7673,12 +7687,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/6` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
-- Provenance: `unavailable/agentplane`
-- Journal digest: `unavailable`
-- Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-10-29T09:03:20.590Z`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:769ebc1aad2b521c177c18d65bdcc3806b6efa65d81d517bcae4fd93f19908d2`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-31T17:26:05.646Z`

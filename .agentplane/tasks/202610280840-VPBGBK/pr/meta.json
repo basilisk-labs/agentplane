@@ -8,10 +8,10 @@
   "pr_number": 6957,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6957",
   "pre_merge_closure": {
-    "basis_commit": "1a5c608730f9fcc4701f08db7ba8b29fa4d6c097",
+    "basis_commit": "17047bc05e61c56850311a58ee409ba16d8200c9",
     "branch": "task/202610280840-VPBGBK/terminal-verification-retry",
     "pr_number": 6957,
-    "recorded_at": "2026-10-29T09:03:20.677Z",
+    "recorded_at": "2026-10-31T17:26:05.774Z",
     "state": "closed_before_merge"
   },
   "provider": {
