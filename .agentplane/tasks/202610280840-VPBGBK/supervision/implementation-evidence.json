@@ -1,0 +1,67 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check d470f18c1e30fdbdef317b1775640ed3fa1ab748..8527b4f9d3d8d7c6c37d638a834d7635afcf9801",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d470f18c1e30fdbdef317b1775640ed3fa1ab748..8527b4f9d3d8d7c6c37d638a834d7635afcf9801",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202610280840-VPBGBK/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610280840-VPBGBK/pr/github-body.md",
+        "M\t.agentplane/tasks/202610280840-VPBGBK/pr/meta.json",
+        "M\t.agentplane/tasks/202610280840-VPBGBK/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts",
+        "M\tpackages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/verification-retry-effect-recovery.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": [
+        " M .agentplane/tasks/202610280840-VPBGBK/README.md",
+        " M .agentplane/tasks/202610280840-VPBGBK/supervision/implementation-evidence.json"
+      ]
+    }
+  ],
+  "execution_base_commit": "d470f18c1e30fdbdef317b1775640ed3fa1ab748",
+  "implementation_commit": "8527b4f9d3d8d7c6c37d638a834d7635afcf9801",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [
+      {
+        "classification": "introduced_during_execution",
+        "line": " M .agentplane/tasks/202610280840-VPBGBK/README.md"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": " M .agentplane/tasks/202610280840-VPBGBK/supervision/implementation-evidence.json"
+      }
+    ],
+    "final": [
+      " M .agentplane/tasks/202610280840-VPBGBK/README.md",
+      " M .agentplane/tasks/202610280840-VPBGBK/supervision/implementation-evidence.json"
+    ],
+    "introduced_after_execution_baseline": [
+      " M .agentplane/tasks/202610280840-VPBGBK/README.md",
+      " M .agentplane/tasks/202610280840-VPBGBK/supervision/implementation-evidence.json"
+    ],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610280840-VPBGBK"
+}

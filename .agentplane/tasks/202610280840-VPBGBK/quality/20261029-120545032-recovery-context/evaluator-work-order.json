@@ -1,0 +1,128 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610280840-VPBGBK-156c295d2a642e945f897562",
+  "prepared_at": "2026-10-29T12:05:45.032Z",
+  "task": {
+    "id": "202610280840-VPBGBK",
+    "revision": 48,
+    "objective": "Allow one admitted verification retry for immutable completed Kernel followups\n\nActual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f393 message01a181a3-ef22-7af0-b6ce-e9f9b00f8d23: narrow AgentPlane fix, separate Task ID, checks and PR/merge, then sb recovery preserving data credentials runtime guards. Exact reviewed design SHA9bda08b6d37c2badb985ac8c8c823651cd0a5edcfd0db8c856dfdedf68964794 in Factory YMR EVID sb-post121845-terminal-verification-retry-reviewable-design.json. Real case Factory completedKernel DRG36R, source48a/currentmanagedhead d906: native run028failed environmental localhost proxy501; corrected commandlocaltransport and actual canonical72PASS685.829/5441/4partitions, but completed no-source-change rework84699 refuses; legacy recovery requires missing current_plan. First qualify CURRENTcanonical d514 mechanisms; do not duplicate a newly existing supported route. Implement one public typed verification_retry_request through existing task advance workflow recovery. Controller authenticates exact repository/terminalKernel digest/approvedcheckcontract/realfailedsupervisorattempt/source or audited managedmetadata-only descendant; when bindingmissing create fresh controller adoption observation, never backfill oldreceipt. One statebound durable retry/attempt, all original mandatorychecks actualnativeexecutor once, fresh before/after source/scope/contract pins; PASS only after actualsuccess, then freshEVALUATOR current-source. Immutable completedKernel/plan/workitems/oldEVAL/failed028 remain byteexact. No general reopen/forceOK/internalAPIcaller/manualTaskJSON/fake sourcediff/import of independentPASS as authority. Drift/unknown/interrupt/duplicate refuse, old no-diff and publicationfrozenbaseguards unchanged. Publicationbase mismatch3f31-vs94 is separate blocker, not permission to disable it. Nearest fault/CLI tests cover canonicalcompleted/no legacy/envfail recovery and exactKernel preservation, source/head/scope/command drift, oldevidence non-adoption, interrupted/failed idempotence/no duplicateexecutor, unchangedlegacy/no-diff/provider guard. Scope exacteight listed roots; native plan may narrow or propose necessary bounded refinement under actual user authorization, not silently broaden. Preserve all originalAP/Factory worktrees and untracked native artifacts, foreignFactoryshim cfab, all privateTMP; no install/globalenv/auth/credential/ACL/runtime effects. Only source repair/checks/authorizedcanonicalGitHubPRmerge in this APTask; no Beta host access. Full mandatory native validation and independent review before publication. Existing source/currentbase CDC stale; canonicalremote d514 verified by ls-remote+scopedfetch. Base pinned d514. Previous N1E7M3 scope is not reused/reopened. This is genuinely new framework repair, not replacementFactoryTask or fakeclosure.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "- In scope: Actual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f393 message01a181a3-ef22-7af0-b6ce-e9f9b00f8d23: narrow AgentPlane fix, separate Task ID, checks and PR/merge, then sb recovery preserving data credentials runtime guards. Exact reviewed design SHA9bda08b6d37c2badb985ac8c8c823651cd0a5edcfd0db8c856dfdedf68964794 in Factory YMR EVID sb-post121845-terminal-verification-retry-reviewable-design.json. Real case Factory completedKernel DRG36R, source48a/currentmanagedhead d906: native run028failed environmental localhost proxy501; corrected commandlocaltransport and actual canonical72PASS685.829/5441/4partitions, but completed no-source-change rework84699 refuses; legacy recovery requires missing current_plan. First qualify CURRENTcanonical d514 mechanisms; do not duplicate a newly existing supported route. Implement one public typed verification_retry_request through existing task advance workflow recovery. Controller authenticates exact repository/terminalKernel digest/approvedcheckcontract/realfailedsupervisorattempt/source or audited managedmetadata-only descendant; when bindingmissing create fresh controller adoption observation, never backfill oldreceipt. One statebound durable retry/attempt, all original mandatorychecks actualnativeexecutor once, fresh before/after source/scope/contract pins; PASS only after actualsuccess, then freshEVALUATOR current-source. Immutable completedKernel/plan/workitems/oldEVAL/failed028 remain byteexact. No general reopen/forceOK/internalAPIcaller/manualTaskJSON/fake sourcediff/import of independentPASS as authority. Drift/unknown/interrupt/duplicate refuse, old no-diff and publicationfrozenbaseguards unchanged. Publicationbase mismatch3f31-vs94 is separate blocker, not permission to disable it. Nearest fault/CLI tests cover canonicalcompleted/no legacy/envfail recovery and exactKernel preservation, source/head/scope/command drift, oldevidence non-adoption, interrupted/failed idempotence/no duplicateexecutor, unchangedlegacy/no-diff/provider guard. Scope exacteight listed roots; native plan may narrow or propose necessary bounded refinement under actual user authorization, not silently broaden. Preserve all originalAP/Factory worktrees and untracked native artifacts, foreignFactoryshim cfab, all privateTMP; no install/globalenv/auth/credential/ACL/runtime effects. Only source repair/checks/authorizedcanonicalGitHubPRmerge in this APTask; no Beta host access. Full mandatory native validation and independent review before publication. Existing source/currentbase CDC stale; canonicalremote d514 verified by ls-remote+scopedfetch. Base pinned d514. Previous N1E7M3 scope is not reused/reopened. This is genuinely new framework repair, not replacementFactoryTask or fakeclosure.\n- Out of scope: unrelated refactors not required for \"Allow one admitted verification retry for immutable completed Kernel followups\".",
+      "1. Execute approved WorkItem terminal-verification-retry.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "a3f7677863abc581576a78b32a3813ee3259330f",
+  "diff_base_sha": "d51453363dbafa18b79f4c35ed9cc7e76f25b867",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610280840-VPBGBK/quality/20261029-120545032-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:08d41bae1bbbc00411e447a9a707c089cd6e0dfe5491ed8684310ddbdaef8576",
+    "prompt_path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/cb2b5fcc687356832c980dd1e8e9f3472459dc7b0d61c53edfbc87cfa8b7837f.md",
+    "result_schema_path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610280840-VPBGBK",
+    "plan_digest": "sha256:c7f5dbb678ff7c7ec2d08610fee2509cb8a4fd388ca1a207e03d309a8b021e11",
+    "policy_digest": "sha256:35781f355aaa21293eb931f34639e0e5cad5380fea760bef8ef8e0fa5ae1c536",
+    "capability_digest": "sha256:336472b167255c45d6034de05905a0aac32caba4bcf46c4ded6116b4ce021236",
+    "checks_digest": "sha256:36f34108bc6ce6507f5db2a0a2148faac56a8f5f9745bba78f0b188b1f1bb963",
+    "verification_input_digest": "sha256:518bdcae8701bb6022507ed44016e599a5ae8fa23f95aaf9182475485819d5f5",
+    "acceptance_digest": "sha256:3b8c429d9b2356ba3f0ef3bd264514976f73b3f014905d4b117660d05302574f",
+    "implementation_sha": "a3f7677863abc581576a78b32a3813ee3259330f",
+    "digest": "sha256:20387f5c82cfaf889c6c808254ffea46047fc03d35d4cd7d1427d96a9b6c4c0d"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610280840-VPBGBK/README.md",
+      "sha256": "sha256:8167f74fb40d45e34c385b47d320966f20be18d01b10a0c7f04b8e038bdaaf73",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch",
+      "sha256": "sha256:bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/fb4ee7bc788b285c33a52c311c8cd845383da17786171c3dc9cd62c735ddc4e2.json",
+      "sha256": "sha256:fb4ee7bc788b285c33a52c311c8cd845383da17786171c3dc9cd62c735ddc4e2",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610280840-VPBGBK/verification/20261029094513524-74ea8efc6a786d6e.json",
+      "sha256": "sha256:f6dd7362b65601f16b77106b4db8c926200a75aa5507f092caa3534846528373",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/652ff62ce04c34907a8d59ab1fc2532ff8f81b5fb2281a2f8ab9ceb5161d3611.json",
+      "sha256": "sha256:652ff62ce04c34907a8d59ab1fc2532ff8f81b5fb2281a2f8ab9ceb5161d3611",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    },
+    {
+      "id": "policy-5",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:597c3690f1b9adb8c463eac29e7efeb605ef25e03098d10f7cc4bf03e114ad07",
+      "required": true
+    }
+  ]
+}

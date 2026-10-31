@@ -3,28 +3,39 @@ import { lstat, readdir, readlink } from "node:fs/promises";
 import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
+import {
+  captureContainedPathChainIdentity,
+  assertContainedPathChainIdentityUnchanged,
+} from "../../shared/contained-stable-file.js";
 import { readStableRegularFileNoFollow } from "../../shared/stable-file.js";
 
 /** Observe protected task artifacts without following links outside the task directory. */
 export async function captureExternalTaskArtifacts(
   checkout: string,
   taskId: string,
+  workflowDir = ".agentplane/tasks",
 ): Promise<Record<string, string>> {
-  const root = path.join(checkout, ".agentplane", "tasks", taskId);
-  for (const parent of [path.join(checkout, ".agentplane"), path.dirname(root), root]) {
-    try {
-      const parentStat = await lstat(parent);
-      if (!parentStat.isDirectory()) {
-        throw new CliError({
-          code: "E_VALIDATION",
-          message: "Task artifact root is not a directory.",
-        });
-      }
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === "ENOENT") return {};
-      throw error;
-    }
-  }
+  if (
+    !workflowDir.trim() ||
+    path.isAbsolute(workflowDir) ||
+    path.win32.isAbsolute(workflowDir) ||
+    workflowDir.replaceAll("\\", "/").split("/").includes("..")
+  )
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Task artifact workflow must be repository-relative.",
+    });
+  const root = path.resolve(checkout, workflowDir, taskId);
+  const chain = await captureContainedPathChainIdentity({
+    repository_root: checkout,
+    file_path: root,
+    label: "task artifact root",
+    path_policy: { target_kind: "file_or_directory", allow_missing_ancestors: true },
+  });
+  if (!chain.target_exists) return {};
+  const rootStat = await lstat(root);
+  if (!rootStat.isDirectory())
+    throw new CliError({ code: "E_VALIDATION", message: "Task artifact root is not a directory." });
   const entries: Record<string, string> = {};
   async function visit(directory: string): Promise<void> {
     const names = await readdir(directory);
@@ -52,5 +63,6 @@ export async function captureExternalTaskArtifacts(
     }
   }
   await visit(root);
+  await assertContainedPathChainIdentityUnchanged(chain, "task artifact root");
   return entries;
 }

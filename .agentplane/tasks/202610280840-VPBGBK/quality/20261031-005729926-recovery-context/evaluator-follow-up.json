@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202610280840-VPBGBK-82e2cee6f6b7210e062ff392",
+  "task_id": "202610280840-VPBGBK",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "The completed Kernel and its frozen Plan must stay unchanged. The helper file is already admitted through the native completed-scope recovery. Pass the validated configured workflow directory into all five capture calls. Preserve existing default callers and path-containment/symlink guards. A retained private control reproduction105 fails on the old helper with the prepared-README error; it is context, not native acceptance authority. Qualify corrected source through fresh native checks and a new EVALUATOR.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "P2: captureExternalTaskArtifacts always reads .agentplane/tasks/<taskId>. verification-retry-effect-recovery reads command.config.paths.workflow_dir, but all five artifact capture calls omit that path. With workflow_dir=operations/native/tasks, capture returns an empty artifact map and the typed retry fails because its prepared Task README is unavailable. The source and call sites are present in the frozen actual-diff evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Residual risk: The current full validation is valid for its covered configuration. It does not establish custom workflow-directory recovery.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202610280840-VPBGBK/quality/20261031-005729926-recovery-context/evaluator-result.json"
+}

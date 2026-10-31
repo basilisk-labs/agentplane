@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The artifact capture helper validates the configured repository-relative workflow directory. All five retry capture sites pass that directory. The default workflow remains supported.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/306c00839212ca567cb57f6b8ee647956ba5ebfa4fe53e2914f69e2dd99ba12b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The regression suite now covers successful execution, pin and contract refusal, one-shot competition, interruption reconciliation, failed retries and historical or PR artifact tampering in both default and custom layouts. Escape and intermediate-symlink cases refuse execution. Artifact symlinks are hashed without traversal.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/306c00839212ca567cb57f6b8ee647956ba5ebfa4fe53e2914f69e2dd99ba12b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The fresh native run-014 executed bun run ci:local:full and passed in 1118213 ms. The frozen verification record and quality identity bind implementation 8527b4f9d3d8d7c6c37d638a834d7635afcf9801. The reviewed source delta closes the previous custom-workflow rework finding.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/306c00839212ca567cb57f6b8ee647956ba5ebfa4fe53e2914f69e2dd99ba12b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted publication, frozen-base reconciliation, provider checks and integration remain separate controller-owned gates. This local quality verdict does not establish deployed or live SB behavior.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/306c00839212ca567cb57f6b8ee647956ba5ebfa4fe53e2914f69e2dd99ba12b.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

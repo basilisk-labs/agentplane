@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610280840-VPBGBK/terminal-verification-retry",
+  "created_at": "2026-10-28T11:38:02.250Z",
+  "diffstat_sha256": "sha256:f621e668e7386c213bae6455e93550a124ed605a51ac5bdf98414bf90ce5a757",
+  "last_verified_at": "2026-10-31T17:12:11.674Z",
+  "last_verified_diffstat_sha256": "sha256:f621e668e7386c213bae6455e93550a124ed605a51ac5bdf98414bf90ce5a757",
+  "pr_number": 6957,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6957",
+  "pre_merge_closure": {
+    "basis_commit": "17047bc05e61c56850311a58ee409ba16d8200c9",
+    "branch": "task/202610280840-VPBGBK/terminal-verification-retry",
+    "pr_number": 6957,
+    "recorded_at": "2026-10-31T17:26:05.774Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610280840-VPBGBK",
+  "updated_at": "2026-10-29T09:00:26.240Z",
+  "verify": {
+    "status": "pass"
+  }
+}

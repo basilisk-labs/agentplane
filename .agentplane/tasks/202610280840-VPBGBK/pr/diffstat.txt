@@ -1,0 +1,2348 @@
+ .agentplane/tasks/202610252242-122WXZ/README.md    | 1527 ++++++++
+ .../tasks/202610252242-122WXZ/pr/diffstat.txt      |    7 +
+ .../tasks/202610252242-122WXZ/pr/github-body.md    |   39 +
+ .../tasks/202610252242-122WXZ/pr/github-title.txt  |    1 +
+ .agentplane/tasks/202610252242-122WXZ/pr/meta.json |   32 +
+ .agentplane/tasks/202610252242-122WXZ/pr/review.md |   42 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-opinion.md                           |   24 +
+ .../evaluator-result.json                          |   65 +
+ .../evaluator-work-order.json                      |  121 +
+ .../quality-report.json                            |   25 +
+ ...4e6d04d763719afafc9b88139bf122a89deb9bca92.json |  Bin 0 -> 12846 bytes
+ ...84bbf75529004bbd4252fb17bad290dbf8f7eae640.json |  Bin 0 -> 8420 bytes
+ ...73a8aebd55adba8e35e4182316b790c8f1b2085ffd.json |  Bin 0 -> 1978 bytes
+ ...c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json |  Bin 0 -> 8497 bytes
+ ...9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json |  Bin 0 -> 7278 bytes
+ ...358d360264a85ee905be64a8723bbdd4ca71e02d4a.json |  Bin 0 -> 3478 bytes
+ ...ff7380fc6cd8dab84ac835994bc339cbcbacc9cc0a2f.md |  Bin 0 -> 5029 bytes
+ ...52ce3714d50a6f28458ef045557903fbdde53c697.patch |  Bin 0 -> 22311 bytes
+ .../supervision/declared-checks.json               |   59 +
+ .../supervision/implementation-evidence.json       |   95 +
+ .../run-000/children/run-000/failures.jsonl        |    0
+ .../run-000/children/run-000/manifest.json         |    1 +
+ .../run-000/children/run-000/status.json           |    1 +
+ .../run-000/children/run-000/stderr.jsonl          |    0
+ .../run-000/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-000/failures.jsonl       |    0
+ .../verification-runs/run-000/manifest.json        |    1 +
+ .../verification-runs/run-000/status.json          |    1 +
+ .../verification-runs/run-000/stderr.jsonl         |    0
+ .../verification-runs/run-000/stdout.jsonl         |   19 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../run-001/children/run-000/status.json           |    1 +
+ .../run-001/children/run-000/stderr.jsonl          |    0
+ .../run-001/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-001/failures.jsonl       |    0
+ .../verification-runs/run-001/manifest.json        |    1 +
+ .../verification-runs/run-001/status.json          |    1 +
+ .../verification-runs/run-001/stderr.jsonl         |    0
+ .../verification-runs/run-001/stdout.jsonl         |   25 +
+ .../run-002/children/run-000/failures.jsonl        |    0
+ .../run-002/children/run-000/manifest.json         |    1 +
+ .../run-002/children/run-000/status.json           |    1 +
+ .../run-002/children/run-000/stderr.jsonl          |    0
+ .../run-002/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-002/failures.jsonl       |    0
+ .../verification-runs/run-002/manifest.json        |    1 +
+ .../verification-runs/run-002/status.json          |    1 +
+ .../verification-runs/run-002/stderr.jsonl         |    0
+ .../verification-runs/run-002/stdout.jsonl         |   19 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../run-003/children/run-000/status.json           |    1 +
+ .../run-003/children/run-000/stderr.jsonl          |    0
+ .../run-003/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-003/failures.jsonl       |    0
+ .../verification-runs/run-003/manifest.json        |    1 +
+ .../verification-runs/run-003/status.json          |    1 +
+ .../verification-runs/run-003/stderr.jsonl         |    0
+ .../verification-runs/run-003/stdout.jsonl         |   25 +
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../run-004/children/run-000/status.json           |    1 +
+ .../run-004/children/run-000/stderr.jsonl          |    0
+ .../run-004/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-004/failures.jsonl       |    0
+ .../verification-runs/run-004/manifest.json        |    1 +
+ .../verification-runs/run-004/status.json          |    1 +
+ .../verification-runs/run-004/stderr.jsonl         |    0
+ .../verification-runs/run-004/stdout.jsonl         |   15 +
+ .../run-005/children/run-000/failures.jsonl        |    0
+ .../run-005/children/run-000/manifest.json         |    1 +
+ .../run-005/children/run-000/status.json           |    1 +
+ .../run-005/children/run-000/stderr.jsonl          |    0
+ .../run-005/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-005/failures.jsonl       |    0
+ .../verification-runs/run-005/manifest.json        |    1 +
+ .../verification-runs/run-005/status.json          |    1 +
+ .../verification-runs/run-005/stderr.jsonl         |    0
+ .../verification-runs/run-005/stdout.jsonl         |   19 +
+ .../20261025231917931-f606f8b0239607e7.json        |  184 +
+ .../20261026170304408-e9f407da6fae5309.json        |  184 +
+ .agentplane/tasks/202610280201-Z9MAPZ/README.md    | 1819 +++++++++
+ .../tasks/202610280201-Z9MAPZ/pr/diffstat.txt      |    4 +
+ .../tasks/202610280201-Z9MAPZ/pr/github-body.md    |   36 +
+ .../tasks/202610280201-Z9MAPZ/pr/github-title.txt  |    1 +
+ .agentplane/tasks/202610280201-Z9MAPZ/pr/meta.json |   32 +
+ .agentplane/tasks/202610280201-Z9MAPZ/pr/review.md |   39 +
+ ...4e6d04d763719afafc9b88139bf122a89deb9bca92.json |  Bin 0 -> 12846 bytes
+ ...c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json |  Bin 0 -> 8497 bytes
+ ...9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json |  Bin 0 -> 7278 bytes
+ .../supervision/declared-checks.json               |   88 +
+ .../supervision/implementation-evidence.json       |  912 +++++
+ .../verification-runs/run-000/failures.jsonl       |    0
+ .../verification-runs/run-000/manifest.json        |    1 +
+ .../verification-runs/run-000/status.json          |    1 +
+ .../verification-runs/run-000/stderr.jsonl         |    0
+ .../verification-runs/run-000/stdout.jsonl         |    9 +
+ .../verification-runs/run-001/failures.jsonl       |    0
+ .../verification-runs/run-001/manifest.json        |    1 +
+ .../verification-runs/run-001/status.json          |    1 +
+ .../verification-runs/run-001/stderr.jsonl         |    1 +
+ .../verification-runs/run-001/stdout.jsonl         |    0
+ .../verification-runs/run-002/failures.jsonl       |    0
+ .../verification-runs/run-002/manifest.json        |    1 +
+ .../verification-runs/run-002/status.json          |    1 +
+ .../verification-runs/run-002/stderr.jsonl         |    0
+ .../verification-runs/run-002/stdout.jsonl         |    9 +
+ .../verification-runs/run-003/failures.jsonl       |    0
+ .../verification-runs/run-003/manifest.json        |    1 +
+ .../verification-runs/run-003/status.json          |    1 +
+ .../verification-runs/run-003/stderr.jsonl         |    1 +
+ .../verification-runs/run-003/stdout.jsonl         |    0
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../run-004/children/run-000/status.json           |    1 +
+ .../run-004/children/run-000/stderr.jsonl          |    1 +
+ .../run-004/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../run-004/children/run-001/status.json           |    1 +
+ .../run-004/children/run-001/stderr.jsonl          |    0
+ .../run-004/children/run-001/stdout.jsonl          |   66 +
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../run-004/children/run-002/status.json           |    1 +
+ .../run-004/children/run-002/stderr.jsonl          |   38 +
+ .../run-004/children/run-002/stdout.jsonl          |  164 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../run-004/children/run-003/status.json           |    1 +
+ .../run-004/children/run-003/stderr.jsonl          |  311 ++
+ .../run-004/children/run-003/stdout.jsonl          | 3524 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../run-004/children/run-004/status.json           |    1 +
+ .../run-004/children/run-004/stderr.jsonl          |    2 +
+ .../run-004/children/run-004/stdout.jsonl          |   11 +
+ .../verification-runs/run-004/failures.jsonl       |    0
+ .../verification-runs/run-004/manifest.json        |    1 +
+ .../verification-runs/run-004/status.json          |    1 +
+ .../verification-runs/run-004/stderr.jsonl         |   81 +
+ .../verification-runs/run-004/stdout.jsonl         |  233 ++
+ .../verification-runs/run-005/failures.jsonl       |    0
+ .../verification-runs/run-005/manifest.json        |    1 +
+ .../verification-runs/run-005/status.json          |    1 +
+ .../verification-runs/run-005/stderr.jsonl         |    0
+ .../verification-runs/run-005/stdout.jsonl         |    9 +
+ .../verification-runs/run-006/failures.jsonl       |    0
+ .../verification-runs/run-006/manifest.json        |    1 +
+ .../verification-runs/run-006/status.json          |    1 +
+ .../verification-runs/run-006/stderr.jsonl         |    1 +
+ .../verification-runs/run-006/stdout.jsonl         |    0
+ .../run-007/children/run-000/failures.jsonl        |    0
+ .../run-007/children/run-000/manifest.json         |    1 +
+ .../run-007/children/run-000/status.json           |    1 +
+ .../run-007/children/run-000/stderr.jsonl          |    1 +
+ .../run-007/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-007/children/run-001/failures.jsonl        |    0
+ .../run-007/children/run-001/manifest.json         |    1 +
+ .../run-007/children/run-001/status.json           |    1 +
+ .../run-007/children/run-001/stderr.jsonl          |    0
+ .../run-007/children/run-001/stdout.jsonl          |   66 +
+ .../run-007/children/run-002/failures.jsonl        |    0
+ .../run-007/children/run-002/manifest.json         |    1 +
+ .../run-007/children/run-002/status.json           |    1 +
+ .../run-007/children/run-002/stderr.jsonl          |   11 +
+ .../run-007/children/run-002/stdout.jsonl          |  169 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-007/children/run-003/failures.jsonl        |    0
+ .../run-007/children/run-003/manifest.json         |    1 +
+ .../run-007/children/run-003/status.json           |    1 +
+ .../run-007/children/run-003/stderr.jsonl          |  311 ++
+ .../run-007/children/run-003/stdout.jsonl          | 3503 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-007/children/run-004/failures.jsonl        |    0
+ .../run-007/children/run-004/manifest.json         |    1 +
+ .../run-007/children/run-004/status.json           |    1 +
+ .../run-007/children/run-004/stderr.jsonl          |    2 +
+ .../run-007/children/run-004/stdout.jsonl          |   11 +
+ .../run-007/children/run-005/failures.jsonl        |    0
+ .../run-007/children/run-005/manifest.json         |    1 +
+ .../run-007/children/run-005/status.json           |    1 +
+ .../run-007/children/run-005/stderr.jsonl          |    0
+ .../run-007/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-007/failures.jsonl       |    0
+ .../verification-runs/run-007/manifest.json        |    1 +
+ .../verification-runs/run-007/status.json          |    1 +
+ .../verification-runs/run-007/stderr.jsonl         |   42 +
+ .../verification-runs/run-007/stdout.jsonl         |  285 ++
+ .../verification-runs/run-008/failures.jsonl       |    0
+ .../verification-runs/run-008/manifest.json        |    1 +
+ .../verification-runs/run-008/status.json          |    1 +
+ .../verification-runs/run-008/stderr.jsonl         |    0
+ .../verification-runs/run-008/stdout.jsonl         |    9 +
+ .../verification-runs/run-009/failures.jsonl       |    0
+ .../verification-runs/run-009/manifest.json        |    1 +
+ .../verification-runs/run-009/status.json          |    1 +
+ .../verification-runs/run-009/stderr.jsonl         |    1 +
+ .../verification-runs/run-009/stdout.jsonl         |    0
+ .../run-010/children/run-000/failures.jsonl        |    0
+ .../run-010/children/run-000/manifest.json         |    1 +
+ .../run-010/children/run-000/status.json           |    1 +
+ .../run-010/children/run-000/stderr.jsonl          |    1 +
+ .../run-010/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-010/children/run-001/failures.jsonl        |    0
+ .../run-010/children/run-001/status.json           |    1 +
+ .../run-010/children/run-001/stderr.jsonl          |    0
+ .../run-010/children/run-001/stdout.jsonl          |    3 +
+ .../verification-runs/run-010/failures.jsonl       |    0
+ .../verification-runs/run-010/status.json          |    1 +
+ .../verification-runs/run-010/stderr.jsonl         |    2 +
+ .../verification-runs/run-010/stdout.jsonl         |   32 +
+ .../verification-runs/run-011/failures.jsonl       |    0
+ .../verification-runs/run-011/manifest.json        |    1 +
+ .../verification-runs/run-011/status.json          |    1 +
+ .../verification-runs/run-011/stderr.jsonl         |    0
+ .../verification-runs/run-011/stdout.jsonl         |    9 +
+ .../verification-runs/run-012/failures.jsonl       |    0
+ .../verification-runs/run-012/manifest.json        |    1 +
+ .../verification-runs/run-012/status.json          |    1 +
+ .../verification-runs/run-012/stderr.jsonl         |    1 +
+ .../verification-runs/run-012/stdout.jsonl         |    0
+ .../run-013/children/run-000/failures.jsonl        |    0
+ .../run-013/children/run-000/manifest.json         |    1 +
+ .../run-013/children/run-000/status.json           |    1 +
+ .../run-013/children/run-000/stderr.jsonl          |    1 +
+ .../run-013/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-013/children/run-001/failures.jsonl        |    0
+ .../run-013/children/run-001/status.json           |    1 +
+ .../run-013/children/run-001/stderr.jsonl          |    0
+ .../run-013/children/run-001/stdout.jsonl          |    3 +
+ .../verification-runs/run-013/failures.jsonl       |    0
+ .../verification-runs/run-013/status.json          |    1 +
+ .../verification-runs/run-013/stderr.jsonl         |    2 +
+ .../verification-runs/run-013/stdout.jsonl         |   32 +
+ .../verification-runs/run-014/failures.jsonl       |    0
+ .../verification-runs/run-014/manifest.json        |    1 +
+ .../verification-runs/run-014/status.json          |    1 +
+ .../verification-runs/run-014/stderr.jsonl         |    0
+ .../verification-runs/run-014/stdout.jsonl         |    9 +
+ .../verification-runs/run-015/failures.jsonl       |    0
+ .../verification-runs/run-015/manifest.json        |    1 +
+ .../verification-runs/run-015/status.json          |    1 +
+ .../verification-runs/run-015/stderr.jsonl         |    1 +
+ .../verification-runs/run-015/stdout.jsonl         |    0
+ .../run-016/children/run-000/failures.jsonl        |    0
+ .../run-016/children/run-000/manifest.json         |    1 +
+ .../run-016/children/run-000/status.json           |    1 +
+ .../run-016/children/run-000/stderr.jsonl          |    1 +
+ .../run-016/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-016/children/run-001/failures.jsonl        |    0
+ .../run-016/children/run-001/manifest.json         |    1 +
+ .../run-016/children/run-001/status.json           |    1 +
+ .../run-016/children/run-001/stderr.jsonl          |    0
+ .../run-016/children/run-001/stdout.jsonl          |   66 +
+ .../run-016/children/run-002/failures.jsonl        |    0
+ .../run-016/children/run-002/manifest.json         |    1 +
+ .../run-016/children/run-002/status.json           |    1 +
+ .../run-016/children/run-002/stderr.jsonl          |   11 +
+ .../run-016/children/run-002/stdout.jsonl          |  169 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-016/children/run-003/failures.jsonl        |    0
+ .../run-016/children/run-003/manifest.json         |    1 +
+ .../run-016/children/run-003/status.json           |    1 +
+ .../run-016/children/run-003/stderr.jsonl          |  311 ++
+ .../run-016/children/run-003/stdout.jsonl          | 3555 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-016/children/run-004/failures.jsonl        |    0
+ .../run-016/children/run-004/manifest.json         |    1 +
+ .../run-016/children/run-004/status.json           |    1 +
+ .../run-016/children/run-004/stderr.jsonl          |    2 +
+ .../run-016/children/run-004/stdout.jsonl          |   11 +
+ .../run-016/children/run-005/failures.jsonl        |    0
+ .../run-016/children/run-005/manifest.json         |    1 +
+ .../run-016/children/run-005/status.json           |    1 +
+ .../run-016/children/run-005/stderr.jsonl          |    0
+ .../run-016/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-016/failures.jsonl       |    0
+ .../verification-runs/run-016/manifest.json        |    1 +
+ .../verification-runs/run-016/status.json          |    1 +
+ .../verification-runs/run-016/stderr.jsonl         |   43 +
+ .../verification-runs/run-016/stdout.jsonl         |  283 ++
+ .../20261028165751959-8b981eebe7978d67.json        |  226 ++
+ .agentplane/tasks/202610280304-8RQD6C/README.md    | 3625 +++++++++++++++++
+ .../tasks/202610280304-8RQD6C/pr/diffstat.txt      |    3 +
+ .../tasks/202610280304-8RQD6C/pr/github-body.md    |   35 +
+ .../tasks/202610280304-8RQD6C/pr/github-title.txt  |    1 +
+ .agentplane/tasks/202610280304-8RQD6C/pr/meta.json |   32 +
+ .agentplane/tasks/202610280304-8RQD6C/pr/review.md |   38 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-opinion.md                           |   21 +
+ .../evaluator-result.json                          |   32 +
+ .../evaluator-work-order.json                      |  123 +
+ .../quality-report.json                            |   22 +
+ ...4e6d04d763719afafc9b88139bf122a89deb9bca92.json |  Bin 0 -> 12846 bytes
+ ...c99bd9880b163ba24f18f4d501e49fde1583f05ef8d6.md |  Bin 0 -> 5029 bytes
+ ...c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json |  Bin 0 -> 8497 bytes
+ ...97b49d8eaba6cca476cd3e16c1b3cf3cb4f8824d7f.json |  Bin 0 -> 2050 bytes
+ ...9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json |  Bin 0 -> 7278 bytes
+ ...9d7877b0c489938ecc617960c4a5e3eee3a705e53c.json |  Bin 0 -> 274238 bytes
+ ...358d360264a85ee905be64a8723bbdd4ca71e02d4a.json |  Bin 0 -> 3478 bytes
+ ...3cb7ae1741057214f970b4f8a559795baf10e22ec.patch |  Bin 0 -> 9283 bytes
+ .../supervision/declared-checks.json               |   91 +
+ .../supervision/implementation-evidence.json       |   85 +
+ .../verification-runs/run-000/failures.jsonl       |    0
+ .../verification-runs/run-000/manifest.json        |    1 +
+ .../verification-runs/run-000/status.json          |    1 +
+ .../verification-runs/run-000/stderr.jsonl         |    0
+ .../verification-runs/run-000/stdout.jsonl         |    9 +
+ .../verification-runs/run-001/failures.jsonl       |    0
+ .../verification-runs/run-001/manifest.json        |    1 +
+ .../verification-runs/run-001/status.json          |    1 +
+ .../verification-runs/run-001/stderr.jsonl         |    1 +
+ .../verification-runs/run-001/stdout.jsonl         |    0
+ .../run-002/children/run-000/failures.jsonl        |    0
+ .../run-002/children/run-000/manifest.json         |    1 +
+ .../run-002/children/run-000/status.json           |    1 +
+ .../run-002/children/run-000/stderr.jsonl          |    1 +
+ .../run-002/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-002/children/run-001/failures.jsonl        |    0
+ .../run-002/children/run-001/status.json           |    1 +
+ .../run-002/children/run-001/stderr.jsonl          |    0
+ .../run-002/children/run-001/stdout.jsonl          |   18 +
+ .../verification-runs/run-002/failures.jsonl       |    0
+ .../verification-runs/run-002/status.json          |    1 +
+ .../verification-runs/run-002/stderr.jsonl         |    2 +
+ .../verification-runs/run-002/stdout.jsonl         |   32 +
+ .../verification-runs/run-003/failures.jsonl       |    0
+ .../verification-runs/run-003/manifest.json        |    1 +
+ .../verification-runs/run-003/status.json          |    1 +
+ .../verification-runs/run-003/stderr.jsonl         |    0
+ .../verification-runs/run-003/stdout.jsonl         |    9 +
+ .../verification-runs/run-004/failures.jsonl       |    0
+ .../verification-runs/run-004/manifest.json        |    1 +
+ .../verification-runs/run-004/status.json          |    1 +
+ .../verification-runs/run-004/stderr.jsonl         |    1 +
+ .../verification-runs/run-004/stdout.jsonl         |    0
+ .../run-005/children/run-000/failures.jsonl        |    0
+ .../run-005/children/run-000/manifest.json         |    1 +
+ .../run-005/children/run-000/status.json           |    1 +
+ .../run-005/children/run-000/stderr.jsonl          |    1 +
+ .../run-005/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-005/children/run-001/failures.jsonl        |    0
+ .../run-005/children/run-001/manifest.json         |    1 +
+ .../run-005/children/run-001/status.json           |    1 +
+ .../run-005/children/run-001/stderr.jsonl          |    0
+ .../run-005/children/run-001/stdout.jsonl          |   66 +
+ .../run-005/children/run-002/failures.jsonl        |    0
+ .../run-005/children/run-002/manifest.json         |    1 +
+ .../run-005/children/run-002/status.json           |    1 +
+ .../run-005/children/run-002/stderr.jsonl          |   11 +
+ .../run-005/children/run-002/stdout.jsonl          |  169 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-005/children/run-003/failures.jsonl        |    0
+ .../run-005/children/run-003/manifest.json         |    1 +
+ .../run-005/children/run-003/status.json           |    1 +
+ .../run-005/children/run-003/stderr.jsonl          |  311 ++
+ .../run-005/children/run-003/stdout.jsonl          | 3537 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-005/children/run-004/failures.jsonl        |    0
+ .../run-005/children/run-004/manifest.json         |    1 +
+ .../run-005/children/run-004/status.json           |    1 +
+ .../run-005/children/run-004/stderr.jsonl          |    2 +
+ .../run-005/children/run-004/stdout.jsonl          |   11 +
+ .../run-005/children/run-005/failures.jsonl        |    0
+ .../run-005/children/run-005/manifest.json         |    1 +
+ .../run-005/children/run-005/status.json           |    1 +
+ .../run-005/children/run-005/stderr.jsonl          |    0
+ .../run-005/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-005/failures.jsonl       |    0
+ .../verification-runs/run-005/manifest.json        |    1 +
+ .../verification-runs/run-005/status.json          |    1 +
+ .../verification-runs/run-005/stderr.jsonl         |   48 +
+ .../verification-runs/run-005/stdout.jsonl         |  283 ++
+ .../verification-runs/run-006/failures.jsonl       |    0
+ .../verification-runs/run-006/manifest.json        |    1 +
+ .../verification-runs/run-006/status.json          |    1 +
+ .../verification-runs/run-006/stderr.jsonl         |    0
+ .../verification-runs/run-006/stdout.jsonl         |    9 +
+ .../verification-runs/run-007/failures.jsonl       |    0
+ .../verification-runs/run-007/manifest.json        |    1 +
+ .../verification-runs/run-007/status.json          |    1 +
+ .../verification-runs/run-007/stderr.jsonl         |    1 +
+ .../verification-runs/run-007/stdout.jsonl         |    0
+ .../run-008/children/run-000/failures.jsonl        |    0
+ .../run-008/children/run-000/manifest.json         |    1 +
+ .../run-008/children/run-000/status.json           |    1 +
+ .../run-008/children/run-000/stderr.jsonl          |    1 +
+ .../run-008/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-008/children/run-001/failures.jsonl        |    0
+ .../run-008/children/run-001/manifest.json         |    1 +
+ .../run-008/children/run-001/status.json           |    1 +
+ .../run-008/children/run-001/stderr.jsonl          |    0
+ .../run-008/children/run-001/stdout.jsonl          |   66 +
+ .../run-008/children/run-002/failures.jsonl        |    0
+ .../run-008/children/run-002/manifest.json         |    1 +
+ .../run-008/children/run-002/status.json           |    1 +
+ .../run-008/children/run-002/stderr.jsonl          |   11 +
+ .../run-008/children/run-002/stdout.jsonl          |  169 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-008/children/run-003/failures.jsonl        |    0
+ .../run-008/children/run-003/manifest.json         |    1 +
+ .../run-008/children/run-003/status.json           |    1 +
+ .../run-008/children/run-003/stderr.jsonl          |  311 ++
+ .../run-008/children/run-003/stdout.jsonl          | 3514 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-008/children/run-004/failures.jsonl        |    0
+ .../run-008/children/run-004/manifest.json         |    1 +
+ .../run-008/children/run-004/status.json           |    1 +
+ .../run-008/children/run-004/stderr.jsonl          |    2 +
+ .../run-008/children/run-004/stdout.jsonl          |   11 +
+ .../run-008/children/run-005/failures.jsonl        |    0
+ .../run-008/children/run-005/manifest.json         |    1 +
+ .../run-008/children/run-005/status.json           |    1 +
+ .../run-008/children/run-005/stderr.jsonl          |    0
+ .../run-008/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-008/failures.jsonl       |    0
+ .../verification-runs/run-008/manifest.json        |    1 +
+ .../verification-runs/run-008/status.json          |    1 +
+ .../verification-runs/run-008/stderr.jsonl         |   42 +
+ .../verification-runs/run-008/stdout.jsonl         |  283 ++
+ .../run-009/children/run-000/failures.jsonl        |    0
+ .../run-009/children/run-000/status.json           |    1 +
+ .../run-009/children/run-000/stderr.jsonl          |    1 +
+ .../run-009/children/run-000/stdout.jsonl          |    6 +
+ .../verification-runs/run-009/failures.jsonl       |    0
+ .../verification-runs/run-009/status.json          |    1 +
+ .../verification-runs/run-009/stderr.jsonl         |    1 +
+ .../verification-runs/run-009/stdout.jsonl         |    3 +
+ .../run-010/children/run-000/failures.jsonl        |    0
+ .../run-010/children/run-000/status.json           |    1 +
+ .../run-010/children/run-000/stderr.jsonl          |    1 +
+ .../run-010/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-010/failures.jsonl       |    0
+ .../verification-runs/run-010/status.json          |    1 +
+ .../verification-runs/run-010/stderr.jsonl         |    1 +
+ .../verification-runs/run-010/stdout.jsonl         |    3 +
+ .../run-011/children/run-000/failures.jsonl        |    0
+ .../run-011/children/run-000/manifest.json         |    1 +
+ .../run-011/children/run-000/status.json           |    1 +
+ .../run-011/children/run-000/stderr.jsonl          |    1 +
+ .../run-011/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-011/children/run-001/failures.jsonl        |    0
+ .../run-011/children/run-001/manifest.json         |    1 +
+ .../run-011/children/run-001/status.json           |    1 +
+ .../run-011/children/run-001/stderr.jsonl          |    0
+ .../run-011/children/run-001/stdout.jsonl          |   66 +
+ .../run-011/children/run-002/failures.jsonl        |    0
+ .../run-011/children/run-002/manifest.json         |    1 +
+ .../run-011/children/run-002/status.json           |    1 +
+ .../run-011/children/run-002/stderr.jsonl          |   11 +
+ .../run-011/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-011/children/run-003/failures.jsonl        |    0
+ .../run-011/children/run-003/manifest.json         |    1 +
+ .../run-011/children/run-003/status.json           |    1 +
+ .../run-011/children/run-003/stderr.jsonl          |  311 ++
+ .../run-011/children/run-003/stdout.jsonl          | 3470 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-011/children/run-004/failures.jsonl        |    0
+ .../run-011/children/run-004/manifest.json         |    1 +
+ .../run-011/children/run-004/status.json           |    1 +
+ .../run-011/children/run-004/stderr.jsonl          |    2 +
+ .../run-011/children/run-004/stdout.jsonl          |   11 +
+ .../run-011/children/run-005/failures.jsonl        |    0
+ .../run-011/children/run-005/manifest.json         |    1 +
+ .../run-011/children/run-005/status.json           |    1 +
+ .../run-011/children/run-005/stderr.jsonl          |    0
+ .../run-011/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-011/failures.jsonl       |    0
+ .../verification-runs/run-011/manifest.json        |    1 +
+ .../verification-runs/run-011/status.json          |    1 +
+ .../verification-runs/run-011/stderr.jsonl         |   52 +
+ .../verification-runs/run-011/stdout.jsonl         |  281 ++
+ .../verification-runs/run-012/failures.jsonl       |    0
+ .../verification-runs/run-012/manifest.json        |    1 +
+ .../verification-runs/run-012/status.json          |    1 +
+ .../verification-runs/run-012/stderr.jsonl         |    1 +
+ .../verification-runs/run-012/stdout.jsonl         |    0
+ .../verification-runs/run-013/failures.jsonl       |    0
+ .../verification-runs/run-013/manifest.json        |    1 +
+ .../verification-runs/run-013/status.json          |    1 +
+ .../verification-runs/run-013/stderr.jsonl         |    0
+ .../verification-runs/run-013/stdout.jsonl         |    9 +
+ .../20261028071843207-95f46b85f447d27a.json        |  226 ++
+ .../20261028105411017-b549d7a38887782b.json        |  240 ++
+ .agentplane/tasks/202610280651-3K1ERD/README.md    | 4085 ++++++++++++++++++++
+ .../tasks/202610280651-3K1ERD/pr/diffstat.txt      |    6 +
+ .../tasks/202610280651-3K1ERD/pr/github-body.md    |   38 +
+ .../tasks/202610280651-3K1ERD/pr/github-title.txt  |    1 +
+ .agentplane/tasks/202610280651-3K1ERD/pr/meta.json |   32 +
+ .agentplane/tasks/202610280651-3K1ERD/pr/review.md |   41 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-opinion.md                           |   23 +
+ .../evaluator-result.json                          |   54 +
+ .../evaluator-work-order.json                      |  120 +
+ .../quality-report.json                            |   24 +
+ ...4e6d04d763719afafc9b88139bf122a89deb9bca92.json |  Bin 0 -> 12846 bytes
+ ...c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json |  Bin 0 -> 8497 bytes
+ ...3200b7c4b3103c373f4fe5472b5abf90584b107fc.patch |  Bin 0 -> 10840 bytes
+ ...9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json |  Bin 0 -> 7278 bytes
+ ...358d360264a85ee905be64a8723bbdd4ca71e02d4a.json |  Bin 0 -> 3478 bytes
+ ...bf67d81dd07a0fd48c5efc59142100c21e89c25bc25f.md |  Bin 0 -> 5029 bytes
+ ...055c8e002eec9b70db5a202def71c84294f0df4901.json |  Bin 0 -> 300783 bytes
+ ...e8d96f447483a413e18ed301b2b2b9cde7823e2da8.json |  Bin 0 -> 2050 bytes
+ .../supervision/declared-checks.json               |   37 +
+ .../supervision/implementation-evidence.json       | 1535 ++++++++
+ .../verification-runs/run-000/failures.jsonl       |    0
+ .../verification-runs/run-000/manifest.json        |    1 +
+ .../verification-runs/run-000/status.json          |    1 +
+ .../verification-runs/run-000/stderr.jsonl         |    0
+ .../verification-runs/run-000/stdout.jsonl         |    0
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../run-001/children/run-000/status.json           |    1 +
+ .../run-001/children/run-000/stderr.jsonl          |    0
+ .../run-001/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-001/failures.jsonl       |    0
+ .../verification-runs/run-001/manifest.json        |    1 +
+ .../verification-runs/run-001/status.json          |    1 +
+ .../verification-runs/run-001/stderr.jsonl         |    0
+ .../verification-runs/run-001/stdout.jsonl         |   10 +
+ .../verification-runs/run-002/failures.jsonl       |    0
+ .../verification-runs/run-002/manifest.json        |    1 +
+ .../verification-runs/run-002/status.json          |    1 +
+ .../verification-runs/run-002/stderr.jsonl         |    1 +
+ .../verification-runs/run-002/stdout.jsonl         |    0
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../run-003/children/run-000/status.json           |    1 +
+ .../run-003/children/run-000/stderr.jsonl          |    1 +
+ .../run-003/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../run-003/children/run-001/status.json           |    1 +
+ .../run-003/children/run-001/stderr.jsonl          |    0
+ .../run-003/children/run-001/stdout.jsonl          |   66 +
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../run-003/children/run-002/status.json           |    1 +
+ .../run-003/children/run-002/stderr.jsonl          |   11 +
+ .../run-003/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |   15 +
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../run-003/children/run-003/status.json           |    1 +
+ .../run-003/children/run-003/stderr.jsonl          |  573 +++
+ .../run-003/children/run-003/stdout.jsonl          | 3517 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../run-003/children/run-004/status.json           |    1 +
+ .../run-003/children/run-004/stderr.jsonl          |    2 +
+ .../run-003/children/run-004/stdout.jsonl          |   11 +
+ .../verification-runs/run-003/failures.jsonl       |    0
+ .../verification-runs/run-003/manifest.json        |    1 +
+ .../verification-runs/run-003/status.json          |    1 +
+ .../verification-runs/run-003/stderr.jsonl         |   96 +
+ .../verification-runs/run-003/stdout.jsonl         |  231 ++
+ .../verification-runs/run-004/failures.jsonl       |    0
+ .../verification-runs/run-004/manifest.json        |    1 +
+ .../verification-runs/run-004/status.json          |    1 +
+ .../verification-runs/run-004/stderr.jsonl         |    0
+ .../verification-runs/run-004/stdout.jsonl         |    0
+ .../run-005/children/run-000/failures.jsonl        |    0
+ .../run-005/children/run-000/manifest.json         |    1 +
+ .../run-005/children/run-000/status.json           |    1 +
+ .../run-005/children/run-000/stderr.jsonl          |    0
+ .../run-005/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-005/failures.jsonl       |    0
+ .../verification-runs/run-005/manifest.json        |    1 +
+ .../verification-runs/run-005/status.json          |    1 +
+ .../verification-runs/run-005/stderr.jsonl         |    0
+ .../verification-runs/run-005/stdout.jsonl         |   10 +
+ .../run-006/children/run-000/failures.jsonl        |    0
+ .../run-006/children/run-000/manifest.json         |    1 +
+ .../run-006/children/run-000/status.json           |    1 +
+ .../run-006/children/run-000/stderr.jsonl          |    0
+ .../run-006/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-006/failures.jsonl       |    0
+ .../verification-runs/run-006/manifest.json        |    1 +
+ .../verification-runs/run-006/status.json          |    1 +
+ .../verification-runs/run-006/stderr.jsonl         |    0
+ .../verification-runs/run-006/stdout.jsonl         |   16 +
+ .../verification-runs/run-007/failures.jsonl       |    0
+ .../verification-runs/run-007/manifest.json        |    1 +
+ .../verification-runs/run-007/status.json          |    1 +
+ .../verification-runs/run-007/stderr.jsonl         |    1 +
+ .../verification-runs/run-007/stdout.jsonl         |    0
+ .../run-008/children/run-000/failures.jsonl        |    0
+ .../run-008/children/run-000/manifest.json         |    1 +
+ .../run-008/children/run-000/status.json           |    1 +
+ .../run-008/children/run-000/stderr.jsonl          |    1 +
+ .../run-008/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-008/children/run-001/failures.jsonl        |    0
+ .../run-008/children/run-001/manifest.json         |    1 +
+ .../run-008/children/run-001/status.json           |    1 +
+ .../run-008/children/run-001/stderr.jsonl          |    0
+ .../run-008/children/run-001/stdout.jsonl          |   66 +
+ .../run-008/children/run-002/failures.jsonl        |    0
+ .../run-008/children/run-002/manifest.json         |    1 +
+ .../run-008/children/run-002/status.json           |    1 +
+ .../run-008/children/run-002/stderr.jsonl          |   11 +
+ .../run-008/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    1 +
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-008/children/run-003/failures.jsonl        |    0
+ .../run-008/children/run-003/manifest.json         |    1 +
+ .../run-008/children/run-003/status.json           |    1 +
+ .../run-008/children/run-003/stderr.jsonl          |  355 ++
+ .../run-008/children/run-003/stdout.jsonl          | 3503 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-008/children/run-004/failures.jsonl        |    0
+ .../run-008/children/run-004/manifest.json         |    1 +
+ .../run-008/children/run-004/status.json           |    1 +
+ .../run-008/children/run-004/stderr.jsonl          |    2 +
+ .../run-008/children/run-004/stdout.jsonl          |   11 +
+ .../verification-runs/run-008/failures.jsonl       |    0
+ .../verification-runs/run-008/manifest.json        |    1 +
+ .../verification-runs/run-008/status.json          |    1 +
+ .../verification-runs/run-008/stderr.jsonl         |   82 +
+ .../verification-runs/run-008/stdout.jsonl         |  233 ++
+ .../verification-runs/run-009/failures.jsonl       |    0
+ .../verification-runs/run-009/manifest.json        |    1 +
+ .../verification-runs/run-009/status.json          |    1 +
+ .../verification-runs/run-009/stderr.jsonl         |    0
+ .../verification-runs/run-009/stdout.jsonl         |    0
+ .../run-010/children/run-000/failures.jsonl        |    0
+ .../run-010/children/run-000/manifest.json         |    1 +
+ .../run-010/children/run-000/status.json           |    1 +
+ .../run-010/children/run-000/stderr.jsonl          |    0
+ .../run-010/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-010/failures.jsonl       |    0
+ .../verification-runs/run-010/manifest.json        |    1 +
+ .../verification-runs/run-010/status.json          |    1 +
+ .../verification-runs/run-010/stderr.jsonl         |    0
+ .../verification-runs/run-010/stdout.jsonl         |   10 +
+ .../run-011/children/run-000/failures.jsonl        |    0
+ .../run-011/children/run-000/manifest.json         |    1 +
+ .../run-011/children/run-000/status.json           |    1 +
+ .../run-011/children/run-000/stderr.jsonl          |    0
+ .../run-011/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-011/failures.jsonl       |    0
+ .../verification-runs/run-011/manifest.json        |    1 +
+ .../verification-runs/run-011/status.json          |    1 +
+ .../verification-runs/run-011/stderr.jsonl         |    0
+ .../verification-runs/run-011/stdout.jsonl         |   15 +
+ .../run-012/children/run-000/failures.jsonl        |    0
+ .../run-012/children/run-000/manifest.json         |    1 +
+ .../run-012/children/run-000/status.json           |    1 +
+ .../run-012/children/run-000/stderr.jsonl          |    0
+ .../run-012/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-012/failures.jsonl       |    0
+ .../verification-runs/run-012/manifest.json        |    1 +
+ .../verification-runs/run-012/status.json          |    1 +
+ .../verification-runs/run-012/stderr.jsonl         |    0
+ .../verification-runs/run-012/stdout.jsonl         |   16 +
+ .../verification-runs/run-013/failures.jsonl       |    0
+ .../verification-runs/run-013/manifest.json        |    1 +
+ .../verification-runs/run-013/status.json          |    1 +
+ .../verification-runs/run-013/stderr.jsonl         |    1 +
+ .../verification-runs/run-013/stdout.jsonl         |    0
+ .../run-014/children/run-000/failures.jsonl        |    0
+ .../run-014/children/run-000/manifest.json         |    1 +
+ .../run-014/children/run-000/status.json           |    1 +
+ .../run-014/children/run-000/stderr.jsonl          |    1 +
+ .../run-014/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-014/children/run-001/failures.jsonl        |    0
+ .../run-014/children/run-001/manifest.json         |    1 +
+ .../run-014/children/run-001/status.json           |    1 +
+ .../run-014/children/run-001/stderr.jsonl          |    0
+ .../run-014/children/run-001/stdout.jsonl          |   67 +
+ .../run-014/children/run-002/failures.jsonl        |    0
+ .../run-014/children/run-002/manifest.json         |    1 +
+ .../run-014/children/run-002/status.json           |    1 +
+ .../run-014/children/run-002/stderr.jsonl          |   11 +
+ .../run-014/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-014/children/run-003/failures.jsonl        |    0
+ .../run-014/children/run-003/manifest.json         |    1 +
+ .../run-014/children/run-003/status.json           |    1 +
+ .../run-014/children/run-003/stderr.jsonl          |  311 ++
+ .../run-014/children/run-003/stdout.jsonl          | 3488 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-014/children/run-004/failures.jsonl        |    0
+ .../run-014/children/run-004/manifest.json         |    1 +
+ .../run-014/children/run-004/status.json           |    1 +
+ .../run-014/children/run-004/stderr.jsonl          |    2 +
+ .../run-014/children/run-004/stdout.jsonl          |   11 +
+ .../run-014/children/run-005/failures.jsonl        |    0
+ .../run-014/children/run-005/manifest.json         |    1 +
+ .../run-014/children/run-005/status.json           |    1 +
+ .../run-014/children/run-005/stderr.jsonl          |    0
+ .../run-014/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-014/failures.jsonl       |    0
+ .../verification-runs/run-014/manifest.json        |    1 +
+ .../verification-runs/run-014/status.json          |    1 +
+ .../verification-runs/run-014/stderr.jsonl         |   43 +
+ .../verification-runs/run-014/stdout.jsonl         |  283 ++
+ .../verification-runs/run-015/failures.jsonl       |    0
+ .../verification-runs/run-015/manifest.json        |    1 +
+ .../verification-runs/run-015/status.json          |    1 +
+ .../verification-runs/run-015/stderr.jsonl         |    0
+ .../verification-runs/run-015/stdout.jsonl         |    0
+ .../run-016/children/run-000/failures.jsonl        |    0
+ .../run-016/children/run-000/manifest.json         |    1 +
+ .../run-016/children/run-000/status.json           |    1 +
+ .../run-016/children/run-000/stderr.jsonl          |    0
+ .../run-016/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-016/failures.jsonl       |    0
+ .../verification-runs/run-016/manifest.json        |    1 +
+ .../verification-runs/run-016/status.json          |    1 +
+ .../verification-runs/run-016/stderr.jsonl         |    0
+ .../verification-runs/run-016/stdout.jsonl         |   10 +
+ .../run-017/children/run-000/failures.jsonl        |    0
+ .../run-017/children/run-000/manifest.json         |    1 +
+ .../run-017/children/run-000/status.json           |    1 +
+ .../run-017/children/run-000/stderr.jsonl          |    0
+ .../run-017/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-017/failures.jsonl       |    0
+ .../verification-runs/run-017/manifest.json        |    1 +
+ .../verification-runs/run-017/status.json          |    1 +
+ .../verification-runs/run-017/stderr.jsonl         |    0
+ .../verification-runs/run-017/stdout.jsonl         |   15 +
+ .../run-018/children/run-000/failures.jsonl        |    0
+ .../run-018/children/run-000/manifest.json         |    1 +
+ .../run-018/children/run-000/status.json           |    1 +
+ .../run-018/children/run-000/stderr.jsonl          |    0
+ .../run-018/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-018/failures.jsonl       |    0
+ .../verification-runs/run-018/manifest.json        |    1 +
+ .../verification-runs/run-018/status.json          |    1 +
+ .../verification-runs/run-018/stderr.jsonl         |    0
+ .../verification-runs/run-018/stdout.jsonl         |   16 +
+ .../verification-runs/run-019/failures.jsonl       |    0
+ .../verification-runs/run-019/manifest.json        |    1 +
+ .../verification-runs/run-019/status.json          |    1 +
+ .../verification-runs/run-019/stderr.jsonl         |    1 +
+ .../verification-runs/run-019/stdout.jsonl         |    0
+ .../run-020/children/run-000/failures.jsonl        |    0
+ .../run-020/children/run-000/manifest.json         |    1 +
+ .../run-020/children/run-000/status.json           |    1 +
+ .../run-020/children/run-000/stderr.jsonl          |    1 +
+ .../run-020/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-020/children/run-001/failures.jsonl        |    0
+ .../run-020/children/run-001/manifest.json         |    1 +
+ .../run-020/children/run-001/status.json           |    1 +
+ .../run-020/children/run-001/stderr.jsonl          |    0
+ .../run-020/children/run-001/stdout.jsonl          |   66 +
+ .../run-020/children/run-002/failures.jsonl        |    0
+ .../run-020/children/run-002/status.json           |    1 +
+ .../run-020/children/run-002/stderr.jsonl          |    1 +
+ .../run-020/children/run-002/stdout.jsonl          |    1 +
+ .../verification-runs/run-020/failures.jsonl       |    0
+ .../verification-runs/run-020/status.json          |    1 +
+ .../verification-runs/run-020/stderr.jsonl         |    2 +
+ .../verification-runs/run-020/stdout.jsonl         |   33 +
+ .../verification-runs/run-021/failures.jsonl       |    0
+ .../verification-runs/run-021/manifest.json        |    1 +
+ .../verification-runs/run-021/status.json          |    1 +
+ .../verification-runs/run-021/stderr.jsonl         |    0
+ .../verification-runs/run-021/stdout.jsonl         |    0
+ .../run-022/children/run-000/failures.jsonl        |    0
+ .../run-022/children/run-000/manifest.json         |    1 +
+ .../run-022/children/run-000/status.json           |    1 +
+ .../run-022/children/run-000/stderr.jsonl          |    0
+ .../run-022/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-022/failures.jsonl       |    0
+ .../verification-runs/run-022/manifest.json        |    1 +
+ .../verification-runs/run-022/status.json          |    1 +
+ .../verification-runs/run-022/stderr.jsonl         |    0
+ .../verification-runs/run-022/stdout.jsonl         |   10 +
+ .../verification-runs/run-023/failures.jsonl       |    0
+ .../verification-runs/run-023/manifest.json        |    1 +
+ .../verification-runs/run-023/status.json          |    1 +
+ .../verification-runs/run-023/stderr.jsonl         |    1 +
+ .../verification-runs/run-023/stdout.jsonl         |    0
+ .../run-024/children/run-000/failures.jsonl        |    0
+ .../run-024/children/run-000/manifest.json         |    1 +
+ .../run-024/children/run-000/status.json           |    1 +
+ .../run-024/children/run-000/stderr.jsonl          |    1 +
+ .../run-024/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-024/children/run-001/failures.jsonl        |    0
+ .../run-024/children/run-001/manifest.json         |    1 +
+ .../run-024/children/run-001/status.json           |    1 +
+ .../run-024/children/run-001/stderr.jsonl          |    0
+ .../run-024/children/run-001/stdout.jsonl          |   66 +
+ .../run-024/children/run-002/failures.jsonl        |    0
+ .../run-024/children/run-002/manifest.json         |    1 +
+ .../run-024/children/run-002/status.json           |    1 +
+ .../run-024/children/run-002/stderr.jsonl          |   11 +
+ .../run-024/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-024/children/run-003/failures.jsonl        |    0
+ .../run-024/children/run-003/manifest.json         |    1 +
+ .../run-024/children/run-003/status.json           |    1 +
+ .../run-024/children/run-003/stderr.jsonl          |  311 ++
+ .../run-024/children/run-003/stdout.jsonl          | 3566 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-024/children/run-004/failures.jsonl        |    0
+ .../run-024/children/run-004/manifest.json         |    1 +
+ .../run-024/children/run-004/status.json           |    1 +
+ .../run-024/children/run-004/stderr.jsonl          |    2 +
+ .../run-024/children/run-004/stdout.jsonl          |   11 +
+ .../run-024/children/run-005/failures.jsonl        |    0
+ .../run-024/children/run-005/manifest.json         |    1 +
+ .../run-024/children/run-005/status.json           |    1 +
+ .../run-024/children/run-005/stderr.jsonl          |    0
+ .../run-024/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-024/failures.jsonl       |    0
+ .../verification-runs/run-024/manifest.json        |    1 +
+ .../verification-runs/run-024/status.json          |    1 +
+ .../verification-runs/run-024/stderr.jsonl         |   42 +
+ .../verification-runs/run-024/stdout.jsonl         |  285 ++
+ .../verification-runs/run-025/failures.jsonl       |    0
+ .../verification-runs/run-025/manifest.json        |    1 +
+ .../verification-runs/run-025/status.json          |    1 +
+ .../verification-runs/run-025/stderr.jsonl         |    0
+ .../verification-runs/run-025/stdout.jsonl         |    0
+ .../run-026/children/run-000/failures.jsonl        |    0
+ .../run-026/children/run-000/manifest.json         |    1 +
+ .../run-026/children/run-000/status.json           |    1 +
+ .../run-026/children/run-000/stderr.jsonl          |    0
+ .../run-026/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-026/failures.jsonl       |    0
+ .../verification-runs/run-026/manifest.json        |    1 +
+ .../verification-runs/run-026/status.json          |    1 +
+ .../verification-runs/run-026/stderr.jsonl         |    0
+ .../verification-runs/run-026/stdout.jsonl         |   10 +
+ .../run-027/children/run-000/failures.jsonl        |    0
+ .../run-027/children/run-000/manifest.json         |    1 +
+ .../run-027/children/run-000/status.json           |    1 +
+ .../run-027/children/run-000/stderr.jsonl          |    0
+ .../run-027/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-027/failures.jsonl       |    0
+ .../verification-runs/run-027/manifest.json        |    1 +
+ .../verification-runs/run-027/status.json          |    1 +
+ .../verification-runs/run-027/stderr.jsonl         |    0
+ .../verification-runs/run-027/stdout.jsonl         |   12 +
+ .../run-028/children/run-000/failures.jsonl        |    0
+ .../run-028/children/run-000/manifest.json         |    1 +
+ .../run-028/children/run-000/status.json           |    1 +
+ .../run-028/children/run-000/stderr.jsonl          |    0
+ .../run-028/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-028/failures.jsonl       |    0
+ .../verification-runs/run-028/manifest.json        |    1 +
+ .../verification-runs/run-028/status.json          |    1 +
+ .../verification-runs/run-028/stderr.jsonl         |    0
+ .../verification-runs/run-028/stdout.jsonl         |   16 +
+ .../verification-runs/run-029/failures.jsonl       |    0
+ .../verification-runs/run-029/manifest.json        |    1 +
+ .../verification-runs/run-029/status.json          |    1 +
+ .../verification-runs/run-029/stderr.jsonl         |    1 +
+ .../verification-runs/run-029/stdout.jsonl         |    0
+ .../run-030/children/run-000/failures.jsonl        |    0
+ .../run-030/children/run-000/manifest.json         |    1 +
+ .../run-030/children/run-000/status.json           |    1 +
+ .../run-030/children/run-000/stderr.jsonl          |    1 +
+ .../run-030/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-030/children/run-001/failures.jsonl        |    0
+ .../run-030/children/run-001/manifest.json         |    1 +
+ .../run-030/children/run-001/status.json           |    1 +
+ .../run-030/children/run-001/stderr.jsonl          |    0
+ .../run-030/children/run-001/stdout.jsonl          |   66 +
+ .../run-030/children/run-002/failures.jsonl        |    0
+ .../run-030/children/run-002/manifest.json         |    1 +
+ .../run-030/children/run-002/status.json           |    1 +
+ .../run-030/children/run-002/stderr.jsonl          |   11 +
+ .../run-030/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-030/children/run-003/failures.jsonl        |    0
+ .../run-030/children/run-003/manifest.json         |    1 +
+ .../run-030/children/run-003/status.json           |    1 +
+ .../run-030/children/run-003/stderr.jsonl          |  311 ++
+ .../run-030/children/run-003/stdout.jsonl          | 3540 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-030/children/run-004/failures.jsonl        |    0
+ .../run-030/children/run-004/manifest.json         |    1 +
+ .../run-030/children/run-004/status.json           |    1 +
+ .../run-030/children/run-004/stderr.jsonl          |    2 +
+ .../run-030/children/run-004/stdout.jsonl          |   11 +
+ .../run-030/children/run-005/failures.jsonl        |    0
+ .../run-030/children/run-005/manifest.json         |    1 +
+ .../run-030/children/run-005/status.json           |    1 +
+ .../run-030/children/run-005/stderr.jsonl          |    0
+ .../run-030/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-030/failures.jsonl       |    0
+ .../verification-runs/run-030/manifest.json        |    1 +
+ .../verification-runs/run-030/status.json          |    1 +
+ .../verification-runs/run-030/stderr.jsonl         |   43 +
+ .../verification-runs/run-030/stdout.jsonl         |  283 ++
+ .../verification-runs/run-031/failures.jsonl       |    0
+ .../verification-runs/run-031/manifest.json        |    1 +
+ .../verification-runs/run-031/status.json          |    1 +
+ .../verification-runs/run-031/stderr.jsonl         |    0
+ .../verification-runs/run-031/stdout.jsonl         |    0
+ .../run-032/children/run-000/failures.jsonl        |    0
+ .../run-032/children/run-000/manifest.json         |    1 +
+ .../run-032/children/run-000/status.json           |    1 +
+ .../run-032/children/run-000/stderr.jsonl          |    0
+ .../run-032/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-032/failures.jsonl       |    0
+ .../verification-runs/run-032/manifest.json        |    1 +
+ .../verification-runs/run-032/status.json          |    1 +
+ .../verification-runs/run-032/stderr.jsonl         |    0
+ .../verification-runs/run-032/stdout.jsonl         |   10 +
+ .../run-033/children/run-000/failures.jsonl        |    0
+ .../run-033/children/run-000/manifest.json         |    1 +
+ .../run-033/children/run-000/status.json           |    1 +
+ .../run-033/children/run-000/stderr.jsonl          |    0
+ .../run-033/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-033/failures.jsonl       |    0
+ .../verification-runs/run-033/manifest.json        |    1 +
+ .../verification-runs/run-033/status.json          |    1 +
+ .../verification-runs/run-033/stderr.jsonl         |    0
+ .../verification-runs/run-033/stdout.jsonl         |   15 +
+ .../run-034/children/run-000/failures.jsonl        |    0
+ .../run-034/children/run-000/manifest.json         |    1 +
+ .../run-034/children/run-000/status.json           |    1 +
+ .../run-034/children/run-000/stderr.jsonl          |    0
+ .../run-034/children/run-000/stdout.jsonl          |    0
+ .../verification-runs/run-034/failures.jsonl       |    0
+ .../verification-runs/run-034/manifest.json        |    1 +
+ .../verification-runs/run-034/status.json          |    1 +
+ .../verification-runs/run-034/stderr.jsonl         |    0
+ .../verification-runs/run-034/stdout.jsonl         |   16 +
+ .../verification-runs/run-035/failures.jsonl       |    0
+ .../verification-runs/run-035/manifest.json        |    1 +
+ .../verification-runs/run-035/status.json          |    1 +
+ .../verification-runs/run-035/stderr.jsonl         |    1 +
+ .../verification-runs/run-035/stdout.jsonl         |    0
+ .../run-036/children/run-000/failures.jsonl        |    0
+ .../run-036/children/run-000/manifest.json         |    1 +
+ .../run-036/children/run-000/status.json           |    1 +
+ .../run-036/children/run-000/stderr.jsonl          |    1 +
+ .../run-036/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-036/children/run-001/failures.jsonl        |    0
+ .../run-036/children/run-001/status.json           |    1 +
+ .../run-036/children/run-001/stderr.jsonl          |    0
+ .../run-036/children/run-001/stdout.jsonl          |    3 +
+ .../verification-runs/run-036/failures.jsonl       |    0
+ .../verification-runs/run-036/status.json          |    1 +
+ .../verification-runs/run-036/stderr.jsonl         |    2 +
+ .../verification-runs/run-036/stdout.jsonl         |   32 +
+ .../run-037/children/run-000/failures.jsonl        |    0
+ .../run-037/children/run-000/manifest.json         |    1 +
+ .../run-037/children/run-000/status.json           |    1 +
+ .../run-037/children/run-000/stderr.jsonl          |    1 +
+ .../run-037/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-037/children/run-001/failures.jsonl        |    0
+ .../run-037/children/run-001/manifest.json         |    1 +
+ .../run-037/children/run-001/status.json           |    1 +
+ .../run-037/children/run-001/stderr.jsonl          |    0
+ .../run-037/children/run-001/stdout.jsonl          |   66 +
+ .../run-037/children/run-002/failures.jsonl        |    0
+ .../run-037/children/run-002/manifest.json         |    1 +
+ .../run-037/children/run-002/status.json           |    1 +
+ .../run-037/children/run-002/stderr.jsonl          |   11 +
+ .../run-037/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-037/children/run-003/failures.jsonl        |    0
+ .../run-037/children/run-003/manifest.json         |    1 +
+ .../run-037/children/run-003/status.json           |    1 +
+ .../run-037/children/run-003/stderr.jsonl          |  311 ++
+ .../run-037/children/run-003/stdout.jsonl          | 3559 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-037/children/run-004/failures.jsonl        |    0
+ .../run-037/children/run-004/manifest.json         |    1 +
+ .../run-037/children/run-004/status.json           |    1 +
+ .../run-037/children/run-004/stderr.jsonl          |    2 +
+ .../run-037/children/run-004/stdout.jsonl          |   11 +
+ .../run-037/children/run-005/failures.jsonl        |    0
+ .../run-037/children/run-005/manifest.json         |    1 +
+ .../run-037/children/run-005/status.json           |    1 +
+ .../run-037/children/run-005/stderr.jsonl          |    0
+ .../run-037/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-037/failures.jsonl       |    0
+ .../verification-runs/run-037/manifest.json        |    1 +
+ .../verification-runs/run-037/status.json          |    1 +
+ .../verification-runs/run-037/stderr.jsonl         |   43 +
+ .../verification-runs/run-037/stdout.jsonl         |  282 ++
+ .../20261028125157510-fe084c0f309bbd22.json        |  294 ++
+ .../20261028140353255-f72790ca73f6b20c.json        |  185 +
+ .agentplane/tasks/202610290115-HZ4C0W/README.md    | 4028 +++++++++++++++++++
+ .../tasks/202610290115-HZ4C0W/pr/diffstat.txt      |   28 +
+ .../tasks/202610290115-HZ4C0W/pr/github-body.md    |   60 +
+ .../tasks/202610290115-HZ4C0W/pr/github-title.txt  |    1 +
+ .agentplane/tasks/202610290115-HZ4C0W/pr/meta.json |   32 +
+ .agentplane/tasks/202610290115-HZ4C0W/pr/review.md |   63 +
+ ...4e6d04d763719afafc9b88139bf122a89deb9bca92.json |  Bin 0 -> 12846 bytes
+ ...c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json |  Bin 0 -> 8497 bytes
+ ...9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json |  Bin 0 -> 7278 bytes
+ .../supervision/declared-checks.json               |   88 +
+ .../supervision/implementation-evidence.json       |  248 ++
+ .../verification-runs/run-000/failures.jsonl       |    0
+ .../verification-runs/run-000/manifest.json        |    1 +
+ .../verification-runs/run-000/status.json          |    1 +
+ .../verification-runs/run-000/stderr.jsonl         |   64 +
+ .../verification-runs/run-000/stdout.jsonl         |    9 +
+ .../verification-runs/run-001/failures.jsonl       |    0
+ .../verification-runs/run-001/manifest.json        |    1 +
+ .../verification-runs/run-001/status.json          |    1 +
+ .../verification-runs/run-001/stderr.jsonl         |    1 +
+ .../verification-runs/run-001/stdout.jsonl         |    9 +
+ .../run-002/children/run-000/failures.jsonl        |    0
+ .../run-002/children/run-000/manifest.json         |    1 +
+ .../run-002/children/run-000/status.json           |    1 +
+ .../run-002/children/run-000/stderr.jsonl          |    1 +
+ .../run-002/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-002/children/run-001/failures.jsonl        |    0
+ .../run-002/children/run-001/manifest.json         |    1 +
+ .../run-002/children/run-001/status.json           |    1 +
+ .../run-002/children/run-001/stderr.jsonl          |    0
+ .../run-002/children/run-001/stdout.jsonl          |   63 +
+ .../run-002/children/run-002/failures.jsonl        |    0
+ .../run-002/children/run-002/manifest.json         |    1 +
+ .../run-002/children/run-002/status.json           |    1 +
+ .../run-002/children/run-002/stderr.jsonl          |   11 +
+ .../run-002/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    1 +
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-002/children/run-003/failures.jsonl        |    0
+ .../run-002/children/run-003/manifest.json         |    1 +
+ .../run-002/children/run-003/status.json           |    1 +
+ .../run-002/children/run-003/stderr.jsonl          |  418 ++
+ .../run-002/children/run-003/stdout.jsonl          | 3491 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-002/children/run-004/failures.jsonl        |    0
+ .../run-002/children/run-004/manifest.json         |    1 +
+ .../run-002/children/run-004/status.json           |    1 +
+ .../run-002/children/run-004/stderr.jsonl          |    2 +
+ .../run-002/children/run-004/stdout.jsonl          |   11 +
+ .../verification-runs/run-002/failures.jsonl       |    0
+ .../verification-runs/run-002/manifest.json        |    1 +
+ .../verification-runs/run-002/status.json          |    1 +
+ .../verification-runs/run-002/stderr.jsonl         |   82 +
+ .../verification-runs/run-002/stdout.jsonl         |  230 ++
+ .../verification-runs/run-003/failures.jsonl       |    0
+ .../verification-runs/run-003/manifest.json        |    1 +
+ .../verification-runs/run-003/status.json          |    1 +
+ .../verification-runs/run-003/stderr.jsonl         |   64 +
+ .../verification-runs/run-003/stdout.jsonl         |    9 +
+ .../verification-runs/run-004/failures.jsonl       |    0
+ .../verification-runs/run-004/manifest.json        |    1 +
+ .../verification-runs/run-004/status.json          |    1 +
+ .../verification-runs/run-004/stderr.jsonl         |    1 +
+ .../verification-runs/run-004/stdout.jsonl         |    9 +
+ .../run-005/children/run-000/failures.jsonl        |    0
+ .../run-005/children/run-000/manifest.json         |    1 +
+ .../run-005/children/run-000/status.json           |    1 +
+ .../run-005/children/run-000/stderr.jsonl          |    1 +
+ .../run-005/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-005/children/run-001/failures.jsonl        |    0
+ .../run-005/children/run-001/manifest.json         |    1 +
+ .../run-005/children/run-001/status.json           |    1 +
+ .../run-005/children/run-001/stderr.jsonl          |    0
+ .../run-005/children/run-001/stdout.jsonl          |   63 +
+ .../run-005/children/run-002/failures.jsonl        |    0
+ .../run-005/children/run-002/manifest.json         |    1 +
+ .../run-005/children/run-002/status.json           |    1 +
+ .../run-005/children/run-002/stderr.jsonl          |   11 +
+ .../run-005/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-005/children/run-003/failures.jsonl        |    0
+ .../run-005/children/run-003/manifest.json         |    1 +
+ .../run-005/children/run-003/status.json           |    1 +
+ .../run-005/children/run-003/stderr.jsonl          |  374 ++
+ .../run-005/children/run-003/stdout.jsonl          | 3491 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-005/children/run-004/failures.jsonl        |    0
+ .../run-005/children/run-004/manifest.json         |    1 +
+ .../run-005/children/run-004/status.json           |    1 +
+ .../run-005/children/run-004/stderr.jsonl          |    2 +
+ .../run-005/children/run-004/stdout.jsonl          |   11 +
+ .../run-005/children/run-005/failures.jsonl        |    0
+ .../run-005/children/run-005/manifest.json         |    1 +
+ .../run-005/children/run-005/status.json           |    1 +
+ .../run-005/children/run-005/stderr.jsonl          |    0
+ .../run-005/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-005/failures.jsonl       |    0
+ .../verification-runs/run-005/manifest.json        |    1 +
+ .../verification-runs/run-005/status.json          |    1 +
+ .../verification-runs/run-005/stderr.jsonl         |   40 +
+ .../verification-runs/run-005/stdout.jsonl         |  280 ++
+ .../verification-runs/run-006/failures.jsonl       |    0
+ .../verification-runs/run-006/manifest.json        |    1 +
+ .../verification-runs/run-006/status.json          |    1 +
+ .../verification-runs/run-006/stderr.jsonl         |   64 +
+ .../verification-runs/run-006/stdout.jsonl         |    9 +
+ .../verification-runs/run-007/failures.jsonl       |    0
+ .../verification-runs/run-007/manifest.json        |    1 +
+ .../verification-runs/run-007/status.json          |    1 +
+ .../verification-runs/run-007/stderr.jsonl         |    1 +
+ .../verification-runs/run-007/stdout.jsonl         |    9 +
+ .../run-008/children/run-000/failures.jsonl        |    0
+ .../run-008/children/run-000/manifest.json         |    1 +
+ .../run-008/children/run-000/status.json           |    1 +
+ .../run-008/children/run-000/stderr.jsonl          |    1 +
+ .../run-008/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-008/children/run-001/failures.jsonl        |    0
+ .../run-008/children/run-001/manifest.json         |    1 +
+ .../run-008/children/run-001/status.json           |    1 +
+ .../run-008/children/run-001/stderr.jsonl          |    0
+ .../run-008/children/run-001/stdout.jsonl          |   63 +
+ .../run-008/children/run-002/failures.jsonl        |    0
+ .../run-008/children/run-002/manifest.json         |    1 +
+ .../run-008/children/run-002/status.json           |    1 +
+ .../run-008/children/run-002/stderr.jsonl          |   11 +
+ .../run-008/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-008/children/run-003/failures.jsonl        |    0
+ .../run-008/children/run-003/manifest.json         |    1 +
+ .../run-008/children/run-003/status.json           |    1 +
+ .../run-008/children/run-003/stderr.jsonl          |  374 ++
+ .../run-008/children/run-003/stdout.jsonl          | 3485 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-008/children/run-004/failures.jsonl        |    0
+ .../run-008/children/run-004/manifest.json         |    1 +
+ .../run-008/children/run-004/status.json           |    1 +
+ .../run-008/children/run-004/stderr.jsonl          |    2 +
+ .../run-008/children/run-004/stdout.jsonl          |   11 +
+ .../run-008/children/run-005/failures.jsonl        |    0
+ .../run-008/children/run-005/manifest.json         |    1 +
+ .../run-008/children/run-005/status.json           |    1 +
+ .../run-008/children/run-005/stderr.jsonl          |    0
+ .../run-008/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-008/failures.jsonl       |    0
+ .../verification-runs/run-008/manifest.json        |    1 +
+ .../verification-runs/run-008/status.json          |    1 +
+ .../verification-runs/run-008/stderr.jsonl         |   40 +
+ .../verification-runs/run-008/stdout.jsonl         |  279 ++
+ .../verification-runs/run-009/failures.jsonl       |    0
+ .../verification-runs/run-009/manifest.json        |    1 +
+ .../verification-runs/run-009/status.json          |    1 +
+ .../verification-runs/run-009/stderr.jsonl         |   64 +
+ .../verification-runs/run-009/stdout.jsonl         |    9 +
+ .../verification-runs/run-010/failures.jsonl       |    0
+ .../verification-runs/run-010/manifest.json        |    1 +
+ .../verification-runs/run-010/status.json          |    1 +
+ .../verification-runs/run-010/stderr.jsonl         |    1 +
+ .../verification-runs/run-010/stdout.jsonl         |    9 +
+ .../run-011/children/run-000/failures.jsonl        |    0
+ .../run-011/children/run-000/manifest.json         |    1 +
+ .../run-011/children/run-000/status.json           |    1 +
+ .../run-011/children/run-000/stderr.jsonl          |    1 +
+ .../run-011/children/run-000/stdout.jsonl          |  109 +
+ .../run-001/children/run-000/failures.jsonl        |    0
+ .../run-001/children/run-000/manifest.json         |    1 +
+ .../children/run-001/children/run-000/status.json  |    1 +
+ .../children/run-001/children/run-000/stderr.jsonl |    0
+ .../children/run-001/children/run-000/stdout.jsonl |    0
+ .../run-011/children/run-001/failures.jsonl        |    0
+ .../run-011/children/run-001/manifest.json         |    1 +
+ .../run-011/children/run-001/status.json           |    1 +
+ .../run-011/children/run-001/stderr.jsonl          |    0
+ .../run-011/children/run-001/stdout.jsonl          |   63 +
+ .../run-011/children/run-002/failures.jsonl        |    0
+ .../run-011/children/run-002/manifest.json         |    1 +
+ .../run-011/children/run-002/status.json           |    1 +
+ .../run-011/children/run-002/stderr.jsonl          |   11 +
+ .../run-011/children/run-002/stdout.jsonl          |  171 +
+ .../run-003/children/run-000/failures.jsonl        |    0
+ .../run-003/children/run-000/manifest.json         |    1 +
+ .../children/run-003/children/run-000/status.json  |    1 +
+ .../children/run-003/children/run-000/stderr.jsonl |    0
+ .../children/run-003/children/run-000/stdout.jsonl |    0
+ .../run-003/children/run-001/failures.jsonl        |    0
+ .../run-003/children/run-001/manifest.json         |    1 +
+ .../children/run-003/children/run-001/status.json  |    1 +
+ .../children/run-003/children/run-001/stderr.jsonl |    0
+ .../children/run-003/children/run-001/stdout.jsonl |    0
+ .../run-003/children/run-002/failures.jsonl        |    0
+ .../run-003/children/run-002/manifest.json         |    1 +
+ .../children/run-003/children/run-002/status.json  |    1 +
+ .../children/run-003/children/run-002/stderr.jsonl |    0
+ .../children/run-003/children/run-002/stdout.jsonl |    0
+ .../run-003/children/run-003/failures.jsonl        |    0
+ .../run-003/children/run-003/manifest.json         |    1 +
+ .../children/run-003/children/run-003/status.json  |    1 +
+ .../children/run-003/children/run-003/stderr.jsonl |    0
+ .../children/run-003/children/run-003/stdout.jsonl |    1 +
+ .../run-003/children/run-004/failures.jsonl        |    0
+ .../run-003/children/run-004/manifest.json         |    1 +
+ .../children/run-003/children/run-004/status.json  |    1 +
+ .../children/run-003/children/run-004/stderr.jsonl |    0
+ .../children/run-003/children/run-004/stdout.jsonl |    0
+ .../run-003/children/run-005/failures.jsonl        |    0
+ .../run-003/children/run-005/manifest.json         |    1 +
+ .../children/run-003/children/run-005/status.json  |    1 +
+ .../children/run-003/children/run-005/stderr.jsonl |    0
+ .../children/run-003/children/run-005/stdout.jsonl |    0
+ .../run-003/children/run-006/failures.jsonl        |    0
+ .../run-003/children/run-006/manifest.json         |    1 +
+ .../children/run-003/children/run-006/status.json  |    1 +
+ .../children/run-003/children/run-006/stderr.jsonl |    0
+ .../children/run-003/children/run-006/stdout.jsonl |    0
+ .../run-003/children/run-007/failures.jsonl        |    0
+ .../run-003/children/run-007/manifest.json         |    1 +
+ .../children/run-003/children/run-007/status.json  |    1 +
+ .../children/run-003/children/run-007/stderr.jsonl |    0
+ .../children/run-003/children/run-007/stdout.jsonl |    0
+ .../run-011/children/run-003/failures.jsonl        |    0
+ .../run-011/children/run-003/manifest.json         |    1 +
+ .../run-011/children/run-003/status.json           |    1 +
+ .../run-011/children/run-003/stderr.jsonl          |  374 ++
+ .../run-011/children/run-003/stdout.jsonl          | 3485 +++++++++++++++++
+ .../run-004/children/run-000/failures.jsonl        |    0
+ .../run-004/children/run-000/manifest.json         |    1 +
+ .../children/run-004/children/run-000/status.json  |    1 +
+ .../children/run-004/children/run-000/stderr.jsonl |    0
+ .../children/run-004/children/run-000/stdout.jsonl |    0
+ .../run-004/children/run-001/failures.jsonl        |    0
+ .../run-004/children/run-001/manifest.json         |    1 +
+ .../children/run-004/children/run-001/status.json  |    1 +
+ .../children/run-004/children/run-001/stderr.jsonl |    0
+ .../children/run-004/children/run-001/stdout.jsonl |    0
+ .../run-004/children/run-002/failures.jsonl        |    0
+ .../run-004/children/run-002/manifest.json         |    1 +
+ .../children/run-004/children/run-002/status.json  |    1 +
+ .../children/run-004/children/run-002/stderr.jsonl |    0
+ .../children/run-004/children/run-002/stdout.jsonl |    0
+ .../run-004/children/run-003/failures.jsonl        |    0
+ .../run-004/children/run-003/manifest.json         |    1 +
+ .../children/run-004/children/run-003/status.json  |    1 +
+ .../children/run-004/children/run-003/stderr.jsonl |    0
+ .../children/run-004/children/run-003/stdout.jsonl |    0
+ .../run-004/children/run-004/failures.jsonl        |    0
+ .../run-004/children/run-004/manifest.json         |    1 +
+ .../children/run-004/children/run-004/status.json  |    1 +
+ .../children/run-004/children/run-004/stderr.jsonl |    0
+ .../children/run-004/children/run-004/stdout.jsonl |    0
+ .../run-011/children/run-004/failures.jsonl        |    0
+ .../run-011/children/run-004/manifest.json         |    1 +
+ .../run-011/children/run-004/status.json           |    1 +
+ .../run-011/children/run-004/stderr.jsonl          |    2 +
+ .../run-011/children/run-004/stdout.jsonl          |   11 +
+ .../run-011/children/run-005/failures.jsonl        |    0
+ .../run-011/children/run-005/manifest.json         |    1 +
+ .../run-011/children/run-005/status.json           |    1 +
+ .../run-011/children/run-005/stderr.jsonl          |    0
+ .../run-011/children/run-005/stdout.jsonl          |    0
+ .../verification-runs/run-011/failures.jsonl       |    0
+ .../verification-runs/run-011/manifest.json        |    1 +
+ .../verification-runs/run-011/status.json          |    1 +
+ .../verification-runs/run-011/stderr.jsonl         |   40 +
+ .../verification-runs/run-011/stdout.jsonl         |  276 ++
+ .../20261029073131513-b3f203a2525dc422.json        |  226 ++
+ .../20261029075629342-39819928b0a9d288.json        |  226 ++
+ .../task-centric-backend-adapter.test.ts           |   39 +
+ .../task-backend/task-centric-backend-adapter.ts   |    9 +-
+ ...run-cli.core.pr-flow.pr-open.validation.test.ts |   90 +-
+ ...re.workflow-recovery.verification-retry.test.ts |  563 +++
+ .../agentplane/src/cli/stale-dist-readonly.test.ts |    2 +
+ .../commands/branch/work-start.hook-shim.test.ts   |    9 +-
+ .../commands/doctor/workspace-task-state.test.ts   |   95 +-
+ .../src/commands/doctor/workspace-task-state.ts    |   53 +-
+ .../src/commands/pr/adoption-merge.test.ts         |    7 +-
+ .../src/commands/pr/adoption-request.test.ts       |    7 +-
+ .../src/commands/pr/adoption-route.test.ts         |   15 +-
+ .../commands/pr/adoption-task-authority.test.ts    |  107 +-
+ .../src/commands/pr/adoption-task-authority.ts     |   11 +-
+ .../pr/integrate/cmd.protected-base.test.ts        |  162 +-
+ .../src/commands/pr/integrate/cmd.test.ts          |   43 +-
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |    1 +
+ .../internal/github-pr-merge-strategy.test.ts      |   74 +
+ .../pr/integrate/internal/github-pr-merge.ts       |   35 +-
+ .../integrate/internal/github-protection.test.ts   |   58 +
+ .../pr/integrate/internal/github-protection.ts     |   55 +
+ .../pr/integrate/internal/gitlab-mr-merge.test.ts  |   95 +-
+ .../pr/integrate/internal/gitlab-mr-merge.ts       |   37 +
+ .../commands/pr/integrate/internal/prepare.test.ts |   73 +-
+ .../src/commands/pr/integrate/internal/prepare.ts  |   26 +
+ .../integrate/internal/protected-base-handoff.ts   |   63 +-
+ .../src/commands/pr/internal/provider-base.test.ts |   70 +-
+ .../src/commands/pr/internal/provider-base.ts      |   41 +-
+ .../pr/provider-update-branch-local.test.ts        |   55 +-
+ .../commands/pr/provider-update-branch-local.ts    |   21 +-
+ .../pr/provider-update-verification-proof.test.ts  |  348 ++
+ .../pr/provider-update-verification-proof.ts       |  333 ++
+ .../task/branch-task-supervisor-operations.test.ts |   17 +
+ .../task/branch-task-supervisor-operations.ts      |   21 +-
+ .../task/direct-task-verification-observation.ts   |  101 +-
+ .../direct-task-verification.observability.test.ts |   88 +-
+ .../src/commands/task/direct-task-verification.ts  |   24 +-
+ .../task/external-agent-task-artifact-baseline.ts  |   42 +-
+ ...rnal-agent-workflow-recovery-provider-update.ts |  124 +
+ .../task/external-agent-workflow-recovery.test.ts  |  225 ++
+ .../task/external-agent-workflow-recovery.ts       |   16 +-
+ .../src/commands/task/next-action.command.ts       |   26 +
+ .../task/provider-update-effect-recovery.test.ts   |  153 +-
+ .../task/provider-update-effect-recovery.ts        |   42 +-
+ .../task/revision-consistency.integration.test.ts  |  227 ++
+ .../verification-retry-effect-recovery.test.ts     |  463 +++
+ .../task/verification-retry-effect-recovery.ts     |  479 +++
+ .../task/verification-retry-source-proof.test.ts   |  145 +
+ .../task/verification-retry-source-proof.ts        |  276 ++
+ .../src/commands/task/verify-record-execute.ts     |    5 +-
+ .../task/verify-record-observed-changes.ts         |   14 +
+ .../verify-record.inherited-provider-base.test.ts  |  403 ++
+ .../agentplane/src/commands/task/verify-record.ts  |    2 +
+ .../src/commands/task/verify-record.types.ts       |    2 +
+ .../src/commands/task/workflow-effect-recovery.ts  |    2 +
+ packages/core/src/tasks/task-kernel/kernel.ts      |   16 +-
+ .../task-kernel/required-check-correction.test.ts  |  194 +
+ 2347 files changed, 102715 insertions(+), 178 deletions(-)
