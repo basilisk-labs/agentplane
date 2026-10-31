@@ -5,6 +5,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import { reconcileVerificationExecutionContract } from "./verify-record-observed-changes.js";
 
 import {
   createLegacyTaskAggregate,
@@ -49,6 +50,72 @@ function executionFor(task: TaskData): TaskExecutionContext {
 }
 
 describe("task execution contract observation", () => {
+  it("retains inherited verification coverage when a later source observation is recorded", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: {},
+      requestedMode: "branch_pr",
+      declaration: {
+        schema_version: 2,
+        preferred_mode: "branch_pr",
+        scope_roots: ["src/code.ts", "src/helper.ts"],
+        repository_effects: ["source_code", "tests"],
+        external_effects: [],
+        requirements_uncertainty: "bounded",
+        implementation_uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["bounded implementation"],
+      },
+    });
+    const inherited = ".agentplane/tasks/earlier/README.md";
+    const covered = reconcileVerificationExecutionContract({
+      contract: initial,
+      changed_paths: ["src/code.ts", inherited],
+      inherited_paths: [inherited],
+    });
+    expect(covered.observed.repository_effects).not.toContain("documentation");
+    expect(covered.verification.contract?.selected_checks).toContain("docs_contract");
+    expect(covered.verification.required_evidence).toContain("repository_effect:documentation");
+    const task = {
+      id: "202610310000-FLOOR1",
+      title: "Completed coverage fixture",
+      status: "DONE",
+      priority: "high",
+      owner: "CODER",
+      depends_on: [],
+      tags: [],
+      verify: [],
+      execution_contract: covered,
+    } satisfies TaskData;
+    const input = {
+      task,
+      workflow_dir: config.paths.workflow_dir,
+      changed_paths: ["src/helper.ts", `.agentplane/tasks/${task.id}/pr/meta.json`],
+      preserved_commit: "a".repeat(40),
+    };
+    const result = projectObservedTaskExecutionContract(input);
+    const next = result.nextTask!;
+    expect(next.execution_contract?.verification.required_evidence).toEqual(
+      expect.arrayContaining(covered.verification.required_evidence),
+    );
+    expect(next.execution_contract?.verification.contract?.selected_checks).toEqual(
+      expect.arrayContaining(covered.verification.contract!.selected_checks),
+    );
+    expect(next.execution_contract?.verification.contract?.observed.changed_files).toContain(
+      inherited,
+    );
+    expect(next.execution_contract?.observed.changed_paths).toEqual([
+      "src/code.ts",
+      "src/helper.ts",
+    ]);
+    expect(next.execution_contract?.observed.repository_effects).not.toContain("documentation");
+    expect(next.execution_contract?.authority).toEqual(covered.authority);
+    expect(result.episodeAuthorityViolations).toEqual([]);
+    expect(projectObservedTaskExecutionContract({ ...input, task: next }).nextTask).toBeNull();
+  });
+
   it("replaces a direct-only blueprint during observed branch escalation", async () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";

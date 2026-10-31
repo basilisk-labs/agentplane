@@ -12,7 +12,7 @@ import type {
   TaskRepositoryEffect,
   TaskVerificationObservation,
 } from "@agentplaneorg/core/tasks";
-import { computeVerificationContractKernel } from "@agentplaneorg/core/tasks";
+import { requiredEvidence, verificationContract } from "./verification.js";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { gitPathIsUnderPrefix } from "../../shared/git-path.js";
@@ -161,87 +161,6 @@ function selectedModeForReasons(opts: {
   )
     ? "branch_pr"
     : "direct";
-}
-
-function requiredEvidence(opts: {
-  declaration: TaskExecutionDeclaration;
-  selected_mode: TaskExecutionRouteMode;
-  observed_effects?: readonly TaskRepositoryEffect[];
-  observed_external_effects?: readonly TaskExternalEffect[];
-  verification_results?: readonly TaskVerificationObservation[];
-}): string[] {
-  const repositoryEffects = uniqueSorted([
-    ...opts.declaration.repository_effects,
-    ...(opts.observed_effects ?? []),
-  ]);
-  return uniqueSorted([
-    "task_outcome",
-    ...repositoryEffects.map((effect) => `repository_effect:${effect}`),
-    ...uniqueSorted([
-      ...opts.declaration.external_effects,
-      ...(opts.observed_external_effects ?? []),
-    ]).map((effect) => `external_effect:${effect}`),
-    ...(opts.verification_results ?? [])
-      .filter((result) => result.result !== "pass")
-      .map((result) => `verification_recovery:${result.id}`),
-    ...(opts.selected_mode === "branch_pr" ? ["hosted_integration"] : []),
-    ...(opts.declaration.requirements_uncertainty === "material"
-      ? ["requirements_resolution"]
-      : []),
-    ...(opts.declaration.implementation_uncertainty === "material"
-      ? ["implementation_risk_validation"]
-      : []),
-  ]);
-}
-
-function verificationContract(opts: {
-  declaration: TaskExecutionDeclaration;
-  selectedMode: "direct" | "branch_pr";
-  changedFiles?: readonly string[];
-  observedRepositoryEffects?: readonly TaskRepositoryEffect[];
-  observedExternalEffects?: readonly TaskExternalEffect[];
-  changedComponents?: readonly string[];
-}): NonNullable<TaskExecutionContract["verification"]["contract"]> {
-  const evidenceRequirements = requiredEvidence({
-    declaration: opts.declaration,
-    selected_mode: opts.selectedMode,
-    observed_effects: opts.observedRepositoryEffects,
-    observed_external_effects: opts.observedExternalEffects,
-  });
-  const computed = computeVerificationContractKernel({
-    phase: "task",
-    changedFiles: opts.changedFiles ?? [],
-    declaredRepositoryEffects: opts.declaration.repository_effects,
-    declaredExternalEffects: opts.declaration.external_effects,
-    observedRepositoryEffects: opts.observedRepositoryEffects ?? [],
-    observedExternalEffects: opts.observedExternalEffects ?? [],
-    changedComponents: opts.changedComponents ?? [],
-    declaredComponents: opts.declaration.scope_roots,
-    requirementsUncertainty: opts.declaration.requirements_uncertainty,
-    implementationUncertainty: opts.declaration.implementation_uncertainty,
-    reversibility: opts.declaration.reversibility,
-    evidenceRequirements,
-  });
-  return {
-    schema_version: computed.schema_version,
-    source: "execution_contract",
-    phase: computed.phase,
-    declared: structuredClone(computed.declared),
-    observed: {
-      repository_effects: [...computed.observed.repository_effects],
-      external_effects: [...computed.observed.external_effects],
-      changed_components: [...computed.observed.changed_components],
-      changed_files: [...computed.observed.changed_files],
-    },
-    policy_floor: structuredClone(computed.policy_floor),
-    selector: structuredClone(computed.selector),
-    selected_checks: [...computed.selected_checks],
-    execution_groups: [...computed.execution_groups],
-    escalation_reasons: [...computed.escalation_reasons],
-    requires_full_regression: computed.requires_full_regression,
-    requires_real_e2e: computed.requires_real_e2e,
-    digest: computed.digest,
-  };
 }
 
 function executionAuthority(
@@ -518,6 +437,14 @@ export function reconcileTaskExecutionContract(opts: {
         observed_effects: observedEffects,
         observed_external_effects: observedExternalEffects,
         verification_results: observedVerificationResults,
+        floor: [
+          ...opts.contract.verification.required_evidence.filter(
+            (entry) => !entry.startsWith("verification_recovery:"),
+          ),
+          ...(opts.contract.verification.contract?.schema_version === 2
+            ? opts.contract.verification.contract.declared.evidence_requirements
+            : []),
+        ],
       }),
       contract: verificationContract({
         declaration: opts.contract.declaration,
@@ -529,6 +456,7 @@ export function reconcileTaskExecutionContract(opts: {
           ...opts.contract.observed.changed_components,
           ...changed_paths.map((changedPath) => componentForPath(changedPath)),
         ]),
+        floor: opts.contract.verification,
       }),
     },
     observed: {

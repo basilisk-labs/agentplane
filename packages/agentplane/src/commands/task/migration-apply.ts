@@ -1,4 +1,4 @@
-import { parseTaskReadme, renderTaskReadme, taskKernel as k } from "@agentplaneorg/core/tasks";
+import { parseTaskReadme, taskKernel as k } from "@agentplaneorg/core/tasks";
 
 import { taskBytesDigest } from "../../backends/task-backend/local-task-byte-store.js";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
@@ -6,13 +6,13 @@ import type { TaskByteSnapshot, TaskByteStore } from "../../ports/task-byte-stor
 import { withSupervisorExecutionAdmissionFence } from "../shared/supervisor-execution-episode.js";
 import { inspectKernelMigrationAdmission } from "./kernel-migration-admission.js";
 import {
+  decodeLifecycleOwnerMigrationSource,
   previewLifecycleOwnerMigration,
   type LifecycleOwnerMigrationPreview,
 } from "./migration-preview.js";
 import {
   LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION,
   LIFECYCLE_OWNER_MIGRATION_RECEIPT_EXTENSION,
-  createLifecycleOwnerMigrationQuarantineMarker,
   parseLifecycleOwnerMigrationFreshBinding,
   parseLifecycleOwnerMigrationReceipt,
   prepareOutput,
@@ -38,14 +38,12 @@ export {
   type LifecycleOwnerMigrationReceipt,
 } from "./migration-apply-conversion.js";
 
-const TASK_CENTRIC_EXTENSION = "agentplane.task_centric";
-const TASK_CENTRIC_RUNTIME_EXTENSION = "agentplane.task_centric_runtime";
-
-type ResolvedMigrationSource = Readonly<{
-  current: TaskByteSnapshot;
-  source: TaskByteSnapshot;
-  marker: LifecycleOwnerMigrationQuarantine | null;
-}>;
+import {
+  isRevisionSplitPreview,
+  persistQuarantine,
+  quarantineAfterimage,
+  type ResolvedMigrationSource,
+} from "./migration-quarantine.js";
 
 async function resolveMigrationSource(opts: {
   current: TaskByteSnapshot;
@@ -75,7 +73,19 @@ async function resolveMigrationSource(opts: {
   } catch {
     return null;
   }
-  if (taskBytesDigest(text) !== marker.backup_digest) return null;
+  if (
+    taskBytesDigest(text) !== marker.backup_digest ||
+    quarantineAfterimage(text, marker) !== opts.current.text
+  )
+    return null;
+  const preview = previewLifecycleOwnerMigration(Buffer.from(text, "utf8"));
+  if (
+    preview.task_id !== marker.task_id ||
+    preview.source_revision !== marker.source_revision ||
+    preview.mapping_version !== marker.mapping_version ||
+    k.kernelDigest(preview.mapping) !== marker.mapping_digest
+  )
+    return null;
   return {
     current: opts.current,
     source: {
@@ -87,79 +97,6 @@ async function resolveMigrationSource(opts: {
     },
     marker,
   };
-}
-
-async function persistQuarantine(opts: {
-  store: TaskByteStore;
-  repository_identity: k.Sha256Digest;
-  resolved: ResolvedMigrationSource;
-  preview: LifecycleOwnerMigrationPreview;
-  binding: LifecycleOwnerMigrationFreshBinding;
-  observe_binding: () => Promise<LifecycleOwnerMigrationFreshBinding>;
-  reason: string;
-}): Promise<LifecycleOwnerMigrationApplyResult> {
-  const { current, source, marker } = opts.resolved;
-  if (marker?.reason === opts.reason)
-    return quarantine(opts.reason, source, opts.preview, true, marker.quarantine_digest);
-  let backupLocation: string;
-  try {
-    backupLocation = await opts.store.backup(source);
-  } catch {
-    return { kind: "refused", reason: "backup_mismatch" };
-  }
-  if (
-    !sameFreshBinding(
-      parseLifecycleOwnerMigrationFreshBinding(await opts.observe_binding()),
-      opts.binding,
-    )
-  )
-    return { kind: "refused", reason: "preview_binding_stale" };
-  const contents = {
-    schema_version: 1 as const,
-    kind: "lifecycle_owner_migration_quarantine" as const,
-    task_id: opts.preview.task_id,
-    repository_identity: opts.repository_identity,
-    backend_identity: opts.store.backend_identity,
-    source_digest: opts.preview.source_digest,
-    source_revision: opts.preview.source_revision,
-    mapping_version: opts.preview.mapping_version,
-    mapping_digest: k.kernelDigest(opts.preview.mapping),
-    mapping_receipt: opts.preview.mapping,
-    semantic_assessment_request: opts.preview.semantic_assessment,
-    reason: opts.reason,
-    backup_digest: opts.preview.source_digest,
-    backup_location: backupLocation,
-    output_revision: current.revision + 1,
-  };
-  const durable = createLifecycleOwnerMigrationQuarantineMarker(contents);
-  const parsed = parseTaskReadme(current.text);
-  const extensions = { ...(parsed.frontmatter.extensions as Record<string, unknown> | undefined) };
-  delete extensions[TASK_CENTRIC_EXTENSION];
-  delete extensions[TASK_CENTRIC_RUNTIME_EXTENSION];
-  delete extensions[TASK_KERNEL_EXTENSION];
-  delete extensions[LIFECYCLE_OWNER_MIGRATION_RECEIPT_EXTENSION];
-  extensions[LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION] = durable;
-  const text = renderTaskReadme(
-    {
-      ...parsed.frontmatter,
-      revision: durable.output_revision,
-      status: "BLOCKED",
-      extensions,
-    },
-    parsed.body,
-  );
-  try {
-    if (!(await opts.store.compareAndSwap(current, text)))
-      return { kind: "refused", reason: "source_changed" };
-  } catch {
-    const observed = await opts.store.read(opts.preview.task_id).catch(() => null);
-    if (observed?.revision !== durable.output_revision || observed.digest !== taskBytesDigest(text))
-      return { kind: "refused", reason: "write_in_doubt" };
-  }
-  const observed = await opts.store.read(opts.preview.task_id).catch(() => null);
-  if (observed?.revision !== durable.output_revision || observed.digest !== taskBytesDigest(text))
-    return { kind: "refused", reason: "write_in_doubt" };
-  return quarantine(opts.reason, source, opts.preview, true, durable.quarantine_digest);
 }
 
 /** Inspect the exact legacy source, including a source retained behind a durable quarantine. */
@@ -324,6 +261,31 @@ export async function applyLifecycleOwnerMigration(opts: {
         k.kernelDigest(preview.mapping) !== opts.request.mapping_digest
       )
         return { kind: "refused", reason: "preview_binding_stale" } as const;
+      if (isRevisionSplitPreview(preview, opts.request.task_id)) {
+        const decoded = decodeLifecycleOwnerMigrationSource(Buffer.from(source.text, "utf8"));
+        const extensions = decoded.source_record.frontmatter.extensions as
+          Record<string, unknown> | undefined;
+        const quiescent =
+          source.encoding_valid &&
+          source.task_id === preview.task_id &&
+          !Object.hasOwn(extensions ?? {}, TASK_KERNEL_EXTENSION) &&
+          decoded.runtime.leases.length === 0 &&
+          decoded.runtime.pending_effects.length === 0 &&
+          Object.values(preview.formal_projection.work_items).every(
+            (item) =>
+              item.claim_id === null && ["PLANNED", "READY", "REWORK_READY"].includes(item.state),
+          );
+        if (!quiescent) return quarantine("legacy_work_not_quiescent", source, preview);
+        return persistQuarantine({
+          store: opts.store,
+          repository_identity: opts.repository_identity,
+          resolved,
+          preview,
+          binding: opts.request.binding,
+          observe_binding: opts.observe_binding,
+          reason: "source_revision_mismatch",
+        });
+      }
       if (preview.mapping.blockers.length > 0) return quarantine("formal_blocker", source, preview);
       if (
         preview.mapping.pending.work_item_ids.length > 0 ||

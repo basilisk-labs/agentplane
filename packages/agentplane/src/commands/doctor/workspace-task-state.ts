@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { GitContext } from "@agentplaneorg/core/git";
 import {
+  type taskKernel,
   normalizeTaskStatus,
   parseTaskReadme,
   renderTaskDocFromSections,
@@ -13,6 +14,14 @@ import {
 import type { TaskSummary } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import { listTaskProjection, type CommandContext } from "../shared/task-backend.js";
+
+import { LocalTaskByteStore } from "../../backends/task-backend/local-task-byte-store.js";
+import { inspectLifecycleOwnerMigration } from "../task/migration-apply.js";
+import {
+  LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION,
+  quarantineMarker,
+} from "../task/migration-apply-conversion.js";
+import { resolveLogicalRepositoryIdentity } from "../task/execution-authority-context.js";
 
 export type TaskDocSnapshot = {
   id?: unknown;
@@ -157,6 +166,41 @@ export function buildTaskCentricProjectionIntegrityFindings(
   for (const task of tasks) {
     const taskId = typeof task.id === "string" ? task.id : "unknown-task";
     const readmeRevision = Number.isInteger(task.revision) ? Number(task.revision) : null;
+    if (Object.hasOwn(task.extensions ?? {}, LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION)) {
+      const marker = quarantineMarker(
+        task.extensions?.[LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION],
+      );
+      const valid =
+        marker?.task_id === taskId &&
+        marker.output_revision === task.revision &&
+        normalizeTaskStatus(task.status) === "BLOCKED" &&
+        !Object.hasOwn(task.extensions ?? {}, "task_kernel") &&
+        !Object.hasOwn(task.extensions ?? {}, "agentplane.task_centric") &&
+        !Object.hasOwn(task.extensions ?? {}, "agentplane.task_centric_runtime");
+      findings.push(
+        renderDiagnosticFinding({
+          severity: valid ? "WARN" : "ERROR",
+          state: `${valid ? "retained" : "invalid"} lifecycle migration quarantine for ${taskId}`,
+          likelyCause: valid
+            ? marker.reason
+            : "the quarantine marker or blocked projection is invalid",
+          details: valid
+            ? [
+                `Task: ${taskId}`,
+                `Retained source: ${marker.source_digest}`,
+                `Backup: ${marker.backup_location}`,
+                "New work is prohibited. Retained blockers require evidence-specific recovery.",
+              ]
+            : [`Task: ${taskId}`],
+          nextAction: {
+            command: `agentplane task kernel-migrate ${taskId}`,
+            reason: "inspect the retained source and native quarantine proof",
+          },
+        }),
+      );
+      if (valid) continue;
+    }
+
     let aggregate;
     try {
       aggregate = taskCentricAggregateFromExtensions(task.extensions);
@@ -242,7 +286,46 @@ export async function checkTaskCentricProjectionIntegrityState(
     projectionTasks.length > 0
       ? projectionTasks
       : await readTaskDocSnapshotsFromReadmes(repoRoot, ctx);
-  return buildTaskCentricProjectionIntegrityFindings(tasks);
+  const findings = buildTaskCentricProjectionIntegrityFindings(tasks);
+  const quarantined = tasks.filter((task) =>
+    Object.hasOwn(task.extensions ?? {}, LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION),
+  );
+  if (quarantined.length === 0) return findings;
+  const backendRoot = (ctx?.taskBackend as { root?: unknown } | undefined)?.root;
+  const store = new LocalTaskByteStore({
+    root:
+      typeof backendRoot === "string"
+        ? backendRoot
+        : path.join(repoRoot, ctx?.config.paths.workflow_dir ?? ".agentplane/tasks"),
+  });
+  const identity = await resolveLogicalRepositoryIdentity({ git_root: repoRoot, task: {} });
+  for (const task of quarantined) {
+    let verified = false;
+    try {
+      const inspected = await inspectLifecycleOwnerMigration({
+        store,
+        repository_identity: identity as taskKernel.Sha256Digest,
+        task_id: String(task.id),
+      });
+      verified = inspected.kind === "ready" && inspected.quarantine !== null;
+    } catch {
+      /* A missing or changed backup cannot be accepted as retained evidence. */
+    }
+    if (!verified)
+      findings.push(
+        renderDiagnosticFinding({
+          severity: "ERROR",
+          state: `lifecycle migration quarantine source proof failed for ${String(task.id)}`,
+          likelyCause:
+            "the retained source, exact afterimage, repository identity or backup does not match",
+          details: [
+            `Task: ${String(task.id)}`,
+            "Execution remains prohibited. Restore valid evidence before any transition.",
+          ],
+        }),
+      );
+  }
+  return findings;
 }
 
 async function readUntrackedPaths(repoRoot: string, ctx?: CommandContext): Promise<Set<string>> {

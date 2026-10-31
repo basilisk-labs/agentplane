@@ -32,6 +32,13 @@ import {
   type LifecycleOwnerMigrationFreshBinding,
 } from "./migration-apply.js";
 
+import { parseLifecycleOwnerQuarantineRollbackProof } from "./migration-apply-conversion.js";
+import {
+  quarantineRollbackProof,
+  isRevisionSplitPreview,
+  rollbackLifecycleOwnerQuarantine,
+} from "./migration-quarantine.js";
+
 type Parsed = {
   taskId: string;
   apply: boolean;
@@ -205,6 +212,23 @@ export async function runKernelMigration(ctx: CommandContext, opts: Parsed): Pro
     );
     const rawObject =
       typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : null;
+    if (rawObject?.quarantine_proof !== undefined) {
+      const proof = parseLifecycleOwnerQuarantineRollbackProof(rawObject.quarantine_proof);
+      if (proof?.task_id !== opts.taskId)
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "Invalid quarantine rollback proof or Task identity.",
+        });
+      const result = await mutateUnderAdmissionFence(() =>
+        rollbackLifecycleOwnerQuarantine({
+          store,
+          repository_identity: identity,
+          proof,
+        }),
+      );
+      process.stdout.write(`${JSON.stringify(await withHistoricalBlueprint(result), null, 2)}\n`);
+      return result.kind === "refused" ? 1 : 0;
+    }
     const lifecycleReceipt = parseLifecycleOwnerMigrationReceipt(rawObject?.receipt);
     const lifecycleOutputDigest = rawObject?.output_bytes_digest;
     if (
@@ -384,6 +408,39 @@ export async function runKernelMigration(ctx: CommandContext, opts: Parsed): Pro
     });
     process.stdout.write(`${JSON.stringify(await withHistoricalBlueprint(result), null, 2)}\n`);
     return result.kind === "refused" || result.kind === "quarantined" ? 1 : 0;
+  }
+  const inspected = await inspectLifecycleOwnerMigration({
+    store,
+    repository_identity: identity,
+    task_id: opts.taskId,
+  });
+  if (inspected.kind === "ready" && inspected.quarantine) {
+    const marker = inspected.quarantine;
+    const report = {
+      classification: "quarantined",
+      reason: marker.reason,
+      persisted: true,
+      task_id: marker.task_id,
+      source_digest: marker.source_digest,
+      source_revision: marker.source_revision,
+      quarantine_proof: quarantineRollbackProof(marker, inspected.current.digest),
+      preview: inspected.preview,
+    };
+    process.stdout.write(`${JSON.stringify(await withHistoricalBlueprint(report), null, 2)}\n`);
+    return 1;
+  }
+  if (inspected.kind === "ready" && isRevisionSplitPreview(inspected.preview, opts.taskId)) {
+    const report = {
+      classification: "quarantined",
+      reason: "source_revision_mismatch",
+      persisted: false,
+      task_id: opts.taskId,
+      source_digest: inspected.source.digest,
+      source_revision: inspected.source.revision,
+      preview: inspected.preview,
+    };
+    process.stdout.write(`${JSON.stringify(await withHistoricalBlueprint(report), null, 2)}\n`);
+    return 1;
   }
   const report = await migration.dryRun(opts.taskId);
   process.stdout.write(`${JSON.stringify(await withHistoricalBlueprint(report), null, 2)}\n`);

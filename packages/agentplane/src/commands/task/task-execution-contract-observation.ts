@@ -1,3 +1,4 @@
+import { authenticateTaskMetadataProjection } from "../shared/task-backend-branch-snapshot.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskExternalEffect, TaskVerificationObservation } from "@agentplaneorg/core/tasks";
 import type { RunnerResult } from "../../runner/types.js";
@@ -137,7 +138,7 @@ export async function recordObservedTaskExecutionContract(opts: {
   return {
     task: mutation.changed
       ? await loadTaskFromContext({ ctx: opts.command, taskId: opts.task.id })
-      : mutation.task,
+      : await authenticateTaskMetadataProjection(opts.command, mutation.task),
     escalated,
     episodeAuthorityViolations,
   };
