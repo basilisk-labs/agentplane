@@ -171,7 +171,7 @@ export function verificationObservationEnv(
 }
 
 /** A retry key selects a new receipt slot, never a caller-supplied path. */
-export function verificationRetryArtifactPath(workflowDir: string, taskId: string, key: string) {
+function verificationRetryArtifactPath(workflowDir: string, taskId: string, key: string) {
   if (!/^[a-f0-9]{64}$/u.test(key) || !/^[A-Za-z0-9_-]+$/u.test(taskId))
     throw new Error("Invalid verification retry artifact identity.");
   const workflow = workflowDir.replaceAll("\\", "/");
