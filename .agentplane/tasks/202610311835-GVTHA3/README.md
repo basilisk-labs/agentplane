@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -63,9 +63,11 @@ quality_review:
     - "Residual risk: Retain historical failures; a future body-file recurrence needs its diagnostic evidence rather than rewriting an old result."
     - "Residual risk: Factory four-intent retirement, deployment, credentials and SB live acceptance remain outside this source review."
 token_usage:
-  agent_runs: 0
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:ed9c8c8e6369a588de5086d182233bdce8d1ab06d13b7dbb07f1f7500febf592"
+  journal_digest: "sha256:e7ea7d6b3108f19499d5c9e602e5b05e38cb5d4c80d7f19e13b1ecc0c3577b41"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,8 +76,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-31T20:17:04.816Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-31T21:17:21.706Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -414,9 +416,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "6abac79e88ffbba5d097a00a62b5819791c43e3b"
-  message: "🧩 GVTHA3 task: refresh task artifacts after commit"
+  hash: "78d079a75f4eceb7f91d11013684ad713585625a"
+  message: "🚧 GVTHA3 task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -441,8 +446,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-10-31T21:17:21.706Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "78d079a75f4eceb7f91d11013684ad713585625a"
 doc_version: 3
-doc_updated_at: "2026-10-31T21:16:58.528Z"
+doc_updated_at: "2026-10-31T21:17:21.716Z"
 doc_updated_by: "CODER"
 description: "The user authorized all eight SB recovery items, native code fixes, PR/merge, deployment and live acceptance while preserving data, credentials and runtime guards. Deliver the already approved terminal verification retry feature from current canonical main f89d603f7fa9b70bca5896fef42212c4c1590fe8. The reviewed candidate is the exact 13-source-file diff from that base to 7e8a77981dd9ab67ac9f2771988e613017306831. Preserve original VPB Task 202610280840-VPBGBK, immutable completed Kernel 43c0045943740ec27078f9b25cf0e9a5168f011e6c2e01a1a712f0812b5405df, PR6957, failed native run015 and all source evidence. The old branch imports canonical Task artifacts relative to its older frozen base and the ownership guard refuses publication. Do not relax that guard, rebuild or reset the old branch, include unrelated Tasks in a fake batch, copy protected proofs, or assign a new result to the old Task. This is a genuine current-main implementation Task with its own source diff, tests, review and publication. Import source code only. Keep one typed verification_retry_request through the existing public task advance workflow recovery. Authenticate exact repository, approved completed Kernel and command contracts, source or audited metadata descendant, and retained real supervisor failure. Execute all mandatory real checks once under the existing lease. Preserve old Kernel, original failed journal, prior EVAL, PR artifacts and receipts. Reconcile interruption from exact durable before/afterimages. Refuse unknown outcomes, duplicate execution, source/command/scope drift, and provider or frozen-base guard changes. Require a fresh EVALUATOR after actual native success. Keep default and configured workflow directories, containment and symlink guards. Address the actual merged-candidate hotspots failure: verify-record-execute.ts has 602 lines against the existing 600-line limit. Do not waive budgets. Investigate the full-suite kernel-bookkeeping body-file cold-read readback_mismatch without weakening its exact CR/LF, two-write or duplicate-replay checks. Independent canonical and merged focused tests passed4 each, and related full-config tests passed60; those diagnostics are not native acceptance. Use full native CI and the current source review before canonical protected PR/merge. Do not modify Factory, SB runtime, credentials, global files, old worktrees, branches or archives. Native retirement of four historical Factory intents is a separate pending user scope decision and is excluded."
 sections:
@@ -867,6 +880,7 @@ extensions:
     work_order_id: "sha256:3aa6347ee1165712f2de4818b7692ce2f7efd222742031322ba7d890f3473a0b"
   implementation_commit:
     hash: "78e3cdcc5b6155f7f2efdbb66e7b0a75adfad1b8"
+    message: "🚧 GVTHA3 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "f89d603f7fa9b70bca5896fef42212c4c1590fe8"
@@ -1925,12 +1939,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/2` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:ed9c8c8e6369a588de5086d182233bdce8d1ab06d13b7dbb07f1f7500febf592`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-31T20:17:04.816Z`
+- Journal digest: `sha256:e7ea7d6b3108f19499d5c9e602e5b05e38cb5d4c80d7f19e13b1ecc0c3577b41`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-31T21:17:21.706Z`
