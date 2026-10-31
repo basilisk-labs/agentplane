@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 56
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-10-31T00:56:38.119Z"
+  updated_at: "2026-10-31T17:12:11.674Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -4990,8 +4990,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-10-31T17:12:11.674Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-10-31T16:42:12.398Z"
+doc_updated_at: "2026-10-31T17:12:28.928Z"
 doc_updated_by: "USER"
 description: "Actual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f393 message01a181a3-ef22-7af0-b6ce-e9f9b00f8d23: narrow AgentPlane fix, separate Task ID, checks and PR/merge, then sb recovery preserving data credentials runtime guards. Exact reviewed design SHA9bda08b6d37c2badb985ac8c8c823651cd0a5edcfd0db8c856dfdedf68964794 in Factory YMR EVID sb-post121845-terminal-verification-retry-reviewable-design.json. Real case Factory completedKernel DRG36R, source48a/currentmanagedhead d906: native run028failed environmental localhost proxy501; corrected commandlocaltransport and actual canonical72PASS685.829/5441/4partitions, but completed no-source-change rework84699 refuses; legacy recovery requires missing current_plan. First qualify CURRENTcanonical d514 mechanisms; do not duplicate a newly existing supported route. Implement one public typed verification_retry_request through existing task advance workflow recovery. Controller authenticates exact repository/terminalKernel digest/approvedcheckcontract/realfailedsupervisorattempt/source or audited managedmetadata-only descendant; when bindingmissing create fresh controller adoption observation, never backfill oldreceipt. One statebound durable retry/attempt, all original mandatorychecks actualnativeexecutor once, fresh before/after source/scope/contract pins; PASS only after actualsuccess, then freshEVALUATOR current-source. Immutable completedKernel/plan/workitems/oldEVAL/failed028 remain byteexact. No general reopen/forceOK/internalAPIcaller/manualTaskJSON/fake sourcediff/import of independentPASS as authority. Drift/unknown/interrupt/duplicate refuse, old no-diff and publicationfrozenbaseguards unchanged. Publicationbase mismatch3f31-vs94 is separate blocker, not permission to disable it. Nearest fault/CLI tests cover canonicalcompleted/no legacy/envfail recovery and exactKernel preservation, source/head/scope/command drift, oldevidence non-adoption, interrupted/failed idempotence/no duplicateexecutor, unchangedlegacy/no-diff/provider guard. Scope exacteight listed roots; native plan may narrow or propose necessary bounded refinement under actual user authorization, not silently broaden. Preserve all originalAP/Factory worktrees and untracked native artifacts, foreignFactoryshim cfab, all privateTMP; no install/globalenv/auth/credential/ACL/runtime effects. Only source repair/checks/authorizedcanonicalGitHubPRmerge in this APTask; no Beta host access. Full mandatory native validation and independent review before publication. Existing source/currentbase CDC stale; canonicalremote d514 verified by ls-remote+scopedfetch. Base pinned d514. Previous N1E7M3 scope is not reused/reopened. This is genuinely new framework repair, not replacementFactoryTask or fakeclosure."
 sections:
@@ -5343,6 +5349,71 @@ sections:
     - capability_digest: sha256:b475500fa4bfdc4476b80c29d6247b04deae37a6e4255e445edcff8ee76b87a9
     - checks_digest: sha256:4a5cd58b4d9e4a9a0f30a52b0d7b2742ac3946efbd58960d12224cb8a0920192
     - identity_digest: sha256:38a8513ddf5b62ade471c4e1f107e241832c378a3c19c8e8f0d54a8579b87e12
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-10-31T17:12:11.674Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:01a7739e77ae3548f372bd147cef12833ca64bfc443898e8b493b66b7e268c47
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610280840-VPBGBK Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610280840-VPBGBK Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610280840-VPBGBK Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610280840-VPBGBK Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610280840-VPBGBK Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610280840-VPBGBK Verification Contract check task_outcome
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:c7f5dbb678ff7c7ec2d08610fee2509cb8a4fd388ca1a207e03d309a8b021e11
+    - policy_digest: sha256:35781f355aaa21293eb931f34639e0e5cad5380fea760bef8ef8e0fa5ae1c536
+    - capability_digest: sha256:b475500fa4bfdc4476b80c29d6247b04deae37a6e4255e445edcff8ee76b87a9
+    - checks_digest: sha256:8723937bea8821559f3598da59dd3ffc40ae6125dae3be12fb18c763c7516798
+    - identity_digest: sha256:96cc934edd35801928d6eecf7c3afee78cc347e52acea7440b93660313d480b3
 
     DecisionContextRef:
     - operator_action: stop
@@ -7512,6 +7583,71 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:b475500fa4bfdc4476b80c29d6247b04deae37a6e4255e445edcff8ee76b87a9
 - checks_digest: sha256:4a5cd58b4d9e4a9a0f30a52b0d7b2742ac3946efbd58960d12224cb8a0920192
 - identity_digest: sha256:38a8513ddf5b62ade471c4e1f107e241832c378a3c19c8e8f0d54a8579b87e12
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-31T17:12:11.674Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:01a7739e77ae3548f372bd147cef12833ca64bfc443898e8b493b66b7e268c47
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610280840-VPBGBK Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610280840-VPBGBK Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610280840-VPBGBK Verification Contract check docs_contract
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610280840-VPBGBK Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610280840-VPBGBK Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610280840-VPBGBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610280840-VPBGBK Verification Contract check task_outcome
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:c7f5dbb678ff7c7ec2d08610fee2509cb8a4fd388ca1a207e03d309a8b021e11
+- policy_digest: sha256:35781f355aaa21293eb931f34639e0e5cad5380fea760bef8ef8e0fa5ae1c536
+- capability_digest: sha256:b475500fa4bfdc4476b80c29d6247b04deae37a6e4255e445edcff8ee76b87a9
+- checks_digest: sha256:8723937bea8821559f3598da59dd3ffc40ae6125dae3be12fb18c763c7516798
+- identity_digest: sha256:96cc934edd35801928d6eecf7c3afee78cc347e52acea7440b93660313d480b3
 
 DecisionContextRef:
 - operator_action: stop
