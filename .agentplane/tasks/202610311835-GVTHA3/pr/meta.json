@@ -8,10 +8,10 @@
   "pr_number": 6964,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6964",
   "pre_merge_closure": {
-    "basis_commit": "6abac79e88ffbba5d097a00a62b5819791c43e3b",
+    "basis_commit": "78d079a75f4eceb7f91d11013684ad713585625a",
     "branch": "task/202610311835-GVTHA3/deliver-terminal-verification-retry-from-current",
     "pr_number": 6964,
-    "recorded_at": "2026-10-31T20:17:04.897Z",
+    "recorded_at": "2026-10-31T21:17:21.780Z",
     "state": "closed_before_merge"
   },
   "provider": {
