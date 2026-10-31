@@ -4,5 +4,5 @@
  .../agentplane/src/commands/task/finish-shared.ts  |  6 +-
  .../kernel-completed-external-rework.testkit.ts    |  2 +-
  .../commands/task/kernel-worktree-routing.test.ts  | 58 +++++++++++++++
- .../src/commands/task/scope-extend.command.test.ts | 11 ++-
- 7 files changed, 185 insertions(+), 16 deletions(-)
+ .../src/commands/task/scope-extend.command.test.ts | 16 ++--
+ 7 files changed, 190 insertions(+), 16 deletions(-)
