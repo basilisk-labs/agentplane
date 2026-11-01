@@ -397,6 +397,34 @@ describe("proof-bound native quarantine repository admission", () => {
     },
   );
 
+  it.each([
+    ["backup", "filesystem"],
+    ["afterimage", "filesystem"],
+    ["backup", "git"],
+    ["afterimage", "git"],
+  ] as const)("refuses BOM-prefixed %s bytes through the %s proof", async (artifact, surface) => {
+    const f = await fixture();
+    const target = path.join(f.root, artifact === "backup" ? f.backup : f.readme);
+    const original = await readFile(target);
+    await writeFile(target, Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), original]));
+    if (surface === "git") {
+      git(f.root, "add", "--", ...f.pair);
+      git(f.root, "commit", "-m", "fixture altered raw quarantine bytes");
+      expect([
+        ...(await nativeQuarantineArtifactPaths({
+          ...f.proof,
+          workOrder: undefined,
+          evaluatedCommit: "HEAD",
+        })),
+      ]).toEqual([]);
+      await expect(f.publish()).rejects.toMatchObject({ code: "E_VALIDATION" });
+    } else {
+      expect([...(await nativeQuarantineArtifactPaths(f.proof))]).toEqual([]);
+      expect(await f.commit()).toBeNull();
+      expect(mocks.commit).not.toHaveBeenCalled();
+    }
+  });
+
   it.each([{ broad: true }, { noSecurity: true }, { expired: true }])(
     "refuses missing exact live operator authority %j",
     async (options) => {

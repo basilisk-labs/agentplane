@@ -118,7 +118,8 @@ async function gitText(root: string, commit: string, file: string): Promise<stri
   const [header, pathname] = entry.split("\t");
   if (!/^100(?:644|755) blob [a-f0-9]+$/u.test(header ?? "") || pathname !== `${file}\0`)
     throw new Error("Quarantine proof requires a regular Git blob");
-  return new TextDecoder("utf-8", { fatal: true }).decode(
+  // A leading BOM must remain data so changed raw bytes cannot compare equal.
+  return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(
     await git(root, ["show", `${commit}:${file}`]),
   );
 }
@@ -159,7 +160,7 @@ async function stableText(root: string, file: string): Promise<string> {
     )
   )
     throw new Error("Quarantine artifact changed during proof");
-  return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
 }
 
 function approvedRoots(task: TaskData, repositoryIdentity: k.Sha256Digest) {
