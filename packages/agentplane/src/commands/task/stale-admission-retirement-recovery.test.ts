@@ -38,7 +38,7 @@ async function fixture() {
     task_id: request.task_id,
     workflow_dir: ".agentplane/tasks",
     worktrees_dir: ".agentplane/worktrees",
-    observe_binding: async () => request,
+    observe_binding: () => Promise.resolve(request),
   };
   const before = {
     source: "---\r\nexact source\n",
@@ -61,10 +61,12 @@ it.each([null, '{"genuine":"retained result"}\r\n'])(
       '{"status":"retired"}\n',
     );
     expect(prepared.before).toEqual(before);
-    expect((await f.evidence.readPrepared())?.before).toEqual(before);
+    const retained = await f.evidence.readPrepared();
+    expect(retained?.before).toEqual(before);
     const first = await f.evidence.receipt(prepared, true);
     const bytes = await readFile(first.path);
-    expect((await f.evidence.receipt(prepared, true)).present).toBe(true);
+    const repeated = await f.evidence.receipt(prepared, true);
+    expect(repeated.present).toBe(true);
     expect(await readFile(first.path)).toEqual(bytes);
     expect(first.receipt.prior_effect_outcome).toBe("unassessed");
     expect(first.receipt.disposition).toBe("admission_retired");

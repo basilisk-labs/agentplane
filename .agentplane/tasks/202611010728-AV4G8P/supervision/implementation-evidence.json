@@ -1,0 +1,80 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 83408fc11bb53298034ecca47b23ff1f28d054dd..ce901bf1f09e760f6c140b9f7ea2b3a21466df0e",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 83408fc11bb53298034ecca47b23ff1f28d054dd..ce901bf1f09e760f6c140b9f7ea2b3a21466df0e",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202611010728-AV4G8P/README.md",
+        "A\t.agentplane/tasks/202611010728-AV4G8P/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202611010728-AV4G8P/pr/github-body.md",
+        "A\t.agentplane/tasks/202611010728-AV4G8P/pr/github-title.txt",
+        "A\t.agentplane/tasks/202611010728-AV4G8P/pr/meta.json",
+        "A\t.agentplane/tasks/202611010728-AV4G8P/pr/review.md",
+        "A\t.agentplane/tasks/202611010728-AV4G8P/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "A\t.agentplane/tasks/202611010728-AV4G8P/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "A\tpackages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/command-catalog/task.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+        "A\tpackages/agentplane/src/commands/task/stale-admission-retirement-evidence.ts",
+        "A\tpackages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts",
+        "A\tpackages/agentplane/src/commands/task/stale-admission-retirement-validation.ts",
+        "A\tpackages/agentplane/src/commands/task/stale-admission-retirement.command.ts",
+        "A\tpackages/agentplane/src/commands/task/stale-admission-retirement.test.ts",
+        "A\tpackages/agentplane/src/commands/task/stale-admission-retirement.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "83408fc11bb53298034ecca47b23ff1f28d054dd",
+  "implementation_commit": "ce901bf1f09e760f6c140b9f7ea2b3a21466df0e",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202611010728-AV4G8P/README.md",
+      "?? .agentplane/tasks/202611010728-AV4G8P/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202611010728-AV4G8P/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202611010728-AV4G8P/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202611010728-AV4G8P/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202611010728-AV4G8P/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202611010728-AV4G8P/README.md",
+      "?? .agentplane/tasks/202611010728-AV4G8P/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202611010728-AV4G8P/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202611010728-AV4G8P"
+}

@@ -61,7 +61,8 @@ describe("stale admission evidence observation boundary", () => {
     const { root, file } = await files();
     await writeFile(file, Buffer.alloc(4 * 1024 * 1024 + 1, 0x61));
     await expect(readRetirementFile(root, file)).rejects.toThrow(/budget/u);
-    expect((await readFile(file)).length).toBe(4 * 1024 * 1024 + 1);
+    const retained = await readFile(file);
+    expect(retained.length).toBe(4 * 1024 * 1024 + 1);
   });
   it("rejects caller-supplied outcome or authority claims", () => {
     const value = {

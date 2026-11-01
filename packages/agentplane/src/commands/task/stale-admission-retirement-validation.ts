@@ -163,7 +163,8 @@ export async function readRetirementFile(root: string, file: string): Promise<st
   });
   if (!bytes.equals(Buffer.from(text))) retirementRefusal("changed or non-UTF-8 evidence.");
   await assertContainedPathChainIdentityUnchanged(chain, "admission retirement evidence");
-  if ((await lstat(file)).nlink !== 1) retirementRefusal("hard-linked evidence.");
+  const stats = await lstat(file);
+  if (stats.nlink !== 1) retirementRefusal("hard-linked evidence.");
   return text;
 }
 
@@ -218,7 +219,7 @@ export async function observeStaleAdmission(
   if (!isRevisionSplitPreview(preview, ctx.task_id))
     retirementRefusal("the exact source is not a revision-split quarantine candidate.");
   const runtime = decodeLifecycleOwnerMigrationSource(Buffer.from(source)).runtime;
-  if (runtime.leases.length !== 0 || runtime.pending_effects.length !== 0)
+  if (runtime.leases.length > 0 || runtime.pending_effects.length > 0)
     retirementRefusal("legacy Task runtime still retains leases or pending effects.");
   const currentJournal = await readRetirementFile(ctx.common_git_dir, journalPath);
   const journalText = before?.journal ?? currentJournal;
@@ -281,7 +282,7 @@ export async function observeStaleAdmission(
     authority.sandbox !== "workspace-write" ||
     authority.mutation_scope !== "code" ||
     authority.writable_roots.length === 0 ||
-    authority.external_side_effects.length !== 0 ||
+    authority.external_side_effects.length > 0 ||
     authority.allowed_tool_classes.some(
       (tool) =>
         ![

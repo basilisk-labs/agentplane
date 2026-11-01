@@ -16,6 +16,7 @@ import {
 } from "@agentplaneorg/core/tasks";
 import {
   buildAgentWorkOrderV2ValidFixture,
+  AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
   buildStateFingerprint,
   createSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
@@ -38,16 +39,23 @@ import {
   resolveExternalAgentExchangePaths,
   validateExternalAgentResultEnvelope,
   type ExternalAgentExchange,
+  type ExternalAgentResultEnvelope,
 } from "../commands/task/external-agent-exchange.js";
 import { acceptExternalAgentResult } from "../commands/task/external-agent-supervisor.js";
 import {
   previewStaleAdmissionRetirement,
   retireStaleAdmission,
 } from "../commands/task/stale-admission-retirement.js";
-import { retirementJournalPath } from "../commands/task/stale-admission-retirement-validation.js";
+import {
+  retirementJournalPath,
+  retirementRequestSchema,
+} from "../commands/task/stale-admission-retirement-validation.js";
 
 installRunCliIntegrationHarness();
 const roots: string[] = [];
+function jsonRecord(text: string): Record<string, unknown> {
+  return JSON.parse(text) as Record<string, unknown>;
+}
 afterEach(async () => {
   await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
 });
@@ -236,7 +244,7 @@ async function fixture(received = false, custom = false, legacy = false) {
     task_id: id,
     workflow_dir: config.paths.workflow_dir,
     worktrees_dir: config.paths.worktrees_dir,
-    observe_binding: async () => binding,
+    observe_binding: () => Promise.resolve(binding),
   };
   const journalPath = retirementJournalPath(context);
   const journal = createSupervisorExecutionEpisodeJournal({
@@ -346,7 +354,7 @@ it.each([
     const preview = await cli(f.root, ["task", "retire-admission", f.id]);
     expect(preview.code, preview.stderr).toBe(0);
     expect(await f.snapshot()).toEqual(before);
-    const request = JSON.parse(preview.stdout).request;
+    const request = retirementRequestSchema.parse(jsonRecord(preview.stdout).request);
     const requestPath = path.join(f.root, ".agentplane/tmp/request.json");
     await mkdir(path.dirname(requestPath), { recursive: true });
     await writeFile(requestPath, JSON.stringify(request));
@@ -372,17 +380,18 @@ it.each([
     });
     const repeated = await cli(f.root, args);
     expect(repeated.code, repeated.stderr).toBe(0);
-    expect(JSON.parse(repeated.stdout).kind).toBe("already_retired");
+    expect(jsonRecord(repeated.stdout).kind).toBe("already_retired");
     expect(await f.snapshot()).toEqual(after);
     await expect(f.late()).rejects.toThrow(/retired/u);
-    expect((await f.snapshot()).journal).toBe(after.journal);
+    const afterLate = await f.snapshot();
+    expect(afterLate.journal).toBe(after.journal);
   },
 );
 
 it("public native quarantine and exact rollback do not reactivate retired admission", async () => {
   const f = await fixture(true, false, true);
   const before = await f.snapshot();
-  const request = (await previewStaleAdmissionRetirement(f.context)).request;
+  const { request } = await previewStaleAdmissionRetirement(f.context);
   await retireStaleAdmission({ context: f.context, request });
   const quarantine = await cli(f.root, [
     "task",
@@ -394,7 +403,7 @@ it("public native quarantine and exact rollback do not reactivate retired admiss
     "--yes",
   ]);
   expect(quarantine.code, quarantine.stderr).toBe(1);
-  const result = JSON.parse(quarantine.stdout);
+  const result = jsonRecord(quarantine.stdout);
   expect(result).toMatchObject({ kind: "quarantined", persisted: true });
   const proof = path.join(f.root, "quarantine-rollback.json");
   await writeFile(proof, quarantine.stdout);
@@ -408,33 +417,40 @@ it("public native quarantine and exact rollback do not reactivate retired admiss
   ]);
   expect(rollback.code, rollback.stderr).toBe(0);
   expect(await readFile(f.sourcePath, "utf8")).toBe(before.source);
-  expect(JSON.parse(await readFile(f.paths.exchange, "utf8")).status).toBe("retired");
+  expect(jsonRecord(await readFile(f.paths.exchange, "utf8")).status).toBe("retired");
   await expect(f.late()).rejects.toThrow(/retired/u);
 });
 
 it("does not apply a retained completed historical report or promote its WorkItems", async () => {
   const f = await fixture(true, false, true);
-  const envelope = JSON.parse(await readFile(f.paths.result, "utf8"));
-  envelope.result.status = "completed";
-  delete envelope.result.blocker;
-  const exchange = JSON.parse(await readFile(f.paths.exchange, "utf8"));
+  const previous = JSON.parse(
+    await readFile(f.paths.result, "utf8"),
+  ) as ExternalAgentResultEnvelope;
+  const fields: Record<string, unknown> = { ...previous.result };
+  delete fields.blocker;
+  const envelope: ExternalAgentResultEnvelope = {
+    ...previous,
+    result: AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse({ ...fields, status: "completed" }),
+  };
+  const exchange = JSON.parse(await readFile(f.paths.exchange, "utf8")) as ExternalAgentExchange;
   exchange.result = envelope;
   exchange.result_digest = externalAgentResultDigest(envelope);
   await writeFile(f.paths.result, JSON.stringify(envelope));
   await writeFile(f.paths.exchange, JSON.stringify(exchange));
   const before = await f.snapshot();
-  const request = (await previewStaleAdmissionRetirement(f.context)).request;
+  const { request } = await previewStaleAdmissionRetirement(f.context);
   const result = await retireStaleAdmission({ context: f.context, request });
   expect(result.receipt.prior_effect_outcome).toBe("unassessed");
   const after = await f.snapshot();
   expect(after.source).toBe(before.source);
   expect(after.result).toBe(before.result);
-  expect(JSON.parse(after.exchange).result.result.status).toBe("completed");
+  const retained = JSON.parse(after.exchange) as ExternalAgentExchange;
+  expect(retained.result?.result.status).toBe("completed");
 });
 
 it("supports configured nested workflow and worktree directories", async () => {
   const f = await fixture(false, true, true);
-  const request = (await previewStaleAdmissionRetirement(f.context)).request;
+  const { request } = await previewStaleAdmissionRetirement(f.context);
   const file = path.join(f.root, "request.json");
   await writeFile(file, JSON.stringify(request));
   const result = await cli(f.root, [
@@ -447,7 +463,7 @@ it("supports configured nested workflow and worktree directories", async () => {
     "--yes",
   ]);
   expect(result.code, result.stderr).toBe(0);
-  expect(JSON.parse(result.stdout).kind).toBe("retired");
+  expect(jsonRecord(result.stdout).kind).toBe("retired");
 });
 
 it.each(["prepared", "exchange", "journal", "receipt"] as const)(
@@ -455,13 +471,14 @@ it.each(["prepared", "exchange", "journal", "receipt"] as const)(
   async (boundary) => {
     const f = await fixture(true, false, true);
     const before = await f.snapshot();
-    const request = (await previewStaleAdmissionRetirement(f.context)).request;
+    const { request } = await previewStaleAdmissionRetirement(f.context);
     await expect(
       retireStaleAdmission({
         context: f.context,
         request,
-        boundary: async (phase) => {
+        boundary: (phase) => {
           if (phase === boundary) throw new Error("Injected interruption");
+          return Promise.resolve();
         },
       }),
     ).rejects.toThrow("Injected interruption");
@@ -471,9 +488,8 @@ it.each(["prepared", "exchange", "journal", "receipt"] as const)(
     expect(after.source).toBe(before.source);
     expect(after.work_order).toBe(before.work_order);
     expect(after.result).toBe(before.result);
-    expect((await retireStaleAdmission({ context: f.context, request })).kind).toBe(
-      "already_retired",
-    );
+    const repeated = await retireStaleAdmission({ context: f.context, request });
+    expect(repeated.kind).toBe("already_retired");
     expect(await f.snapshot()).toEqual(after);
   },
 );
@@ -482,7 +498,7 @@ it.each(["source", "policy", "owner", "result"] as const)(
   "refuses %s drift after preparation before native state writes",
   async (target) => {
     const f = await fixture(true, false, true);
-    const request = (await previewStaleAdmissionRetirement(f.context)).request;
+    const { request } = await previewStaleAdmissionRetirement(f.context);
     const before = await f.snapshot();
     await expect(
       retireStaleAdmission({
@@ -505,7 +521,7 @@ it.each(["source", "policy", "owner", "result"] as const)(
 
 it("refuses active leases and concurrent retirement rather than running duplicate operations", async () => {
   const f = await fixture(false, false, true);
-  const request = (await previewStaleAdmissionRetirement(f.context)).request;
+  const { request } = await previewStaleAdmissionRetirement(f.context);
   const before = await f.snapshot();
   const lease = await tryAcquireSupervisorExecutionLease({ journal_path: f.journalPath });
   expect(lease).not.toBeNull();
@@ -543,19 +559,21 @@ it("refuses active leases and concurrent retirement rather than running duplicat
   } finally {
     release();
   }
-  expect((await first).kind).toBe("retired");
+  const completed = await first;
+  expect(completed.kind).toBe("retired");
 });
 
 it("refuses an impossible reverse partial publication without repairing foreign state", async () => {
   const f = await fixture(false, false, true);
-  const request = (await previewStaleAdmissionRetirement(f.context)).request;
+  const { request } = await previewStaleAdmissionRetirement(f.context);
   const before = await f.snapshot();
   await expect(
     retireStaleAdmission({
       context: f.context,
       request,
-      boundary: async (phase) => {
+      boundary: (phase) => {
         if (phase === "journal") throw new Error("Injected interruption");
+        return Promise.resolve();
       },
     }),
   ).rejects.toThrow("Injected interruption");
@@ -588,13 +606,15 @@ it.each(["external-authority", "effect-in-doubt", "accepted", "checkpoint", "ope
       );
     }
     if (target === "accepted" || target === "checkpoint") {
-      const exchange = JSON.parse(await readFile(f.paths.exchange, "utf8"));
+      const exchange = jsonRecord(await readFile(f.paths.exchange, "utf8"));
       if (target === "accepted") exchange.status = "accepted";
       else exchange.verification_checkpoint = { unproven: true };
       await writeFile(f.paths.exchange, JSON.stringify(exchange));
     }
     if (target === "operation") {
-      const exchange = JSON.parse(await readFile(f.paths.exchange, "utf8"));
+      const exchange = JSON.parse(
+        await readFile(f.paths.exchange, "utf8"),
+      ) as ExternalAgentExchange;
       exchange.baseline.head = "f".repeat(40);
       await writeFile(f.paths.exchange, JSON.stringify(exchange));
     }

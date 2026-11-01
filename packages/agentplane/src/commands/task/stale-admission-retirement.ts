@@ -1,4 +1,5 @@
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import type { ExternalAgentExchange } from "./external-agent-exchange.js";
 import {
   isoTimestampSchema,
   retireSupervisorExecutionEpisodeIntentAfterStateDrift,
@@ -43,7 +44,7 @@ function afterimages(before: RetirementImages, request: RetirementRequest, now: 
     now,
   });
   const exchange = {
-    ...JSON.parse(before.exchange),
+    ...(JSON.parse(before.exchange) as ExternalAgentExchange),
     status: "retired",
     postcondition_fingerprint: fingerprint,
     updated_at: now,
@@ -55,7 +56,7 @@ function afterimages(before: RetirementImages, request: RetirementRequest, now: 
 }
 
 function assertAfterimages(prepared: PreparedRetirement, request: RetirementRequest): void {
-  const now: unknown = JSON.parse(prepared.after_exchange).updated_at;
+  const now = (JSON.parse(prepared.after_exchange) as { updated_at?: unknown }).updated_at;
   if (typeof now !== "string") retirementRefusal("invalid prepared retirement timestamp.");
   const expected = afterimages(prepared.before, request, now);
   if (expected.journal !== prepared.after_journal || expected.exchange !== prepared.after_exchange)

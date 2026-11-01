@@ -27,16 +27,16 @@ Implement a bounded public native operator recovery to revoke only stale writabl
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...run-cli.core.stale-admission-retirement.test.ts | 605 +++++++++++++++++++++
+ ...run-cli.core.stale-admission-retirement.test.ts | 625 +++++++++++++++++++++
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../task/stale-admission-retirement-evidence.ts    | 209 +++++++
- .../stale-admission-retirement-recovery.test.ts    | 127 +++++
- .../task/stale-admission-retirement-validation.ts  | 421 ++++++++++++++
+ .../stale-admission-retirement-recovery.test.ts    | 129 +++++
+ .../task/stale-admission-retirement-validation.ts  | 422 ++++++++++++++
  .../task/stale-admission-retirement.command.ts     | 134 +++++
- .../task/stale-admission-retirement.test.ts        |  90 +++
- .../commands/task/stale-admission-retirement.ts    | 157 ++++++
- 9 files changed, 1754 insertions(+)
+ .../task/stale-admission-retirement.test.ts        |  91 +++
+ .../commands/task/stale-admission-retirement.ts    | 158 ++++++
+ 9 files changed, 1779 insertions(+)
 ```
 
 </details>
