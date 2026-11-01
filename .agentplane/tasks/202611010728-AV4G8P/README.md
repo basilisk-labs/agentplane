@@ -4,7 +4,7 @@ title: "Retire stale writable semantic admissions before legacy quarantine"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -23,15 +23,31 @@ verify:
   - "bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-11-01T07:32:37.934Z"
+  updated_at: "2026-11-01T09:44:53.883Z"
   updated_by: "USER"
-  note: null
+  note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-11-01T10:07:34.127Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-11-01T09:44:53.883Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical EVALUATOR review passed."
+  evaluated_sha: "cd9042a69dfdedcbea7e34104f31a9694aa36e59"
+  review_identity_digest: "sha256:169b3174761825be1de229cc614b5301236b82c17047104f696903fbdb238adc"
+  evidence_refs:
+    - "../../../.git/agentplane/kernel/exchanges/202611010728-AV4G8P/48c952e0eedd2f5850d3459c67184e6c4cf68bb53206e60cc0551e8370c47de7/quality-report.json"
+  findings:
+    - "Reviewed all nine source paths and the fresh14-block context plus native implementation, repository and validation inputs. Exact source/report digests match767 and the native evaluator target. The previous root-link finding is closed by explicit root lstat refusal before stable reads, lease acquisition and evidence publication; four regressions failed before the fix and pass after it, preserving target inventory and bytes."
+    - "The operator authenticates the exact native revision-split source, original single EXECUTOR intent, WorkOrder/exchange/result identity, repository and policy. Missing original owner and no active lease/external-effect/accepted or checkpointed exchange are required. Historical fingerprint-v1 records are authenticated in the bounded retirement reader; the normal invocation validators and migration/runtime guards remain unchanged."
+    - "The existing native execution fence covers exact protected beforeimages, prepared afterimages, retired exchange first, journal CAS second and an immutable final receipt. Replay only recognizes exact admitted partial states. Old Tasks, Plans, WorkItems, WorkOrders and genuine results are preserved; prior effects remain unassessed and no historical DONE/PASS/CANCELLED is assigned."
+    - "Public CLI tests cover issued and genuine-result cases, late-result refusal, real native quarantine and raw-byte rollback without reactivating admission, configured directories, interruption/replay, tamper/drift, unknown partial state, active lease and concurrent apply. Existing assertions are preserved or increased; no test or CI/policy budget was weakened."
+    - "Retained native validation768 actually passed all three mandatory commands: full ci:local:full (runtime/docs-schema/core/CLI), focused40 tests and publicCLI22 tests. The earlier lint and root-link review failures remain retained. No actual Factory retirement/quarantine, host effect or credential change occurred in this source episode."
 execution_route:
   frozen: true
   reason_codes:
@@ -111,11 +127,66 @@ execution_contract:
       - "packages/agentplane/src/commands/task/stale-admission-retirement.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts"
+      - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
+      - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+      - "packages/agentplane/src/commands/task/stale-admission-retirement-evidence.ts"
+      - "packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/stale-admission-retirement-validation.ts"
+      - "packages/agentplane/src/commands/task/stale-admission-retirement.command.ts"
+      - "packages/agentplane/src/commands/task/stale-admission-retirement.test.ts"
+      - "packages/agentplane/src/commands/task/stale-admission-retirement.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -171,11 +242,14 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:c6e97a9f3dd75cdea593a33203d85c21b47cd7940cb94153fe0b9029efa5f93e"
+      digest: "sha256:b931bb2614ba57fd119e1435ea1b069ca03fa0e95c8b6fe7f7613ad42b86f4fd"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
         - "central_component:packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
         - "effect_public_api"
         - "effect_release_metadata"
         - "effect_security_boundary"
@@ -187,10 +261,23 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts"
+          - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
+          - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+          - "packages/agentplane/src/commands/task/stale-admission-retirement-evidence.ts"
+          - "packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/stale-admission-retirement-validation.ts"
+          - "packages/agentplane/src/commands/task/stale-admission-retirement.command.ts"
+          - "packages/agentplane/src/commands/task/stale-admission-retirement.test.ts"
+          - "packages/agentplane/src/commands/task/stale-admission-retirement.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -228,12 +315,20 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "cd9042a69dfdedcbea7e34104f31a9694aa36e59"
+  message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-11-01T10:07:34.127Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-11-01T07:28:07.278Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-11-01T10:07:34.931Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement a bounded public native operator recovery to revoke only stale writable external semantic admissions before revision-split quarantine. Initial approved application targets are Factory BPA49V,778NR2,G6MVKS,BCJRWK. Preserve exact Task/journal/WorkOrder/exchange/result beforeimages, old results and receipts; never execute old WorkItems or assign historical DONE/PASS/CANCELLED, and never classify an unknown effect applied/not_applied. Require exact current repository/source/policy/operation pins, missing original checkout and no external-effect authority or active execution lease. Use native retired exchange and journal CAS under the common execution fence, durable prepared/afterimage receipts and strict crash/duplicate/drift/tamper/concurrency refusal. Reuse existing native retirement primitives without weakening migration admission or runtime guards. Validate rollback cannot reactivate retired admission. No Factory application until this source task passes native mandatory checks, fresh independent EVALUATOR, protected canonical PR/merge and current CLI qualification. Keep existing branches/worktrees and all runtime data/credentials. User explicitly approved this extension and the all8 PR/merge/deploy outcome."
 sections:
   Summary: |-
@@ -254,12 +349,137 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-11-01T10:07:34.127Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bf26ec4fd7f1c36de7b8ad2363d46f73a847ae76872f1b50951ebaa5856adc19, input_digest=sha256:d2e3ec0d2583f1004c7a9a6eb4230f573fccbf4aa71c8a581bef0d43db3cc31f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run test:fast packages/agentplane/src/commands/task/stale-admission-retirement.test.ts packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts packages/agentplane/src/commands/task/kernel-migration-admission.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run test:fast packages/agentplane/src/commands/task/stale-admission-retirement.test.ts packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts packages/agentplane/src/commands/task/kernel-migration-admission.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check real_e2e (1/3)
+
+    Check: real_e2e
+    Command: bun run test:fast packages/agentplane/src/commands/task/stale-admission-retirement.test.ts packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts packages/agentplane/src/commands/task/kernel-migration-admission.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check real_e2e (2/3)
+
+    Check: real_e2e
+    Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check real_e2e (3/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run test:fast packages/agentplane/src/commands/task/stale-admission-retirement.test.ts packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts packages/agentplane/src/commands/task/kernel-migration-admission.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202611010728-AV4G8P Verification Contract check task_outcome (3/3)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:11ddab81d6756bb40ae2b7fa7f2dc8b31cf53c5b5fb160569978bcbc5637cebb
+    - policy_digest: sha256:afcda1f51a320f9f13fd7af39ac9bf6788c0495770b3cb3a798b7b65aedd2593
+    - capability_digest: sha256:b838864bcbcaf2b8a840126c7ca52120e5a1135148807ff1d4ee58dbf6938086
+    - checks_digest: sha256:8ba2d268a0e379f5ff0530453b005c9f432b3558341888589dbd97038221176c
+    - identity_digest: sha256:a3b77fed3a8f9997ae79b28b2568a1e6027d3abf36c2db13bc694448d7206192
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202611010728-AV4G8P
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.kernel_operational_projection:
+    digest: "sha256:948f0da7e755f48d81533305ce865be6fbb3d2fd7c3091526cf957c4ab76cbad"
+    evidence_refs:
+      - "../../../.git/agentplane/kernel/exchanges/202611010728-AV4G8P/48c952e0eedd2f5850d3459c67184e6c4cf68bb53206e60cc0551e8370c47de7/quality-report.json"
+    findings:
+      - "Reviewed all nine source paths and the fresh14-block context plus native implementation, repository and validation inputs. Exact source/report digests match767 and the native evaluator target. The previous root-link finding is closed by explicit root lstat refusal before stable reads, lease acquisition and evidence publication; four regressions failed before the fix and pass after it, preserving target inventory and bytes."
+      - "The operator authenticates the exact native revision-split source, original single EXECUTOR intent, WorkOrder/exchange/result identity, repository and policy. Missing original owner and no active lease/external-effect/accepted or checkpointed exchange are required. Historical fingerprint-v1 records are authenticated in the bounded retirement reader; the normal invocation validators and migration/runtime guards remain unchanged."
+      - "The existing native execution fence covers exact protected beforeimages, prepared afterimages, retired exchange first, journal CAS second and an immutable final receipt. Replay only recognizes exact admitted partial states. Old Tasks, Plans, WorkItems, WorkOrders and genuine results are preserved; prior effects remain unassessed and no historical DONE/PASS/CANCELLED is assigned."
+      - "Public CLI tests cover issued and genuine-result cases, late-result refusal, real native quarantine and raw-byte rollback without reactivating admission, configured directories, interruption/replay, tamper/drift, unknown partial state, active lease and concurrent apply. Existing assertions are preserved or increased; no test or CI/policy budget was weakened."
+      - "Retained native validation768 actually passed all three mandatory commands: full ci:local:full (runtime/docs-schema/core/CLI), focused40 tests and publicCLI22 tests. The earlier lint and root-link review failures remain retained. No actual Factory retirement/quarantine, host effect or credential change occurred in this source episode."
+    implementation_commit: "cd9042a69dfdedcbea7e34104f31a9694aa36e59"
+    implementation_tree: "f82ed976dbdea6438c3b3eb3812bed7a2c83b0d0"
+    projected_at: "2026-11-01T09:44:53.883Z"
+    review_identity_digest: "sha256:169b3174761825be1de229cc614b5301236b82c17047104f696903fbdb238adc"
+    schema_version: 1
+    source: "task_kernel"
+    verification_evidence_digest: "sha256:30bca17d0f6c4a72883a24d9c85f7963ab881ea9d1c3c90b29ee7f0e1b46841e"
+    work_order_id: "sha256:e4b814b745b851e17eba253007d75c7995c5e2e8c523fb12482a30e9250f651d"
   task_execution_context:
     base_ref: "main"
     base_sha: "83408fc11bb53298034ecca47b23ff1f28d054dd"
@@ -515,6 +735,69 @@ extensions:
             evidence_digest: "sha256:31b76542e72d4a66738093fdc24745232aabf44bf46b49921b4e3d5d0e40add7"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:f42c80bab9ab0bf23a7f0cb5e04072a1b1f897226c7ac2843d0a742b59501bc2"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:135d1268cbe6f70cc7fddcf2ab86434175fca1c9f517817ec69a73f7bd1460eb"
+            expires_at: null
+            external_effects:
+              - "network_read"
+            plan_digest: "sha256:11ddab81d6756bb40ae2b7fa7f2dc8b31cf53c5b5fb160569978bcbc5637cebb"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:37492408e7e56de75241cc87a953f635dd9852af3cd93225899233274890938c"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:0f48b50981361db07170678c2384aec2712a40ee4fc16d3c83e9fafabdcdbeb3"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:df1bd3cd6a7f075e456d820612b80dcd0e49da835ad66483577d8157ff881401"
+            repository_effects:
+              - "public_api"
+              - "release_metadata"
+              - "repository_write"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:7f37237c859830b57f1668ca8f7bdd82482ba41a5cde9ec6c37dbb3dac8936e6"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - "packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts"
+              - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
+              - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+              - "packages/agentplane/src/commands/task/stale-admission-retirement-evidence.ts"
+              - "packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts"
+              - "packages/agentplane/src/commands/task/stale-admission-retirement-validation.ts"
+              - "packages/agentplane/src/commands/task/stale-admission-retirement.command.ts"
+              - "packages/agentplane/src/commands/task/stale-admission-retirement.test.ts"
+              - "packages/agentplane/src/commands/task/stale-admission-retirement.ts"
+            task_id: "202611010728-AV4G8P"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/commands/task/stale-admission-retirement-evidence.ts"
+              - "packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts"
+              - "packages/agentplane/src/commands/task/stale-admission-retirement-validation.ts"
+              - "packages/agentplane/src/commands/task/stale-admission-retirement.test.ts"
+            evidence_digest: "sha256:8f20880945dd4766cfac1735f206785d04b8591f1166a1b73893b0f46c971546"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:80fba7e82218cef323437c7767eed7c817455585c0c2a9f52bf727ac10cb5176"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -554,7 +837,17 @@ extensions:
             optional: false
             required_inputs: []
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:09b856f86aa918c809f5f763b4c0db5068af5b34b53b2af959f9254b302c7751"
+        identity:
+          check_id: "canonical-final-contracts-v2"
+          command_digest: "sha256:c48eb89b3e6a3d51df88185cda0fd4c7f37e7ca94584b8566cb112d8824bf0e2"
+          environment_digest: "sha256:d7ebc641ec5d226525e9fafa255b5b88093c4124b643f58675f10bd2c1707dcb"
+          implementation_identity: "sha256:7f37237c859830b57f1668ca8f7bdd82482ba41a5cde9ec6c37dbb3dac8936e6"
+          toolchain_digest: "sha256:faa94f4704251a0ff003cdbc75a97e92e3c24d4023ad357cfeee08b3fded3efc"
+        observed_at: "2026-11-01T09:44:59.210Z"
+        status: "PASSED"
       id: "202611010728-AV4G8P"
       intent_digest: "sha256:20dbe443fff8e353e9c2493d23dac4360c54b2549bb5d04b787cab429afa4061"
       migration_receipts: []
@@ -568,6 +861,15 @@ extensions:
           event_digests:
             - "sha256:1ea0213614527ad9c883ce51316e0588748f8aa04eb92f7ec808020d7ba5df39"
           mutation_id: "capture:202611010728-AV4G8P"
+        final-validation:sha256:09b856f86aa918c809f5f763b4c0db5068af5b34b53b2af959f9254b302c7751:26:
+          after_revision: 27
+          aggregate_digest: "sha256:0fc0c1ec5b8fa0e3cc3806d5a1ab56657689a9cee85bf5e9fad1763628a0dfbf"
+          before_revision: 26
+          command_digest: "sha256:643a47be95a5c9bca9c7561df4e0eeeae39f63dc9dac9dd46d22e93d3a0504b8"
+          effect_ids: []
+          event_digests:
+            - "sha256:88bfb8db0fc66a74c5ac072a3ffda60c92376e2c7ff75e9b4c69ba84832be635"
+          mutation_id: "final-validation:sha256:09b856f86aa918c809f5f763b4c0db5068af5b34b53b2af959f9254b302c7751:26"
         kernel_work_item_claim_required:sha256:7a8e85d7027fecdb0ebfb92aaf3a3d0b9485ff93405a9e6e5d9d5e1578338fc1:sha256:b2dafc80f5179630c3fa1d9a943accc292707158c63e54f8ec906677ff1ca1a0:
           after_revision: 5
           aggregate_digest: "sha256:6234a17f2c4f88d2786c63c29972e3738e27914a2151ed72b1e1b6b80bf14a55"
@@ -613,6 +915,15 @@ extensions:
           event_digests:
             - "sha256:9e9ade902f6c3d71c58fce93449dff3e30d7affd8eea56e2171481f8e7adebdc"
           mutation_id: "kernel_work_item_inspection_required:sha256:55601d5fa05612d398d3fba675dacda012c99fae34c490403a877a25514daf70:sha256:80fba7e82218cef323437c7767eed7c817455585c0c2a9f52bf727ac10cb5176"
+        kernel_work_item_inspection_required:sha256:b8efd4490f76461abf05e28be092d1345764fd5ca83b0eb54f4e6332ebc11448:sha256:7f37237c859830b57f1668ca8f7bdd82482ba41a5cde9ec6c37dbb3dac8936e6:
+          after_revision: 24
+          aggregate_digest: "sha256:3ddb903ca82cc2199a1c0b52727223a3260541de1ee37468ed7194b56e0e8de3"
+          before_revision: 23
+          command_digest: "sha256:4e08aaa4401ac194b051068e78c7777782568d48762ce9f63a364755a635bb50"
+          effect_ids: []
+          event_digests:
+            - "sha256:d433a79b3a981713d14e5cd153ed407409c7db7e2b5ce1eea881ea61fde7b69f"
+          mutation_id: "kernel_work_item_inspection_required:sha256:b8efd4490f76461abf05e28be092d1345764fd5ca83b0eb54f4e6332ebc11448:sha256:7f37237c859830b57f1668ca8f7bdd82482ba41a5cde9ec6c37dbb3dac8936e6"
         kernel_work_item_inspection_required:sha256:bff1f53bed870ded04ac5bd041dd7c6450c661bdc08568067b137f935fe99521:sha256:f42c80bab9ab0bf23a7f0cb5e04072a1b1f897226c7ac2843d0a742b59501bc2:
           after_revision: 10
           aggregate_digest: "sha256:1e42b6500863cdb25462398f517819837e5cbbf42662a1500364e1c4d4a6cd9b"
@@ -667,6 +978,15 @@ extensions:
           event_digests:
             - "sha256:5b321fac888d460bc1870436a3cd510337f8abb53264a15213ec11278ffa666a"
           mutation_id: "result:sha256:b08361acbe888c8123a97ee3479d11a96ad2305114707e466537ae9d3f290a3e"
+        result:sha256:e4b814b745b851e17eba253007d75c7995c5e2e8c523fb12482a30e9250f651d:
+          after_revision: 23
+          aggregate_digest: "sha256:a316e6c8933259701f75d758c28b626dea3343ed38d9bb7b907ea276a8542f67"
+          before_revision: 22
+          command_digest: "sha256:94a39cc8e94dae1bc19746777d867bd5feb91a6f5831f0ee2e7b4ebbb349d14d"
+          effect_ids: []
+          event_digests:
+            - "sha256:1b6a2632c1072851eb0bb6a76b3712ddebe3b82c75d3ffbaf57e7622d93b3439"
+          mutation_id: "result:sha256:e4b814b745b851e17eba253007d75c7995c5e2e8c523fb12482a30e9250f651d"
         result:sha256:f40c02511b2d155d6b895b088a82f69bf7bd0aadae953fdfacad75ba760e8c04:
           after_revision: 9
           aggregate_digest: "sha256:e1ec5e96480f4f0eae57fffb553bf876fd0508cde108de37f44bb565954c09d0"
@@ -676,6 +996,15 @@ extensions:
           event_digests:
             - "sha256:7c8ff0f82a6e68d0046d7592111a0f8a981b11b5faabb457f12be4e935d337a6"
           mutation_id: "result:sha256:f40c02511b2d155d6b895b088a82f69bf7bd0aadae953fdfacad75ba760e8c04"
+        sha256:1c5570af862f4aecaf0496f2fffbbf300f8823069a94e2d1632e1b745d0712cb:
+          after_revision: 22
+          aggregate_digest: "sha256:79696e8abe2a5233bc56def5ea7c8f5e15529238c22e72fe826058108d9ee3a5"
+          before_revision: 21
+          command_digest: "sha256:10b511efead41abd843e176f6d8c02b9c6cb4cb09ff39e9b517f8d71d56b9bd6"
+          effect_ids: []
+          event_digests:
+            - "sha256:150caa1fd2189e204e9d8c3d39a0310fabcb8d02f36ef8be32a77db1447dae0c"
+          mutation_id: "sha256:1c5570af862f4aecaf0496f2fffbbf300f8823069a94e2d1632e1b745d0712cb"
         sha256:6df8f2458bc8142fbe84700dbfb5c74bc6f06f25393d4e21df92952586c4e917:
           after_revision: 8
           aggregate_digest: "sha256:2533c30e861334976e2fa06edc8a890fefc1bed3e2f0b55049ba033167cb18d3"
@@ -730,6 +1059,24 @@ extensions:
           event_digests:
             - "sha256:159f1de8fd873ecfb406c560d0578dc17fb2e2d57b7291be7f7fc506094d6041"
           mutation_id: "validation-resolution:sha256:a58c04681c1c89ed9a589f04d1a7278d31e5be823e548633a618ab41c871ff1c"
+        validation-resolution:sha256:fd19ff51bbfc720a79a440f883cf706931716fe2072116aa37dedf45c41b2174:
+          after_revision: 26
+          aggregate_digest: "sha256:490f033709818bd05f2afb0378dabf75956557bdc0a8d7677313669ef44e770e"
+          before_revision: 25
+          command_digest: "sha256:35f5caca53af2a6f2aa36669814c3003d40684c2b730deb1dd403ff1a550594b"
+          effect_ids: []
+          event_digests:
+            - "sha256:026b28af2ead3c75e8b5fbe7a492551fbc65947033e63a0dc7e375397824416d"
+          mutation_id: "validation-resolution:sha256:fd19ff51bbfc720a79a440f883cf706931716fe2072116aa37dedf45c41b2174"
+        validation:sha256:48c952e0eedd2f5850d3459c67184e6c4cf68bb53206e60cc0551e8370c47de7:
+          after_revision: 25
+          aggregate_digest: "sha256:8ef1c0db440be517b809cea6c952a661996d57de11bd284c16f7d3e336d10c00"
+          before_revision: 24
+          command_digest: "sha256:5395a3994f0f7072299941d96b064f4ac62fb7dbb42dacc77636c73a6a846aa6"
+          effect_ids: []
+          event_digests:
+            - "sha256:bb20dee35186906db21b241838bc7a31441d4bd8d0becb2c07b7a6de53b25e75"
+          mutation_id: "validation:sha256:48c952e0eedd2f5850d3459c67184e6c4cf68bb53206e60cc0551e8370c47de7"
         validation:sha256:bab94b7fa99b62f81d86c56d7008038a710cbbafa9762377a9aa5a1f07cb35cf:
           after_revision: 18
           aggregate_digest: "sha256:a60291254c041aed4e888b7316f8f9740ed3905db13527def5552bedd6fd45f2"
@@ -749,9 +1096,9 @@ extensions:
             - "sha256:98f015d28df0d22d08473a420703f09bcb093a3449059b5a2d98fbd602b95e7c"
           mutation_id: "validation:sha256:f40c02511b2d155d6b895b088a82f69bf7bd0aadae953fdfacad75ba760e8c04"
       plan_history: []
-      revision: 21
+      revision: 27
       schema_version: 1
-      state: "ACTIVE"
+      state: "FINAL_VALIDATION"
       work_items:
         native-stale-admission-retirement:
           attempt: 3
@@ -786,12 +1133,41 @@ extensions:
             id: "native-stale-admission-retirement"
             optional: false
             required_inputs: []
-          output_manifests: []
-          result_digest: null
-          revision: 15
-          state: "EXECUTING"
-          validation: null
-    digest: "sha256:35ff48538bd8b6f21f5e6303650bb530c70a13ff8cdd58aa81649c80334b6c10"
+          output_manifests:
+            -
+              attempt: 3
+              digest: "sha256:6da76619950aeab775f929a111ee8f81110b7c2a78c5442e6d0afd4c3a2c2a9b"
+              id: "native-admission-retirement-source"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:7f37237c859830b57f1668ca8f7bdd82482ba41a5cde9ec6c37dbb3dac8936e6"
+              task_id: "202611010728-AV4G8P"
+              work_item_id: "native-stale-admission-retirement"
+            -
+              attempt: 3
+              digest: "sha256:45df52da58d3bfc2c33c9fe8311687a82687bc412cfd554513bd83f1495bc49b"
+              id: "native-admission-retirement-coverage"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:7f37237c859830b57f1668ca8f7bdd82482ba41a5cde9ec6c37dbb3dac8936e6"
+              task_id: "202611010728-AV4G8P"
+              work_item_id: "native-stale-admission-retirement"
+          result_digest: "sha256:d6c5d02d1b831d7b9ecf2c051d0bb266df0d2dc0e71cd5c7f216a1ba4652169c"
+          revision: 19
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:48f60329e3247133700c2743c017169a08db2cce5cb5b77adba67b8a12a80256"
+              - "sha256:169b3174761825be1de229cc614b5301236b82c17047104f696903fbdb238adc"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:c48eb89b3e6a3d51df88185cda0fd4c7f37e7ca94584b8566cb112d8824bf0e2"
+              environment_digest: "sha256:893106cef5246f929ca650908dc12252cb149fd79df1ec71f7173ad4d698438b"
+              implementation_identity: "sha256:d6c5d02d1b831d7b9ecf2c051d0bb266df0d2dc0e71cd5c7f216a1ba4652169c"
+              toolchain_digest: "sha256:d2c612397df84c985d305c9e00234d88e65624eefb509b6cf6045ed92e3f5918"
+            observed_at: "2026-11-01T09:44:53.883Z"
+            status: "PASSED"
+    digest: "sha256:54a83f601c2a64374c37bc621bca421c62fa5ae81f85acaf51797918d682977d"
     documents:
       contracts:
         sha256:430513ee9535ee63ad9455b1e578b9a8eb23d72d81a4c2eee2bdd901e4aec36b:
@@ -1003,6 +1379,60 @@ extensions:
         payload_digest: "sha256:f01e8fc394bd33bcaa4f4728fdd4472df9cb2403e0580ea0813ac40d4be16ed1"
         task_id: "202611010728-AV4G8P"
         task_revision: 21
+      -
+        command_digest: "sha256:10b511efead41abd843e176f6d8c02b9c6cb4cb09ff39e9b517f8d71d56b9bd6"
+        id: "sha256:1c5570af862f4aecaf0496f2fffbbf300f8823069a94e2d1632e1b745d0712cb:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:1c5570af862f4aecaf0496f2fffbbf300f8823069a94e2d1632e1b745d0712cb"
+        occurred_at: "2026-11-01T09:20:18.581Z"
+        payload_digest: "sha256:be3663b3e19de3c102755ce6c68afb0345ff05ad1ecd659f29a48e6a01df736c"
+        task_id: "202611010728-AV4G8P"
+        task_revision: 22
+      -
+        command_digest: "sha256:94a39cc8e94dae1bc19746777d867bd5feb91a6f5831f0ee2e7b4ebbb349d14d"
+        id: "result:sha256:e4b814b745b851e17eba253007d75c7995c5e2e8c523fb12482a30e9250f651d:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:e4b814b745b851e17eba253007d75c7995c5e2e8c523fb12482a30e9250f651d"
+        occurred_at: "2026-11-01T09:20:21.148Z"
+        payload_digest: "sha256:8616b9f83d607f1119c194aad6af7084d8925066e7ba614d8401bb05a478712f"
+        task_id: "202611010728-AV4G8P"
+        task_revision: 23
+      -
+        command_digest: "sha256:4e08aaa4401ac194b051068e78c7777782568d48762ce9f63a364755a635bb50"
+        id: "kernel_work_item_inspection_required:sha256:b8efd4490f76461abf05e28be092d1345764fd5ca83b0eb54f4e6332ebc11448:sha256:7f37237c859830b57f1668ca8f7bdd82482ba41a5cde9ec6c37dbb3dac8936e6:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:b8efd4490f76461abf05e28be092d1345764fd5ca83b0eb54f4e6332ebc11448:sha256:7f37237c859830b57f1668ca8f7bdd82482ba41a5cde9ec6c37dbb3dac8936e6"
+        occurred_at: "2026-11-01T09:20:23.128Z"
+        payload_digest: "sha256:25fc799cbaea476a6a4f8cc85abc4fd5fad922d8757330254f9c97111bdb2c54"
+        task_id: "202611010728-AV4G8P"
+        task_revision: 24
+      -
+        command_digest: "sha256:5395a3994f0f7072299941d96b064f4ac62fb7dbb42dacc77636c73a6a846aa6"
+        id: "validation:sha256:48c952e0eedd2f5850d3459c67184e6c4cf68bb53206e60cc0551e8370c47de7:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:48c952e0eedd2f5850d3459c67184e6c4cf68bb53206e60cc0551e8370c47de7"
+        occurred_at: "2026-11-01T09:44:55.838Z"
+        payload_digest: "sha256:b7dfeba2c66f92469d3a331d0dfa3fc1839e94463950c91888ac11bb0969c176"
+        task_id: "202611010728-AV4G8P"
+        task_revision: 25
+      -
+        command_digest: "sha256:35f5caca53af2a6f2aa36669814c3003d40684c2b730deb1dd403ff1a550594b"
+        id: "validation-resolution:sha256:fd19ff51bbfc720a79a440f883cf706931716fe2072116aa37dedf45c41b2174:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:fd19ff51bbfc720a79a440f883cf706931716fe2072116aa37dedf45c41b2174"
+        occurred_at: "2026-11-01T09:44:57.159Z"
+        payload_digest: "sha256:889e73562cf53a9c7dee2be452348c5ea0df14be85ac054a16b3e1f587a2ee0b"
+        task_id: "202611010728-AV4G8P"
+        task_revision: 26
+      -
+        command_digest: "sha256:643a47be95a5c9bca9c7561df4e0eeeae39f63dc9dac9dd46d22e93d3a0504b8"
+        id: "final-validation:sha256:09b856f86aa918c809f5f763b4c0db5068af5b34b53b2af959f9254b302c7751:26:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:09b856f86aa918c809f5f763b4c0db5068af5b34b53b2af959f9254b302c7751:26"
+        occurred_at: "2026-11-01T10:07:33.299Z"
+        payload_digest: "sha256:f40c41744efae91e24b755999b5d2f9e67da828ecaafd7273a47cb2ad04b20cf"
+        task_id: "202611010728-AV4G8P"
+        task_revision: 27
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -1036,6 +1466,113 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-11-01T10:07:34.127Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bf26ec4fd7f1c36de7b8ad2363d46f73a847ae76872f1b50951ebaa5856adc19, input_digest=sha256:d2e3ec0d2583f1004c7a9a6eb4230f573fccbf4aa71c8a581bef0d43db3cc31f
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run test:fast packages/agentplane/src/commands/task/stale-admission-retirement.test.ts packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts packages/agentplane/src/commands/task/kernel-migration-admission.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run test:fast packages/agentplane/src/commands/task/stale-admission-retirement.test.ts packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts packages/agentplane/src/commands/task/kernel-migration-admission.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check real_e2e (1/3)
+
+Check: real_e2e
+Command: bun run test:fast packages/agentplane/src/commands/task/stale-admission-retirement.test.ts packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts packages/agentplane/src/commands/task/kernel-migration-admission.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check real_e2e (2/3)
+
+Check: real_e2e
+Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check real_e2e (3/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run test:fast packages/agentplane/src/commands/task/stale-admission-retirement.test.ts packages/agentplane/src/commands/task/stale-admission-retirement-recovery.test.ts packages/agentplane/src/commands/task/kernel-migration-admission.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611010728-AV4G8P/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202611010728-AV4G8P Verification Contract check task_outcome (3/3)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:11ddab81d6756bb40ae2b7fa7f2dc8b31cf53c5b5fb160569978bcbc5637cebb
+- policy_digest: sha256:afcda1f51a320f9f13fd7af39ac9bf6788c0495770b3cb3a798b7b65aedd2593
+- capability_digest: sha256:b838864bcbcaf2b8a840126c7ca52120e5a1135148807ff1d4ee58dbf6938086
+- checks_digest: sha256:8ba2d268a0e379f5ff0530453b005c9f432b3558341888589dbd97038221176c
+- identity_digest: sha256:a3b77fed3a8f9997ae79b28b2568a1e6027d3abf36c2db13bc694448d7206192
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202611010728-AV4G8P
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

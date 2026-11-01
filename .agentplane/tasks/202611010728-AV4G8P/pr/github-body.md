@@ -15,8 +15,8 @@ Implement a bounded public native operator recovery to revoke only stale writabl
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
