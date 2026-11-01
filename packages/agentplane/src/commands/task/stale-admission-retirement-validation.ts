@@ -146,7 +146,15 @@ export function retirementBytesDigest(text: string): string {
   return "sha256:" + createHash("sha256").update(text).digest("hex");
 }
 
+export async function assertRetirementRoot(root: string): Promise<void> {
+  // Containment helpers canonicalize their root before inspecting descendants.
+  const stats = await lstat(root);
+  if (stats.isSymbolicLink() || !stats.isDirectory())
+    retirementRefusal("unsafe evidence root; a non-symlink directory is required.");
+}
+
 export async function readRetirementFile(root: string, file: string): Promise<string> {
+  await assertRetirementRoot(root);
   const chain = await captureContainedPathChainIdentity({
     repository_root: root,
     file_path: file,
@@ -165,6 +173,7 @@ export async function readRetirementFile(root: string, file: string): Promise<st
   await assertContainedPathChainIdentityUnchanged(chain, "admission retirement evidence");
   const stats = await lstat(file);
   if (stats.nlink !== 1) retirementRefusal("hard-linked evidence.");
+  await assertRetirementRoot(root);
   return text;
 }
 

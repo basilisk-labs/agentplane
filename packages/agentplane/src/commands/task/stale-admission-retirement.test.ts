@@ -52,6 +52,17 @@ describe("stale admission evidence observation boundary", () => {
       /symlink/u,
     );
   });
+  it("refuses a directory link used as the observation root", async () => {
+    const { root } = await files();
+    const other = await files();
+    const before = await readFile(other.file);
+    const alias = path.join(root, "alias");
+    await symlink(other.root, alias, "junction");
+    await expect(readRetirementFile(alias, path.join(alias, "nested/source"))).rejects.toThrow(
+      /root/u,
+    );
+    expect(await readFile(other.file)).toEqual(before);
+  });
   it("refuses hard-linked evidence", async () => {
     const { root, file } = await files();
     await link(file, path.join(root, "second"));

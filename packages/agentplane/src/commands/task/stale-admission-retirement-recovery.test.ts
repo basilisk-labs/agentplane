@@ -1,8 +1,18 @@
-import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rename,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, expect, it } from "vitest";
 import { RetirementEvidence } from "./stale-admission-retirement-evidence.js";
+import { retireStaleAdmission } from "./stale-admission-retirement.js";
 import {
   retirementBytesDigest,
   type RetirementContext,
@@ -127,3 +137,25 @@ it("refuses a linked evidence directory before writing outside the native root",
     code: "ENOENT",
   });
 });
+it.each(["read", "prepare", "apply"])(
+  "refuses a linked common Git root before %s can create evidence or a lease",
+  async (operation) => {
+    const f = await fixture();
+    const journal = path.join("agentplane/supervisor/episodes", f.request.task_id, "journal.json");
+    await mkdir(path.dirname(path.join(f.ctx.common_git_dir, journal)), { recursive: true });
+    await writeFile(path.join(f.ctx.common_git_dir, journal), f.before.journal);
+    const target = path.join(f.root, "retained-common");
+    await rename(f.ctx.common_git_dir, target);
+    await symlink(target, f.ctx.common_git_dir, "junction");
+    const entries = await readdir(target, { recursive: true });
+    const action =
+      operation === "read"
+        ? f.evidence.readPrepared()
+        : operation === "prepare"
+          ? f.evidence.prepare(f.before, "after", "after")
+          : retireStaleAdmission({ context: f.ctx, request: f.request });
+    await expect(action).rejects.toThrow(/root/u);
+    expect(await readdir(target, { recursive: true })).toEqual(entries);
+    expect(await readFile(path.join(target, journal), "utf8")).toBe(f.before.journal);
+  },
+);

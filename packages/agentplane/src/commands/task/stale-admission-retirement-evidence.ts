@@ -8,6 +8,7 @@ import {
 } from "../../shared/contained-stable-file.js";
 import { publishNewStableRegularFileNoFollow } from "../../shared/stable-file.js";
 import {
+  assertRetirementRoot,
   retirementBytesDigest,
   retirementRefusal,
   retirementRequestSchema,
@@ -70,6 +71,7 @@ export class RetirementEvidence {
 
   private async put(file: string, text: string): Promise<void> {
     const root = this.ctx.common_git_dir;
+    await assertRetirementRoot(root);
     const relative = path.relative(root, path.dirname(file));
     if (!relative || relative.startsWith("..") || path.isAbsolute(relative))
       retirementRefusal("invalid native evidence directory.");
@@ -97,6 +99,7 @@ export class RetirementEvidence {
       label: "retirement evidence parent",
       path_policy: { target_kind: "file_or_directory" },
     });
+    await assertRetirementRoot(root);
     await publishNewStableRegularFileNoFollow(file, text, "immutable retirement evidence");
     await assertContainedPathChainIdentityUnchanged(chain, "retirement evidence parent");
     if ((await this.read(file)) !== text) retirementRefusal("native evidence collision or tamper.");

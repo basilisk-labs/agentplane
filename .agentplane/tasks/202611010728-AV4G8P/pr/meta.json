@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202611010728-AV4G8P/retire-stale-writable-semantic-admissions-before",
   "created_at": "2026-11-01T08:22:38.255Z",
-  "diffstat_sha256": "sha256:2a985b5077bf7564405afdea5df526bb70d90f20a4123643e04f06946b48091d",
+  "diffstat_sha256": "sha256:8036cad5e234de128f108ef3a55a6da2e091bc8fdd76a786cf0331c2590b9337",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
