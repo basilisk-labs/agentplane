@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202611010728-AV4G8P/retire-stale-writable-semantic-admissions-before",
+  "created_at": "2026-11-01T08:22:38.255Z",
+  "diffstat_sha256": "sha256:252cf54eb4c24f18aeae0341ea358b7aa06c5ffdfdcf76e2f29545e4c84ad1ca",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202611010728-AV4G8P",
+  "updated_at": "2026-11-01T08:22:38.255Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

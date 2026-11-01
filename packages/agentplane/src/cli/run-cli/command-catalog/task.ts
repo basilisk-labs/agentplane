@@ -33,6 +33,7 @@ import { taskLintSpec } from "../../../commands/task/lint.command.js";
 import { taskListSpec } from "../../../commands/task/list.spec.js";
 import { taskMigrateDocSpec } from "../../../commands/task/migrate-doc.command.js";
 import { taskKernelMigrateSpec } from "../../../commands/task/kernel-migrate.command.js";
+import { taskRetireAdmissionSpec } from "../../../commands/task/stale-admission-retirement.command.js";
 import { taskMigrateSpec } from "../../../commands/task/migrate.command.js";
 import { taskNewSpec } from "../../../commands/task/new.spec.js";
 import { taskCreateSpec } from "../../../commands/task/create.command.js";
@@ -177,6 +178,7 @@ import {
   loadTaskObsidianSpec,
   loadTaskMigrateSpec,
   loadTaskKernelMigrateSpec,
+  loadTaskRetireAdmissionSpec,
   fromTaskPlanSpec,
   loadTaskPlanSetSpec,
   loadTaskPlanApproveSpec,
@@ -500,6 +502,11 @@ export const TASK_COMMANDS = [
   }),
   declareSessionCommand(taskKernelMigrateSpec, {
     load: loadTaskKernelMigrateSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
+    ...advancedTaskHelp,
+  }),
+  declareSessionCommand(taskRetireAdmissionSpec, {
+    load: loadTaskRetireAdmissionSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
     ...advancedTaskHelp,
   }),
