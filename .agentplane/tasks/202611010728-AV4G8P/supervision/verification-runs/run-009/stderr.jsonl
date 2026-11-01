@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.stale-admission-retirement.test.ts"
