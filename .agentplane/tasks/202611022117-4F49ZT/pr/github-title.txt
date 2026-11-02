@@ -1,1 +1,1 @@
-🚧 4F49ZT task: Preserve foreign cleanup during native quarantine publication [202611022117-4F49ZT]
+✅ 4F49ZT task: Preserve foreign cleanup during native quarantine publication [202611022117-4F49ZT]
