@@ -6,7 +6,7 @@ Created: 2026-11-01T13:30:34.839Z
 
 - Task: `202611011211-VKPT8K`
 - Title: Publish exact native quarantine artifacts without resuming historical Tasks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611011211-VKPT8K/publish-exact-native-quarantine-artifacts-withou`
 - Canonical task record: `.agentplane/tasks/202611011211-VKPT8K/README.md`
 
