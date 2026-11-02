@@ -3,7 +3,8 @@
   "branch": "task/202611011514-52DTSZ/publish-approved-stale-admission-retirement-with",
   "created_at": "2026-11-02T09:31:31.784Z",
   "diffstat_sha256": "sha256:9d329cf06b00c1d236c5e43a444497c28d3bbb7932e459220bd384e3bd56abc6",
-  "last_verified_at": null,
+  "last_verified_at": "2026-11-02T15:38:40.912Z",
+  "last_verified_diffstat_sha256": "sha256:9d329cf06b00c1d236c5e43a444497c28d3bbb7932e459220bd384e3bd56abc6",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202611011514-52DTSZ",
   "updated_at": "2026-11-02T09:31:31.784Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
