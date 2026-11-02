@@ -19,6 +19,11 @@ const mocks = vi.hoisted(() => ({
   stage: vi.fn(),
   stagedPaths: vi.fn(),
   hookReady: vi.fn(),
+  quarantine: vi.fn(),
+}));
+
+vi.mock("../shared/native-quarantine-artifact-proof.js", () => ({
+  nativeQuarantineArtifactPaths: mocks.quarantine,
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
@@ -67,6 +72,7 @@ const command = {
 describe("canonical repository coordinator", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mocks.quarantine.mockResolvedValue(new Set());
     mocks.loadTask.mockResolvedValue({
       execution_route: { repository_mode: "branch_pr" },
     });
