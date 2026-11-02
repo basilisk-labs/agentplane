@@ -7,6 +7,7 @@ import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import { CliError } from "../../shared/errors.js";
 import { assertHookRunnerReady } from "../shared/hook-shim-template.js";
 import path from "node:path";
+import { lstat } from "node:fs/promises";
 import { parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { runProcess } from "@agentplaneorg/core/process";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
@@ -20,6 +21,10 @@ import { cmdCommit } from "../guard/impl/commit.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
+import {
+  nativeQuarantineArtifactPaths,
+  nativeQuarantineCandidatePaths,
+} from "../shared/native-quarantine-artifact-proof.js";
 import {
   readDirectRepositoryStatus,
   readDirectTaskHead,
@@ -201,13 +206,39 @@ export async function commitCanonicalImplementation(opts: {
   );
   const currentLines = new Set(nonTaskStatusLines(opts.command, baseline.task_id, status));
   const currentPaths = new Set([...currentLines].map((line) => pathFromStatusLine(line)));
+  const baselinePaths = [...baselineLines]
+    .map((line) => pathFromStatusLine(line))
+    .filter((candidate): candidate is string => candidate !== null);
+  const intendedPathsBeforeCommit = [...opts.changed_paths, ...(intent?.changed_paths ?? [])];
+  const quarantineCandidatePaths = [...new Set([...baselinePaths, ...intendedPathsBeforeCommit])];
+  const quarantineProof = (evaluatedCommit?: string) =>
+    nativeQuarantineArtifactPaths({
+      gitRoot: baseline.checkout,
+      baseCommit: baseline.head,
+      primaryTaskId: baseline.task_id,
+      workflowDir: opts.command.config.paths.workflow_dir,
+      changedPaths: quarantineCandidatePaths,
+      ...(evaluatedCommit ? { evaluatedCommit } : { workOrder: opts.work_order }),
+    });
+  const quarantinedBaseline = await quarantineProof();
+  // A failed live proof must not erase the requirement retained by the commit intent.
+  const requiredQuarantinePaths = new Set([
+    ...quarantinedBaseline,
+    ...(await nativeQuarantineCandidatePaths({
+      gitRoot: baseline.checkout,
+      baseCommit: baseline.head,
+      primaryTaskId: baseline.task_id,
+      workflowDir: opts.command.config.paths.workflow_dir,
+      changedPaths: intendedPathsBeforeCommit,
+    })),
+  ]);
   // Native staging can change porcelain columns before a hook rejects the commit.
   const retainedIntentPath = (line: string) => {
     const candidate = pathFromStatusLine(line);
     return (
       candidate !== null &&
       intent?.changed_paths.includes(candidate) === true &&
-      opts.changed_paths.includes(candidate) &&
+      (opts.changed_paths.includes(candidate) || quarantinedBaseline.has(candidate)) &&
       currentPaths.has(candidate)
     );
   };
@@ -224,10 +255,15 @@ export async function commitCanonicalImplementation(opts: {
   const roots = opts.work_order.authority.writable_roots.map((root) =>
     path.relative(baseline.checkout, root).replaceAll(path.sep, "/"),
   );
-  const baselinePaths = [...baselineLines]
-    .map((line) => pathFromStatusLine(line))
-    .filter((candidate): candidate is string => candidate !== null);
-  const approvedBaseline = baselinePaths.filter((candidate) => roots.includes(candidate));
+  const approvedBaseline = baselinePaths.filter(
+    (candidate) => roots.includes(candidate) || quarantinedBaseline.has(candidate),
+  );
+  const assertQuarantineProof = async (evaluatedCommit?: string) => {
+    if (requiredQuarantinePaths.size === 0) return;
+    const current = await quarantineProof(evaluatedCommit);
+    if ([...requiredQuarantinePaths].some((file) => !current.has(file)))
+      throw new Error("Native quarantine artifacts changed after their approved baseline proof");
+  };
   const authorized = new Set([...opts.changed_paths, ...approvedBaseline]);
   const adoptedBaseline = baselinePaths.filter((candidate) => authorized.has(candidate));
   const unauthorizedIntroduced = introduced.filter((candidate) => !authorized.has(candidate));
@@ -267,6 +303,7 @@ export async function commitCanonicalImplementation(opts: {
     throw new Error(
       `Canonical implementation escaped its commit scope: ${outsideScope.join(", ")}`,
     );
+  await assertQuarantineProof();
   if (!intent) {
     const intentContents = {
       schema_version: 1 as const,
@@ -281,9 +318,36 @@ export async function commitCanonicalImplementation(opts: {
   }
   const commitPaths = async (paths: readonly string[]) => {
     await assertHookRunnerReady(baseline.checkout);
-    // A rejected hook can leave an older version of an authorized path staged.
-    // Refresh the implementation paths before the guarded commit retries them.
-    await opts.command.git.stage([...paths]);
+    await assertQuarantineProof();
+    // Refresh stale staged bytes after a rejected hook. Git add cannot repeat an
+    // already staged deletion whose path is absent from both index and worktree.
+    const deleted = new Set(
+      status.lines.filter((line) => line.startsWith("D ")).map(pathFromStatusLine),
+    );
+    const stagePaths: string[] = [];
+    for (const file of paths) {
+      if (deleted.has(file)) {
+        try {
+          await lstat(path.join(baseline.checkout, file));
+        } catch (error) {
+          if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+          throw error;
+        }
+      }
+      stagePaths.push(file);
+    }
+    if (stagePaths.length > 0) await opts.command.git.stage(stagePaths);
+    await assertQuarantineProof();
+    if (
+      quarantinedBaseline.size > 0 &&
+      (await gitValue(
+        opts.command,
+        ["diff", "--name-only", "--", ...quarantinedBaseline],
+        "quarantine staging",
+        true,
+      ))
+    )
+      throw new Error("Native quarantine artifact changed during staging");
     const protectedKinds = new Set(
       paths.map((filePath) =>
         protectedPathKindForFile({
@@ -363,6 +427,9 @@ export async function commitCanonicalImplementation(opts: {
   const primaryCommit = followup?.base_commit ?? implementationCommit;
   if (!primaryDispatched)
     await assertCommittedRange(baseline.head, primaryCommit, intent.changed_paths);
+  // Authenticate the primary commit before recovering or dispatching any followup.
+  await assertQuarantineProof(primaryCommit);
+  await assertQuarantineProof();
   const afterPrimary = await readDirectRepositoryStatus(baseline.checkout);
   if (!afterPrimary) throw new Error("Canonical repository status after commit is unavailable");
   const remainingPaths = nonTaskStatusLines(opts.command, baseline.task_id, afterPrimary)
@@ -407,6 +474,7 @@ export async function commitCanonicalImplementation(opts: {
   const intendedPaths = [
     ...new Set([...intent.changed_paths, ...(followup?.changed_paths ?? [])]),
   ].toSorted();
+  await assertQuarantineProof(implementationCommit);
   const prepared = await prepareDirectImplementationEvidence({
     command: opts.command,
     cwd: baseline.checkout,
