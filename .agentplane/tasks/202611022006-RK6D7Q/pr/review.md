@@ -6,7 +6,7 @@ Created: 2026-11-02T20:19:24.720Z
 
 - Task: `202611022006-RK6D7Q`
 - Title: Preserve quarantine proof across commit recovery
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611022006-RK6D7Q/preserve-quarantine-proof-across-commit-recovery`
 - Canonical task record: `.agentplane/tasks/202611022006-RK6D7Q/README.md`
 
