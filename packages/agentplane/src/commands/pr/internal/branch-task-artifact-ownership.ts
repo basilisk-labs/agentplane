@@ -5,6 +5,7 @@ import {
   taskOriginHistoryPaths,
 } from "../provider-update-verification-proof.js";
 import type { CommandContext } from "../../shared/task-backend.js";
+import { nativeQuarantineArtifactPaths } from "../../shared/native-quarantine-artifact-proof.js";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
@@ -123,14 +124,30 @@ export async function assertBranchTaskArtifactOwnership(opts: {
     }))
       inherited.add(file);
   }
+  const foreignEntries = changedEntries.filter((entry) => {
+    const taskId = taskIdFromArtifactPath(entry.path, roots);
+    return (
+      taskId !== null &&
+      !allowed.has(taskId) &&
+      !inherited.has(entry.path) &&
+      !isVolatileTaskArtifactDeletion(entry, roots, authorizedCleanupRoots)
+    );
+  });
+  if (foreignEntries.length === 0) return;
+  const quarantined = await nativeQuarantineArtifactPaths({
+    gitRoot: opts.gitRoot,
+    baseCommit: mergeBase,
+    evaluatedCommit: evaluatedSha,
+    primaryTaskId: opts.primaryTaskId,
+    workflowDir: normalizedRoot(opts.workflowDir),
+    changedPaths: foreignEntries
+      .filter((entry) => ["A", "M"].includes(entry.statusCode))
+      .map((entry) => entry.path),
+  });
   const foreignTaskIds = [
     ...new Set(
-      changedEntries
-        .filter(
-          (entry) =>
-            !inherited.has(entry.path) &&
-            !isVolatileTaskArtifactDeletion(entry, roots, authorizedCleanupRoots),
-        )
+      foreignEntries
+        .filter((entry) => !["A", "M"].includes(entry.statusCode) || !quarantined.has(entry.path))
         .map((entry) => taskIdFromArtifactPath(entry.path, roots))
         .filter((taskId): taskId is string => Boolean(taskId && !allowed.has(taskId))),
     ),

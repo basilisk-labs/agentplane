@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   readStable: vi.fn(),
   writeStable: vi.fn(),
   mkdir: vi.fn(),
+  lstat: vi.fn(),
   cmdCommit: vi.fn(),
   loadTask: vi.fn(),
   prepareEvidence: vi.fn(),
@@ -19,6 +20,13 @@ const mocks = vi.hoisted(() => ({
   stage: vi.fn(),
   stagedPaths: vi.fn(),
   hookReady: vi.fn(),
+  quarantine: vi.fn(),
+  quarantineCandidates: vi.fn(),
+}));
+
+vi.mock("../shared/native-quarantine-artifact-proof.js", () => ({
+  nativeQuarantineArtifactPaths: mocks.quarantine,
+  nativeQuarantineCandidatePaths: mocks.quarantineCandidates,
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
@@ -26,7 +34,7 @@ vi.mock("../../shared/stable-file.js", () => ({
   readStableRegularTextNoFollow: mocks.readStable,
   writeNewStableRegularFileNoFollow: mocks.writeStable,
 }));
-vi.mock("node:fs/promises", () => ({ mkdir: mocks.mkdir }));
+vi.mock("node:fs/promises", () => ({ mkdir: mocks.mkdir, lstat: mocks.lstat }));
 vi.mock("../shared/hook-shim-template.js", () => ({ assertHookRunnerReady: mocks.hookReady }));
 vi.mock("../guard/impl/commit.js", () => ({ cmdCommit: mocks.cmdCommit }));
 vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
@@ -67,6 +75,11 @@ const command = {
 describe("canonical repository coordinator", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mocks.quarantine.mockResolvedValue(new Set());
+    mocks.quarantineCandidates.mockResolvedValue(new Set());
+    mocks.lstat.mockRejectedValue(
+      Object.assign(new Error("fixture absent path"), { code: "ENOENT" }),
+    );
     mocks.loadTask.mockResolvedValue({
       execution_route: { repository_mode: "branch_pr" },
     });
