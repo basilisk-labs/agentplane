@@ -3,7 +3,8 @@
   "branch": "task/202611022006-RK6D7Q/preserve-quarantine-proof-across-commit-recovery",
   "created_at": "2026-11-02T20:19:24.720Z",
   "diffstat_sha256": "sha256:3a98a03455f38aa9845c1ee681eb2971b0496e08a3e84086396877f74d509d80",
-  "last_verified_at": null,
+  "last_verified_at": "2026-11-02T21:06:40.162Z",
+  "last_verified_diffstat_sha256": "sha256:3a98a03455f38aa9845c1ee681eb2971b0496e08a3e84086396877f74d509d80",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202611022006-RK6D7Q",
   "updated_at": "2026-11-02T20:19:24.720Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
