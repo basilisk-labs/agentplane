@@ -21,12 +21,10 @@ const mocks = vi.hoisted(() => ({
   stagedPaths: vi.fn(),
   hookReady: vi.fn(),
   quarantine: vi.fn(),
-  quarantineCandidates: vi.fn(),
 }));
 
 vi.mock("../shared/native-quarantine-artifact-proof.js", () => ({
-  nativeQuarantineArtifactPaths: mocks.quarantine,
-  nativeQuarantineCandidatePaths: mocks.quarantineCandidates,
+  nativeQuarantineCommitProof: mocks.quarantine,
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
@@ -75,8 +73,7 @@ const command = {
 describe("canonical repository coordinator", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.quarantine.mockResolvedValue(new Set());
-    mocks.quarantineCandidates.mockResolvedValue(new Set());
+    mocks.quarantine.mockResolvedValue({ baseline: new Set(), assert: vi.fn() });
     mocks.lstat.mockRejectedValue(
       Object.assign(new Error("fixture absent path"), { code: "ENOENT" }),
     );

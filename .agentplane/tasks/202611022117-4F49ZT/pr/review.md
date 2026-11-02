@@ -32,11 +32,11 @@ Created: 2026-11-02T21:38:46.175Z
  .../branch-task-artifact-ownership.test.ts         |  61 ++
  .../pr/internal/branch-task-artifact-ownership.ts  |  29 +-
  .../native-quarantine-artifact-proof.test.ts       | 192 ++++
- .../shared/native-quarantine-artifact-proof.ts     | 374 ++++++++
+ .../shared/native-quarantine-artifact-proof.ts     | 413 +++++++++
  ...ernel-repository-coordinator-quarantine.test.ts | 996 +++++++++++++++++++++
- .../task/kernel-repository-coordinator.test.ts     |  15 +-
- .../commands/task/kernel-repository-coordinator.ts |  84 +-
- 7 files changed, 1736 insertions(+), 15 deletions(-)
+ .../task/kernel-repository-coordinator.test.ts     |  12 +-
+ .../commands/task/kernel-repository-coordinator.ts |  63 +-
+ 7 files changed, 1751 insertions(+), 15 deletions(-)
 ```
 
 </details>

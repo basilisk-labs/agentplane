@@ -21,10 +21,7 @@ import { cmdCommit } from "../guard/impl/commit.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
-import {
-  nativeQuarantineArtifactPaths,
-  nativeQuarantineCandidatePaths,
-} from "../shared/native-quarantine-artifact-proof.js";
+import { nativeQuarantineCommitProof } from "../shared/native-quarantine-artifact-proof.js";
 import {
   readDirectRepositoryStatus,
   readDirectTaskHead,
@@ -210,28 +207,16 @@ export async function commitCanonicalImplementation(opts: {
     .map((line) => pathFromStatusLine(line))
     .filter((candidate): candidate is string => candidate !== null);
   const intendedPathsBeforeCommit = [...opts.changed_paths, ...(intent?.changed_paths ?? [])];
-  const quarantineCandidatePaths = [...new Set([...baselinePaths, ...intendedPathsBeforeCommit])];
-  const quarantineProof = (evaluatedCommit?: string) =>
-    nativeQuarantineArtifactPaths({
+  const { baseline: quarantinedBaseline, assert: assertQuarantineProof } =
+    await nativeQuarantineCommitProof({
       gitRoot: baseline.checkout,
       baseCommit: baseline.head,
       primaryTaskId: baseline.task_id,
       workflowDir: opts.command.config.paths.workflow_dir,
-      changedPaths: quarantineCandidatePaths,
-      ...(evaluatedCommit ? { evaluatedCommit } : { workOrder: opts.work_order }),
+      baselinePaths,
+      intendedPaths: intendedPathsBeforeCommit,
+      workOrder: opts.work_order,
     });
-  const quarantinedBaseline = await quarantineProof();
-  // A failed live proof must not erase the requirement retained by the commit intent.
-  const requiredQuarantinePaths = new Set([
-    ...quarantinedBaseline,
-    ...(await nativeQuarantineCandidatePaths({
-      gitRoot: baseline.checkout,
-      baseCommit: baseline.head,
-      primaryTaskId: baseline.task_id,
-      workflowDir: opts.command.config.paths.workflow_dir,
-      changedPaths: intendedPathsBeforeCommit,
-    })),
-  ]);
   // Native staging can change porcelain columns before a hook rejects the commit.
   const retainedIntentPath = (line: string) => {
     const candidate = pathFromStatusLine(line);
@@ -258,12 +243,6 @@ export async function commitCanonicalImplementation(opts: {
   const approvedBaseline = baselinePaths.filter(
     (candidate) => roots.includes(candidate) || quarantinedBaseline.has(candidate),
   );
-  const assertQuarantineProof = async (evaluatedCommit?: string) => {
-    if (requiredQuarantinePaths.size === 0) return;
-    const current = await quarantineProof(evaluatedCommit);
-    if ([...requiredQuarantinePaths].some((file) => !current.has(file)))
-      throw new Error("Native quarantine artifacts changed after their approved baseline proof");
-  };
   const authorized = new Set([...opts.changed_paths, ...approvedBaseline]);
   const adoptedBaseline = baselinePaths.filter((candidate) => authorized.has(candidate));
   const unauthorizedIntroduced = introduced.filter((candidate) => !authorized.has(candidate));
