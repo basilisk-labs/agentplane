@@ -6,7 +6,7 @@ Created: 2026-11-02T09:31:31.784Z
 
 - Task: `202611011514-52DTSZ`
 - Title: Publish approved stale-admission retirement with exact compatibility delta
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611011514-52DTSZ/publish-approved-stale-admission-retirement-with`
 - Canonical task record: `.agentplane/tasks/202611011514-52DTSZ/README.md`
 
