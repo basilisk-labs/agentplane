@@ -6,7 +6,7 @@ Created: 2026-11-02T19:03:17.300Z
 
 - Task: `202611021850-PPSWB1`
 - Title: Publish retry-safe exact native quarantine artifacts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611021850-PPSWB1/publish-retry-safe-exact-native-quarantine-artif`
 - Canonical task record: `.agentplane/tasks/202611021850-PPSWB1/README.md`
 
