@@ -1,10 +1,11 @@
 ---
 id: "202611022006-RK6D7Q"
 title: "Preserve quarantine proof across commit recovery"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "The existing digest-authenticated commit intent independently retains required quarantine paths. Empty live proof cannot make committed proof optional. Both primary committed and live proofs precede any followup; final committed proof remains mandatory. Existing exact ops scope, claim, plan, base, authority expiry, backup/afterimage raw bytes, staging and ownership guards remain intact; no intent schema changed."
     - "Inspected actual before-fix output:8tampered committed recovery cases failed and2valid interrupted cases passed. Final98focused tests cover both workflow directories, bad/restored live bytes, introduced pairs, no duplicate commit/no followup, exact retained intent/head, and authority refusal. Controller independently observed unchanged fullCI exit0 in1245295ms and focused98exit0 in54429ms; their retained manifests authenticate and bind68d1d1fb."
     - "Detailed read-only review: /Users/densmirnov/Github/agentplane/.agentplane/tmp/sb-recovery-20261102-resume/private/quarantine-commit-recovery-independent-evaluator-review-1243.json; raw SHA256 5e97a5490c0b359ae71a2671572eaced9c93e4e3ed03005acf9c696fc0cfa67d. No implementation or Task repository files were modified by EVALUATOR."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:3878175780486de1564ad74446fa9cf09993835681d6839b54c271f60f943df9"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-02T21:10:11.638Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -284,9 +301,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "68d1d1fbb9880de082e5cef3bf66342c823b6e40"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "5b1245945659c1a869dfc905e030f69837f2c1bc"
+  message: "🧩 RK6D7Q task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -294,9 +314,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-02T21:10:11.638Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "5b1245945659c1a869dfc905e030f69837f2c1bc"
 doc_version: 3
-doc_updated_at: "2026-11-02T21:06:40.902Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-02T21:10:11.638Z"
+doc_updated_by: "CODER"
 description: "Complete the already approved exact seven-file native quarantine publication for sb. Port only source files from implementation92392374a299acca735c2331bc63d9bae4c84866, preserve PR6969 and all historical Task/evidence, and fix reviewed post-commit recovery bypass PRRT_kwDORCLmJM6y1t5j. No old Task execution or DONE/PASS assignment; data, credentials and runtime guards remain preserved."
 sections:
   Summary: |-
@@ -423,6 +451,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:198225acbe934a6568a3f2ea22632347c34cd494c4d5ce7149bb734947a8f344"
     work_order_id: "sha256:1ae92cb872a23cc1945a4454a0f6efc72ad1e5d93a6bd24a760c4e27bda588d0"
+  implementation_commit:
+    hash: "68d1d1fbb9880de082e5cef3bf66342c823b6e40"
+    message: "🚧 RK6D7Q task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "fd98a4b4f1c85e82f7c8a35f7297d5985c41f7ba"
@@ -1119,3 +1150,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:3878175780486de1564ad74446fa9cf09993835681d6839b54c271f60f943df9`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-02T21:10:11.638Z`
