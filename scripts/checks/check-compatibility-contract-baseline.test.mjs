@@ -68,3 +68,55 @@ test("completed repair reconcile retains exact reviewed option and source proven
     ],
   );
 });
+
+test("retire-admission retains its exact command, options and source-task provenance", () => {
+  const sourceTask = "202611010728-AV4G8P";
+  const delta = candidate.deltas.find((entry) => entry.section === "cli_topology");
+  const options = [
+    { default: false, kind: "boolean", name: "apply", valueHint: null },
+    { kind: "string", name: "request", valueHint: "<request.json>" },
+    { default: false, kind: "boolean", name: "yes", valueHint: null },
+  ];
+  assert.ok(candidate.source_tasks.includes(sourceTask));
+  assert.ok(delta.source_tasks.includes(sourceTask));
+  assert.deepEqual(
+    delta.evidence.added_command_descriptors.find(
+      (entry) => entry.id.join(" ") === "task retire-admission",
+    ),
+    {
+      args: [{ name: "task-id", required: true, valueHint: "<task-id>", variadic: false }],
+      group: "Task",
+      id: ["task", "retire-admission"],
+      options,
+      visibility: "advanced",
+    },
+  );
+  assert.deepEqual(
+    delta.evidence.added_options.filter((entry) => entry.command === "task retire-admission"),
+    options.map((option) => ({ command: "task retire-admission", ...option })),
+  );
+  assert.deepEqual(
+    delta.evidence.addition_sources.filter((entry) => entry.command === "task retire-admission"),
+    [
+      { command: "task retire-admission", kind: "command", source_task: sourceTask },
+      ...options.map(({ name }) => ({
+        command: "task retire-admission",
+        kind: "option",
+        name,
+        source_task: sourceTask,
+      })),
+    ],
+  );
+});
+
+test("reviewed retirement addition does not admit drift in the other six sections", () => {
+  const reviewed = candidate.candidate.section_digests;
+  const otherSections = Object.keys(reviewed).filter((section) => section !== "cli_topology");
+  assert.equal(otherSections.length, 6);
+  for (const section of otherSections) {
+    assert.throws(
+      () => assertReviewedSectionDigests({ ...reviewed, [section]: "0".repeat(64) }),
+      /section inventory drift/u,
+    );
+  }
+});

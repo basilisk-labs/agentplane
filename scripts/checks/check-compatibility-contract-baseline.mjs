@@ -56,7 +56,7 @@ function candidatePathFromArgs(argv) {
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-  cli_topology: "525568244a7470b00644ad255c1dc384369a96a875e7ac25873ae041d89084bc",
+  cli_topology: "e35c7165a6156e1778ae106d6af7b5d243e766ec983f5c8c4a197282ed02660b",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
@@ -410,6 +410,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     "202610260157-ZDEE0D",
     "202610270555-MY0JZE",
     "202610300522-MRJ9WH",
+    "202611010728-AV4G8P",
   ];
 
   assert(
@@ -1029,6 +1030,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       "202610260157-ZDEE0D",
       "202610270555-MY0JZE",
       "202610300522-MRJ9WH",
+      "202611010728-AV4G8P",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -3862,6 +3864,13 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       name: "reconcile-request",
       source_task: "202610300522-MRJ9WH",
     },
+    { kind: "command", command: "task retire-admission", source_task: "202611010728-AV4G8P" },
+    ...["apply", "request", "yes"].map((name) => ({
+      kind: "option",
+      command: "task retire-admission",
+      name,
+      source_task: "202611010728-AV4G8P",
+    })),
   ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
@@ -3877,6 +3886,17 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
         : command,
     );
   activeExpectedAddedCommandDescriptors.push(
+    {
+      args: [{ name: "task-id", required: true, valueHint: "<task-id>", variadic: false }],
+      group: "Task",
+      id: ["task", "retire-admission"],
+      options: [
+        { default: false, kind: "boolean", name: "apply", valueHint: null },
+        { kind: "string", name: "request", valueHint: "<request.json>" },
+        { default: false, kind: "boolean", name: "yes", valueHint: null },
+      ],
+      visibility: "advanced",
+    },
     {
       args: [
         { name: "task-id", required: true, valueHint: "<task-id>", variadic: false },
@@ -4143,6 +4163,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
         "task create",
         "task kernel-migrate",
         "task plan recover-rejection",
+        "task retire-admission",
         "task run reconcile",
         "task run resolve-effect",
         "task run resume-effect",
@@ -4161,6 +4182,26 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     "new CLI command descriptor is not in the approved delta",
   );
   const activeExpectedAddedOptions = [
+    {
+      command: "task retire-admission",
+      default: false,
+      kind: "boolean",
+      name: "apply",
+      valueHint: null,
+    },
+    {
+      command: "task retire-admission",
+      kind: "string",
+      name: "request",
+      valueHint: "<request.json>",
+    },
+    {
+      command: "task retire-admission",
+      default: false,
+      kind: "boolean",
+      name: "yes",
+      valueHint: null,
+    },
     { command: "pr adopt", kind: "string", name: "approval-digest", valueHint: "<sha256>" },
     { command: "pr adopt", kind: "string", name: "by", valueHint: "USER" },
     { command: "pr adopt", kind: "string", name: "file", valueHint: "<json>" },
