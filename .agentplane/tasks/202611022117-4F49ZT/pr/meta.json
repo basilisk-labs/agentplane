@@ -3,7 +3,8 @@
   "branch": "task/202611022117-4F49ZT/preserve-foreign-cleanup-during-native-quarantin",
   "created_at": "2026-11-02T21:38:46.175Z",
   "diffstat_sha256": "sha256:0d20c00a691624b3215c3135dc5ee013e460840828d39c8cfd6baa3e2a93e3aa",
-  "last_verified_at": null,
+  "last_verified_at": "2026-11-02T22:46:04.217Z",
+  "last_verified_diffstat_sha256": "sha256:0d20c00a691624b3215c3135dc5ee013e460840828d39c8cfd6baa3e2a93e3aa",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202611022117-4F49ZT",
   "updated_at": "2026-11-02T21:38:46.175Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
