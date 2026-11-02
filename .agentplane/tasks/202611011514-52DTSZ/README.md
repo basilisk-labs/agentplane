@@ -1,10 +1,11 @@
 ---
 id: "202611011514-52DTSZ"
 title: "Publish approved stale-admission retirement with exact compatibility delta"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -51,6 +52,22 @@ quality_review:
     - "Stable contained non-follow reads verify UTF8 byte identity, roots, parents, regular file identity, size bounds and nlink. Evidence directories and immutable objects reject linked roots, tampering and lost preparation under completed receipt."
     - "The exact new advanced command and three options retain AV4G8P attribution. The immutable0.6.24 base and six other section digests remain unchanged. Existing assertions are retained. Public CLI covers issued/received legacy and current cases, interruption, source/policy/owner/result drift, concurrency and forbidden authority."
     - "Native full CI passed in 2574849 ms; the focused five-file suite passed40tests and the public CLI suite passed22tests. This evaluator inspected retained evidence and ran no checks."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:071fab3c0c4a2a7014ef0893f8c687cef399aae8e6dbf97e3045b7a6c1e372ad"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-02T17:14:38.403Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -341,9 +358,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "77151d1534f702bd1eac50e53fa673c111015168"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "87f8bbf07ebd7b74090a4ca10acdd1ba230214ef"
+  message: "🧩 52DTSZ task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -351,9 +371,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-02T17:14:38.403Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "87f8bbf07ebd7b74090a4ca10acdd1ba230214ef"
 doc_version: 3
-doc_updated_at: "2026-11-02T15:38:41.884Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-02T17:14:38.403Z"
+doc_updated_by: "CODER"
 description: "Publish and qualify the already USER-approved native stale writable admission retirement and its exact three-file compatibility delta as one fresh canonical code Task. The original immutable WorkItem scope must include exactly the nine approved retirement implementation/test/catalog/loader files and three approved candidate/checker/test files. Import only those twelve exact source blobs from retained native implementation69816aefa9c5f6e78d7e1ba801a60271726128f4 (source owner AV4G8P later headcc4a9b9cadbd295eb217f1d05a494cd8fbaee7c8 changes only native Task evidence). Preserve original source-task provenance and immutable v0.6.24 compatibility anchor; other six compatibility section digests and existing assertions stay unchanged. Retain original AV4G8P Kernel, Plan, exchanges, real PASS/failure/timeout records, branch, worktree and open PR6965 without promotion or rewriting. No new feature, broader source scope or lifecycle/verification guard exception is approved. Require unchanged original three native mandatory commands, exact compatibility tests/ratchet/candidate freshness, independent EVALUATOR, protected canonical PR/merge and current CLI qualification before any actual Factory retirement. Preserve all old Task data, branches/worktrees, archives, runtime data, credentials and guards. Never run historical WorkItems, assign historical DONE/PASS/CANCELLED or classify unknown effects. Factory and runtime effects are outside this source WorkItem. Serialize full native checks with VKPT8K. Existing explicit all8 implementation/publication/deployment authorization and exact three-file compatibility approval cover this unchanged twelve-file source scope."
 sections:
   Summary: |-
@@ -508,6 +536,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:40f4c0c2462e794b7f4c97c7ea4af0202b305edfcb64874c845621f12e287d92"
     work_order_id: "sha256:cd72282eb6b60c2e4891528b19f0f75e5f43b6c6a1dc6fb08c6b7851ca801bf1"
+  implementation_commit:
+    hash: "77151d1534f702bd1eac50e53fa673c111015168"
+    message: "🚧 52DTSZ task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "83408fc11bb53298034ecca47b23ff1f28d054dd"
@@ -1393,3 +1424,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:071fab3c0c4a2a7014ef0893f8c687cef399aae8e6dbf97e3045b7a6c1e372ad`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-02T17:14:38.403Z`

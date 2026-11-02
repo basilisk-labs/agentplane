@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:9d329cf06b00c1d236c5e43a444497c28d3bbb7932e459220bd384e3bd56abc6",
   "pr_number": 6967,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6967",
+  "pre_merge_closure": {
+    "basis_commit": "87f8bbf07ebd7b74090a4ca10acdd1ba230214ef",
+    "branch": "task/202611011514-52DTSZ/publish-approved-stale-admission-retirement-with",
+    "pr_number": 6967,
+    "recorded_at": "2026-11-02T17:14:38.569Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
