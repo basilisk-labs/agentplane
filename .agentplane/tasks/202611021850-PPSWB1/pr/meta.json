@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202611021850-PPSWB1/publish-retry-safe-exact-native-quarantine-artif",
+  "created_at": "2026-11-02T19:03:17.300Z",
+  "diffstat_sha256": "sha256:6d4b9edf6c6d3c96c1ecb3dfa8b31b2928235ad31e17fe6b306afe12ca8b9c1f",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202611021850-PPSWB1",
+  "updated_at": "2026-11-02T19:03:17.300Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
