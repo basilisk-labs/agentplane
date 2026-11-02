@@ -1,10 +1,11 @@
 ---
 id: "202611022117-4F49ZT"
 title: "Preserve foreign cleanup during native quarantine publication"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -50,6 +51,22 @@ quality_review:
     - "Rework is a cohesive extraction into the already approved proof module plus one equivalent lint expression and its existing unit mock. Coordinator600lines and integration test997lines satisfy unchanged gates."
     - "Native full CI passed1332922ms; core reports7896passed1skipped, and the unchanged focused five-file command passed120tests in72854ms. Recursively authenticated all retained manifest/log bytes. Four nested failed commands are intentional exit2/exit3 failure-aggregation fixtures, independently matched to source tests188-231. These are inspected controller observations; the evaluator did not execute new checks."
     - "Independent report: /Users/densmirnov/Github/agentplane/.agentplane/tmp/sb-recovery-20261102-resume/private/quarantine-cleanup-compatible-independent-evaluator-review-1287.json; digest sha256:de9b3c3136d1b5a0a94d796283fc08a73968c751fa98f67d47611d9396374269."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:375e7ede476e1237c1bcd534212710464a2312a37ea9da9cc2090a9605900414"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-02T22:50:53.544Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -287,9 +304,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "014ad7a38d8549c579ab7215ba1c38cfed59b908"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "879627c56327231abb8b671766fd8baa2d2c9139"
+  message: "🧩 4F49ZT task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -297,9 +317,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-02T22:50:53.544Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "879627c56327231abb8b671766fd8baa2d2c9139"
 doc_version: 3
-doc_updated_at: "2026-11-02T22:46:04.955Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-02T22:50:53.544Z"
+doc_updated_by: "CODER"
 description: "Complete the already approved exact seven-file native quarantine publication for sb. Port only source files from immutable implementation68d1d1fbb9880de082e5cef3bf66342c823b6e40, reproduce and fix reviewed authorized foreign volatile-artifact cleanup regression PRRT_kwDORCLmJM6y3Xqy, and retain every live/Git byte-proof and commit recovery guard. Preserve all predecessors, data, credentials and runtime guards; no old Task execution or DONE/PASS assignment."
 sections:
   Summary: |-
@@ -429,6 +457,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:afdec3bca46d6e9627c994f2be330a7df77db326231666acae69b11840e668b0"
     work_order_id: "sha256:ac5bcabc9c88389035c34d90e47d84c2406ce4f11c9233b882869977f9f2ee7e"
+  implementation_commit:
+    hash: "014ad7a38d8549c579ab7215ba1c38cfed59b908"
+    message: "🚧 4F49ZT task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "fd98a4b4f1c85e82f7c8a35f7297d5985c41f7ba"
@@ -1311,3 +1342,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:375e7ede476e1237c1bcd534212710464a2312a37ea9da9cc2090a9605900414`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-02T22:50:53.544Z`
