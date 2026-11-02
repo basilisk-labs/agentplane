@@ -6,7 +6,7 @@ Created: 2026-11-02T21:38:46.175Z
 
 - Task: `202611022117-4F49ZT`
 - Title: Preserve foreign cleanup during native quarantine publication
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611022117-4F49ZT/preserve-foreign-cleanup-during-native-quarantin`
 - Canonical task record: `.agentplane/tasks/202611022117-4F49ZT/README.md`
 
