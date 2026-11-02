@@ -1,10 +1,11 @@
 ---
 id: "202611011211-VKPT8K"
 title: "Publish exact native quarantine artifacts without resuming historical Tasks"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 48
 origin:
   system: "manual"
 depends_on: []
@@ -48,6 +49,22 @@ quality_review:
     - "Before/after-stage and committed-Git proof checks retain existing commit-intent/unknown-effect protections. The branch guard retains normal ownership, batch/import and scoped cleanup behavior; deletion/rename is never admitted by quarantine proof."
     - "Authenticated native validation independently records fullCI exit0 and the declared five-file70-test suite exit0 under the corrected outside-framework case-sensitive TMPDIR, unchanged commands and acceptance timeouts. Old FAILED/interrupted runs and diagnostic evidence are retained."
     - "Independent review report: /Users/densmirnov/Github/agentplane/.agentplane/tmp/sb-recovery-20261102-resume/private/pub-independent-review-983.json; raw digest sha256:2743edc5e222154c2e2bf477e83ca866ca408a51503d12e4a29991381c7e8ce2. No implementation, test, policy, Task history, credential or runtime guard was modified during inspection."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:207c8944461836ad8943cf9083a79304d8a74c29f970c3f408503766581a80e6"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-02T17:31:02.477Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -285,9 +302,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "931f5364bc9a5900372e0d0eb169205257fe0238"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "d256f6b3d6ee84a39526cb7cc3b402b98126af57"
+  message: "🧩 VKPT8K task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -295,9 +315,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-02T17:31:02.477Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d256f6b3d6ee84a39526cb7cc3b402b98126af57"
 doc_version: 3
-doc_updated_at: "2026-11-02T17:27:24.838Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-02T17:31:02.477Z"
+doc_updated_by: "CODER"
 description: "Implement the explicitly USER-approved seven-file native quarantine publication admission. Reuse one shared read-only proof classifier in canonical dirty-baseline adoption and branch PR foreign-task ownership. Require approved exact per-foreignTask directory scope and security-boundary/repository-write authority. Bind source bytes to the exact Git comparison base, logical repository/backend identity, genuine native revision-split mapping, exact quarantineAfterimage and exact content-addressed raw source backup. Admit only README and that backup. Refuse arbitrary broad scope, forged or altered marker/body/backup, wrong base/source/repository, extra/deleted/renamed/linked/missing/unstable foreign artifacts and unproven history. Preserve existing Task/batch/import/cleanup rules. Historical Tasks stay BLOCKED; never run old WorkItems or assign DONE/PASS/CANCELLED or classify unknown effects. Verify actual byte/Git/coordinator/publication integration and negative cases, full mandatory CI and independent EVALUATOR, protected canonical PR/merge and current CLI qualification before actual Factory publication. Preserve all existing branches, worktrees, archives, runtime data, credentials and guards. No new public CLI/schema/dependencies or runtime effects."
 sections:
   Summary: |-
@@ -427,6 +455,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:2a699a8ed3fb0a262c621fdd4eab8c272c8cb849f2c280ba64c706a83158ca8e"
     work_order_id: "sha256:645e240eaf82ef1f29e70fbecd23dcee716ca1cfc17babe2b19dd46fcd660ff6"
+  implementation_commit:
+    hash: "931f5364bc9a5900372e0d0eb169205257fe0238"
+    message: "🚧 VKPT8K task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "83408fc11bb53298034ecca47b23ff1f28d054dd"
@@ -1869,3 +1900,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:207c8944461836ad8943cf9083a79304d8a74c29f970c3f408503766581a80e6`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-02T17:31:02.477Z`
