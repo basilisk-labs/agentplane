@@ -10,6 +10,11 @@ const mocks = vi.hoisted(() => ({
   gitRevParse: vi.fn(),
   inherited: vi.fn(),
   history: vi.fn(),
+  quarantine: vi.fn(),
+}));
+
+vi.mock("../../shared/native-quarantine-artifact-proof.js", () => ({
+  nativeQuarantineArtifactPaths: mocks.quarantine,
 }));
 
 vi.mock("../provider-update-verification-proof.js", async (original) => ({
@@ -39,6 +44,7 @@ describe("committed task artifact ownership", () => {
     vi.clearAllMocks();
     mocks.history.mockResolvedValue({ stdout: "" });
     mocks.inherited.mockResolvedValue([]);
+    mocks.quarantine.mockResolvedValue(new Set());
     mocks.gitBranchExists.mockResolvedValue(true);
     mocks.gitBranchUpstream.mockResolvedValue("origin/main");
     mocks.gitRevParse.mockImplementation((_root: string, args: string[]) =>
@@ -81,6 +87,61 @@ describe("committed task artifact ownership", () => {
     expect(mocks.gitBranchExists).toHaveBeenCalledTimes(1);
     expect(mocks.gitBranchExists).toHaveBeenCalledWith("/repo", "task/T-PRIMARY/change");
   });
+
+  it("admits only the exact pair returned by the native quarantine proof", async () => {
+    const readme = ".agentplane/tasks/T-FOREIGN/README.md";
+    const backup = `.agentplane/tasks/T-FOREIGN/migration-${"a".repeat(64)}.source`;
+    mocks.gitDiffNameStatus.mockResolvedValue([
+      { statusCode: "M", path: readme },
+      { statusCode: "A", path: backup },
+    ]);
+    mocks.quarantine.mockResolvedValue(new Set([readme, backup]));
+    const opts = {
+      gitRoot: "/repo",
+      baseBranch: "main",
+      branch: "task/T-PRIMARY/change",
+      workflowDir: ".agentplane/tasks",
+      tasksPath: ".agentplane/tasks",
+      primaryTaskId: "T-PRIMARY",
+    };
+    await expect(assertBranchTaskArtifactOwnership(opts)).resolves.toBeUndefined();
+    expect(mocks.quarantine).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      baseCommit: "merge-base-sha",
+      evaluatedCommit: opts.branch,
+      primaryTaskId: opts.primaryTaskId,
+      workflowDir: opts.workflowDir,
+      changedPaths: [readme, backup],
+    });
+    mocks.gitDiffNameStatus.mockResolvedValue([
+      { statusCode: "M", path: readme },
+      { statusCode: "A", path: backup },
+      { statusCode: "M", path: ".agentplane/tasks/T-FOREIGN/pr/meta.json" },
+    ]);
+    await expect(assertBranchTaskArtifactOwnership(opts)).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { foreign_task_ids: ["T-FOREIGN"] },
+    });
+  });
+
+  it.each(["D", "R"])(
+    "does not admit a quarantine-path %s as a native afterimage",
+    async (statusCode) => {
+      const file = ".agentplane/tasks/T-FOREIGN/README.md";
+      mocks.gitDiffNameStatus.mockResolvedValue([{ statusCode, path: file }]);
+      mocks.quarantine.mockResolvedValue(new Set([file]));
+      await expect(
+        assertBranchTaskArtifactOwnership({
+          gitRoot: "/repo",
+          baseBranch: "main",
+          branch: "task/T-PRIMARY/change",
+          workflowDir: ".agentplane/tasks",
+          tasksPath: ".agentplane/tasks",
+          primaryTaskId: "T-PRIMARY",
+        }),
+      ).rejects.toMatchObject({ code: "E_VALIDATION" });
+    },
+  );
 
   it("filters only paths authenticated by the native canonical import proof", async () => {
     const file = ".agentplane/tasks/T-FOREIGN/README.md";
