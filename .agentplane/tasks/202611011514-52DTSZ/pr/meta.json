@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202611011514-52DTSZ/publish-approved-stale-admission-retirement-with",
+  "created_at": "2026-11-02T09:31:31.784Z",
+  "diffstat_sha256": "sha256:9d329cf06b00c1d236c5e43a444497c28d3bbb7932e459220bd384e3bd56abc6",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202611011514-52DTSZ",
+  "updated_at": "2026-11-02T09:31:31.784Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
