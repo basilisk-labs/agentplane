@@ -365,6 +365,10 @@ export const loadTaskKernelMigrateSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/kernel-migrate.command.js").then((m) =>
     m.makeRunTaskKernelMigrateHandler(getSessionContext(session, "task.write")),
   );
+export const loadTaskRetireAdmissionSpec = (session: TaskWriteSession) =>
+  import("../../../commands/task/stale-admission-retirement.command.js").then((m) =>
+    m.makeRunTaskRetireAdmissionHandler(getSessionContext(session, "task.write")),
+  );
 export const loadTaskMigrateSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/migrate.command.js").then((m) =>
     m.makeRunTaskMigrateHandler(getSessionContext(session, "task.write")),

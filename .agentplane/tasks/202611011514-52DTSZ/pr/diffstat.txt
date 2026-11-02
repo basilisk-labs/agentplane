@@ -1,0 +1,13 @@
+ ...run-cli.core.stale-admission-retirement.test.ts | 625 +++++++++++++++++++++
+ .../src/cli/run-cli/command-catalog/task.ts        |   7 +
+ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
+ .../task/stale-admission-retirement-evidence.ts    | 212 +++++++
+ .../stale-admission-retirement-recovery.test.ts    | 161 ++++++
+ .../task/stale-admission-retirement-validation.ts  | 431 ++++++++++++++
+ .../task/stale-admission-retirement.command.ts     | 134 +++++
+ .../task/stale-admission-retirement.test.ts        | 102 ++++
+ .../commands/task/stale-admission-retirement.ts    | 158 ++++++
+ .../baselines/v0.7-compatibility-candidate.json    |  79 ++-
+ .../check-compatibility-contract-baseline.mjs      |  43 +-
+ .../check-compatibility-contract-baseline.test.mjs |  52 ++
+ 12 files changed, 1997 insertions(+), 11 deletions(-)
