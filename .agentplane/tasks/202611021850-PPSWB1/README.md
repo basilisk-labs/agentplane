@@ -1,10 +1,11 @@
 ---
 id: "202611021850-PPSWB1"
 title: "Publish retry-safe exact native quarantine artifacts"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "The fresh exact quarantine proof precedes retry admission. Retry still requires the persisted commit intent and current path; only re-proven native quarantine bytes supplement declared changed_paths. Changed backup/afterimage or unrelated staged bytes retain refusal."
     - "Reviewed actual regression evidence: two positive retry failures before repair, three negative passes, and75/75focused passes after repair. The controller independently ran the unchanged full local CI and focused75tests with exit0, at the exact implementation and pinned runtime."
     - "Independent report: /Users/densmirnov/Github/agentplane/.agentplane/tmp/sb-recovery-20261102-resume/private/quarantine-retry-independent-evaluator-review-1192.json; native authentication: /Users/densmirnov/Github/agentplane/.agentplane/tmp/sb-recovery-20261102-resume/progress/quarantine-retry-evaluator-authenticated-inputs-1191.json."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:6936723bb5d1ed4cad05b6193ec64118f1639ca708b553d1d9c14e92bd96d1c1"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-02T19:57:52.871Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -284,9 +301,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "92392374a299acca735c2331bc63d9bae4c84866"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "48872775f61affad3e3e739a28a9293da1c63116"
+  message: "🧩 PPSWB1 task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -294,9 +314,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-02T19:57:52.871Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "48872775f61affad3e3e739a28a9293da1c63116"
 doc_version: 3
-doc_updated_at: "2026-11-02T19:54:13.624Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-02T19:57:52.871Z"
+doc_updated_by: "CODER"
 description: "Complete the user-approved exact seven-file quarantine publication for sb. Port immutable approved source89f99678 and fix verified review PRRT_kwDORCLmJM6yyPJy. Preserve old completed Task, PR6968, data, credentials and guards. No historical Task execution or DONE/PASS assignment."
 sections:
   Summary: |-
@@ -423,6 +451,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:f212f11c32ddbd9e1625ec9aa8325d125e3a40882ce280019b9b4d9f5c6051a7"
     work_order_id: "sha256:5c498b438f686a9f0ab6c4b4b9ac099a13753bd4d187fe517e91318063ee5197"
+  implementation_commit:
+    hash: "92392374a299acca735c2331bc63d9bae4c84866"
+    message: "🚧 PPSWB1 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "fd98a4b4f1c85e82f7c8a35f7297d5985c41f7ba"
@@ -1117,3 +1148,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6936723bb5d1ed4cad05b6193ec64118f1639ca708b553d1d9c14e92bd96d1c1`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-02T19:57:52.871Z`
