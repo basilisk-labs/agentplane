@@ -1,0 +1,71 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check fd98a4b4f1c85e82f7c8a35f7297d5985c41f7ba..bb7a014f1a3b6730248d4ccf4337d73987023ec2",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB fd98a4b4f1c85e82f7c8a35f7297d5985c41f7ba..bb7a014f1a3b6730248d4ccf4337d73987023ec2",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202611022117-4F49ZT/README.md",
+        "A\t.agentplane/tasks/202611022117-4F49ZT/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202611022117-4F49ZT/pr/github-body.md",
+        "A\t.agentplane/tasks/202611022117-4F49ZT/pr/github-title.txt",
+        "A\t.agentplane/tasks/202611022117-4F49ZT/pr/meta.json",
+        "A\t.agentplane/tasks/202611022117-4F49ZT/pr/review.md",
+        "A\t.agentplane/tasks/202611022117-4F49ZT/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts",
+        "M\tpackages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts",
+        "A\tpackages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts",
+        "A\tpackages/agentplane/src/commands/shared/native-quarantine-artifact-proof.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "fd98a4b4f1c85e82f7c8a35f7297d5985c41f7ba",
+  "implementation_commit": "bb7a014f1a3b6730248d4ccf4337d73987023ec2",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202611022117-4F49ZT/README.md",
+      "?? .agentplane/tasks/202611022117-4F49ZT/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202611022117-4F49ZT/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202611022117-4F49ZT/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202611022117-4F49ZT/README.md",
+      "?? .agentplane/tasks/202611022117-4F49ZT/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202611022117-4F49ZT"
+}

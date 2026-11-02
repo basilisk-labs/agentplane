@@ -252,7 +252,7 @@ export async function nativeQuarantineCandidatePaths(opts: {
     if (
       !taskId ||
       taskId === opts.primaryTaskId ||
-      nested.length !== 0 ||
+      nested.length > 0 ||
       (name !== "README.md" && !/^migration-[a-f0-9]{64}\.source$/u.test(name ?? ""))
     )
       continue;
@@ -281,6 +281,45 @@ export async function nativeQuarantineCandidatePaths(opts: {
     required.add(backup);
   }
   return required;
+}
+
+/** Retain the same byte-proof requirement across staging and interrupted commit recovery. */
+export async function nativeQuarantineCommitProof(opts: {
+  gitRoot: string;
+  baseCommit: string;
+  primaryTaskId: string;
+  workflowDir: string;
+  baselinePaths: readonly string[];
+  intendedPaths: readonly string[];
+  workOrder: AgentWorkOrderV2;
+}): Promise<{
+  baseline: ReadonlySet<string>;
+  assert: (evaluatedCommit?: string) => Promise<void>;
+}> {
+  const { gitRoot, baseCommit, primaryTaskId, workflowDir } = opts;
+  const common = { gitRoot, baseCommit, primaryTaskId, workflowDir };
+  const changedPaths = [...new Set([...opts.baselinePaths, ...opts.intendedPaths])];
+  const prove = (evaluatedCommit?: string) =>
+    nativeQuarantineArtifactPaths({
+      ...common,
+      changedPaths,
+      ...(evaluatedCommit ? { evaluatedCommit } : { workOrder: opts.workOrder }),
+    });
+  const baseline = await prove();
+  // A failed live proof must not erase the requirement retained by the commit intent.
+  const required = new Set([
+    ...baseline,
+    ...(await nativeQuarantineCandidatePaths({ ...common, changedPaths: opts.intendedPaths })),
+  ]);
+  return {
+    baseline,
+    assert: async (evaluatedCommit?: string) => {
+      if (required.size === 0) return;
+      const current = await prove(evaluatedCommit);
+      if ([...required].some((file) => !current.has(file)))
+        throw new Error("Native quarantine artifacts changed after their approved baseline proof");
+    },
+  };
 }
 
 /** A failed proof grants no exception. The existing caller retains its normal ownership refusal. */
