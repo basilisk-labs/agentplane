@@ -1,11 +1,16 @@
 import { mkdir, mkdtemp, realpath, rename, rm, symlink, writeFile } from "node:fs/promises";
+import * as fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRepositorySnapshot, normalizeTaskPlanProposal } from "@agentplaneorg/core/tasks";
 import { parseScenarioV2, type ScenarioV2Definition } from "@agentplaneorg/recipes";
 
 import { validateRecipeScenarioPlan } from "./recipe-context.js";
+
+vi.mock("node:fs/promises", async (original) => ({
+  ...(await original<typeof fs>()),
+}));
 
 const baseline = createRepositorySnapshot({
   git: { kind: "commit", sha: "a".repeat(40), ref: "refs/heads/main" },
@@ -229,8 +234,15 @@ describe("Recipe Plan native normalization and containment", () => {
 
   it("rejects case aliases, including ambiguous case-distinct sibling entries", async () => {
     await expect(validate(scenario(), "SRC")).rejects.toThrow("case-aliased");
-    await mkdir(path.join(root, "SRC"));
-    await expect(validate()).rejects.toThrow("case-aliased");
+    const siblings = await fs.readdir(root);
+    // Model a case-sensitive directory even when the host folds file names.
+    const read = vi.spyOn(fs, "readdir").mockResolvedValue([...siblings, "SRC"] as never);
+    try {
+      await expect(validate()).rejects.toThrow("case-aliased");
+      expect(read).toHaveBeenCalledWith(root);
+    } finally {
+      read.mockRestore();
+    }
   });
 
   it.each(["required_sources", "optional_sources"] as const)(
