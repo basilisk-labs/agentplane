@@ -13,7 +13,16 @@ import {
 type Packet = { action: { kind: string }; exchange: NonNullable<AgentActionPacket["exchange"]> };
 import * as commitOwner from "../guard/impl/commit.js";
 import { CliError } from "../../shared/errors.js";
-import { readFile, writeFile, mkdir, symlink, rename, readdir, chmod } from "node:fs/promises";
+import {
+  readFile,
+  writeFile,
+  mkdir,
+  symlink,
+  rename,
+  readdir,
+  chmod,
+  realpath,
+} from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import * as proof from "../../adapters/task-backend/completed-scope-admission.js";
@@ -680,11 +689,22 @@ it.each([false, true])(
   { timeout: 120_000 },
   async (written) => {
     const { f, args, command, before } = await completedScopeFixture(false, true);
-    const file = path.join(f.root, command.config.paths.workflow_dir, f.id, "README.md");
+    const file = await realpath(
+      path.join(
+        command.resolvedProject.gitRoot,
+        command.config.paths.workflow_dir,
+        f.id,
+        "README.md",
+      ),
+    );
     const original = writes.writeTextIfChanged;
     let interrupt = true;
     const stop = vi.spyOn(writes, "writeTextIfChanged").mockImplementation(async (...call) => {
-      if (call[0] === file && interrupt) {
+      if (
+        interrupt &&
+        path.basename(call[0]) === "README.md" &&
+        (await realpath(call[0])) === file
+      ) {
         interrupt = false;
         if (written) await original(...call);
         throw new Error("Injected interruption at Task publication");
@@ -693,6 +713,7 @@ it.each([false, true])(
     });
     const failed = await invoke(f.root, args);
     stop.mockRestore();
+    expect(interrupt).toBe(false);
     expect(failed.code).not.toBe(0);
     const common = await taskBackend.resolveCommandGitCommonDir(command);
     const parent = path.join(common, "agentplane/completed-scope", f.id);
