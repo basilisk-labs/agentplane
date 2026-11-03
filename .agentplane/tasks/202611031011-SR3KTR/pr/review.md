@@ -6,7 +6,7 @@ Created: 2026-11-03T13:13:09.563Z
 
 - Task: `202611031011-SR3KTR`
 - Title: Preserve GitLab source branches and qualify legacy fast-forward merge guards
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611031011-SR3KTR/preserve-gitlab-source-branches-and-qualify-lega`
 - Canonical task record: `.agentplane/tasks/202611031011-SR3KTR/README.md`
 
