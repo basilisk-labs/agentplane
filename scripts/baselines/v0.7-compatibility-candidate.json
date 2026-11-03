@@ -4480,6 +4480,7 @@
     "to_sha256": "23ab3b86b266a0689f506e4b48c10f75e7cabb9333636a35b83a4d13a1ac5585",
     "to_surface_sha256": "bcab59ba2d8d3baa7c4975394741c65b34aa4cfda7aa095e74dff740637854e2"
   },
+  "incremental_package_delta_reviewed_version": "0.7.12",
   "pre_release_package_delta": {
     "allowed_json_paths": [
       "$.package_manifests[0].dependencies.@clack/prompts",
@@ -4562,9 +4563,9 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "ed2bff514305fb220edcc5e86ac9167fb93a7c8e03a3b5c1aa908549950b1a16",
-    "to_sha256": "fcc419a72f859fb594e93e8e576c4e83f67c207a312477cdbae6994aefda8941",
-    "to_version": "0.7.12"
+    "surface_sha256": "207d694b6a5139d82e9c8e61c71f6c940387a71951d68aa12409a8425261e7f8",
+    "to_sha256": "7383b78be7ce0f793778f5253f063c5a2608d3f166c3a7bcf7f7c9194d572715",
+    "to_version": "0.7.13"
   },
   "review": {
     "conditions": [
