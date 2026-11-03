@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:251e44b17aa34dfc74a86fe26ce71749c84bfc8ddcd1b901d4874989c5146fa0",
   "pr_number": 6973,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6973",
+  "pre_merge_closure": {
+    "basis_commit": "cf2ee866fb0a75a734f350d3b7632a9d4a59e602",
+    "branch": "task/202611030256-AN0ZJ4/bind-quarantine-publication-to-the-canonical-ker",
+    "pr_number": 6973,
+    "recorded_at": "2026-11-03T04:43:56.583Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
