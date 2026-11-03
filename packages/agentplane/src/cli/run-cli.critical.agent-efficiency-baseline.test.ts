@@ -40,6 +40,9 @@ const EFFICIENCY_LIBRARY_URL = pathToFileURL(
 const COMPATIBILITY_LIBRARY_URL = pathToFileURL(
   path.join(REPO_ROOT, "scripts/lib/compatibility-contract.mjs"),
 ).href;
+const INCREMENTAL_PACKAGE_LIBRARY_URL = pathToFileURL(
+  path.join(REPO_ROOT, "scripts/lib/compatibility-incremental-package-delta.mjs"),
+).href;
 const TARBALL_POLICY_LIBRARY_URL = pathToFileURL(
   path.join(REPO_ROOT, "scripts/lib/package-tarball-policy.mjs"),
 ).href;
@@ -119,7 +122,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
       expect(candidateFreshness).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("255commands/176args/857options");
+      expect(compatibility.stdout).toContain("265commands/187args/907options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -239,20 +242,32 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202609261720-KKE9ZN",
           "202610041748-K43XFE",
           "202610060956-42J54D",
+          "202610011624-MP3J6N",
+          "202610081434-RDZE4P",
+          "202610100459-0NATSS",
+          "202610100750-36SZWD",
+          "202610100756-0Y9HMG",
+          "202610101128-35N0ZK",
+          "202610101141-AGRARP",
+          "202610160500-6RCQSY",
+          "202610260157-ZDEE0D",
+          "202610270555-MY0JZE",
+          "202610300522-MRJ9WH",
+          "202611010728-AV4G8P",
         ],
         candidate: {
           section_digests: {
             agent_facing_context_contracts:
-              "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
-            cli_topology: "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135",
+              "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
+            cli_topology: "e35c7165a6156e1778ae106d6af7b5d243e766ec983f5c8c4a197282ed02660b",
             exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
-            package_manifests: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+            package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
             tarball_policy: "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
-            workflow_schema: "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452",
+            workflow_schema: "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451",
           },
-          surface_sha256: "d35e7cdd8f0a9e2c4361f43fdbcb8f2ff2f4ceec90b9390cf990b9daeb0b76f1",
+          surface_sha256: "71b52e0ff2b37139c779808d550b794d05d461a021db5961c7f16e4a4b8d702d",
         },
         pre_release_package_delta: {
           allowed_json_paths: [
@@ -286,8 +301,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
             "202609211330-5A54M1",
             "202610041748-K43XFE",
             "202610060956-42J54D",
+            "202610011624-MP3J6N",
           ],
-          to_sha256: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+          to_sha256: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
         },
         release_version_delta: {
           allowed_json_paths: [
@@ -302,7 +318,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
             "$.package_manifests[2].version",
           ],
           classification: "planned_version_parity",
-          from_sha256: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+          from_sha256: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
           from_version: "0.6.24",
           section: "package_manifests",
           source_task: "202608082119-P6SHBN",
@@ -310,7 +326,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         contract_artifacts: {
           execution_receipt_schema: {
             path: "schemas/execution-receipt.schema.json",
-            sha256: "ebcdcda6d38e1b399696add88587e3a2a1a84246beebc656feccdfb357dfbddf",
+            sha256: "16380c75b048492cc4f3c7f6826bd9d66522e59edc276642c5c6be0a1c989e75",
             comparison: "canonical_json_exact",
             source_task: "202607221849-NWVCAG",
           },
@@ -382,9 +398,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
           agent_work_order_schema: {
             path: "schemas/agent-work-order-v2.schema.json",
-            sha256: "901bf3d2c40447b953a5f750cd02db64f21d860083668121f68ca2de43747660",
+            sha256: "423b520ced196be0aa41fbcb9418c2052c1d3aa46ada0ccb02fb7b0827cce3d2",
             comparison: "canonical_json_exact",
-            source_task: "202609162254-YE48GC",
+            source_task: "202610100756-0Y9HMG",
           },
           core_agent_work_order_exports: {
             comparison: "required_named_reexports",
@@ -566,6 +582,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           diffJsonPaths,
           surfaceSectionDigests,
         } from ${JSON.stringify(COMPATIBILITY_LIBRARY_URL)};
+        import { reconstructHistoricalPackageSurface, reviewedPackageVersion }
+          from ${JSON.stringify(INCREMENTAL_PACKAGE_LIBRARY_URL)};
         const baseSource = createWorktreeSource(process.cwd());
         const publishedManifestPaths = new Set([
           "packages/agentplane/package.json",
@@ -592,8 +610,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         });
         const candidate = JSON.parse(readFileSync(${JSON.stringify(COMPATIBILITY_CANDIDATE)}, "utf8"));
         const releaseVersion = candidate.release_version_delta.to_version;
-        const before = collectCompatibilitySurface(versionedSource("0.6.24"));
-        const after = collectCompatibilitySurface(versionedSource(releaseVersion));
+        const reviewedVersion = reviewedPackageVersion(candidate);
+        const historicalSurface = (version) => reconstructHistoricalPackageSurface(
+          collectCompatibilitySurface(versionedSource(version)),
+          candidate.incremental_package_delta,
+          reviewedVersion,
+        );
+        const before = historicalSurface("0.6.24");
+        const after = historicalSurface(releaseVersion);
         const sectionDigests = surfaceSectionDigests(after);
         process.stdout.write(JSON.stringify({
           releaseVersion,
@@ -603,8 +627,19 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           candidateReleaseVersion: candidate.release_version_delta,
           currentVersion: JSON.parse(baseSource.readText("packages/agentplane/package.json")).version,
           normalizedPackageDigest: surfaceSectionDigests(before).package_manifests,
-          versionVariants: ["0.7.12", "0.7.13"].map((version) => {
-            const surface = collectCompatibilitySurface(versionedSource(version));
+          approvedVariants: [
+            { version: reviewedVersion,
+              packageManifestDigest: candidate.incremental_package_delta.from_sha256,
+              surfaceDigest: compatibilitySurfaceDigest({
+                ...candidate.candidate.section_digests,
+                package_manifests: candidate.incremental_package_delta.from_sha256,
+              }) },
+            { version: releaseVersion,
+              packageManifestDigest: candidate.release_version_delta.to_sha256,
+              surfaceDigest: candidate.release_version_delta.surface_sha256 },
+          ],
+          versionVariants: [reviewedVersion, releaseVersion].map((version) => {
+            const surface = historicalSurface(version);
             const digests = surfaceSectionDigests(surface);
             return { version, changedPaths: diffJsonPaths(before, surface),
               packageManifestDigest: digests.package_manifests,
@@ -624,10 +659,16 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           packageManifestDigest: string;
           surfaceDigest: string;
         }[];
+        approvedVariants: {
+          version: string;
+          packageManifestDigest: string;
+          surfaceDigest: string;
+        }[];
         packageManifestDigest: string;
         surfaceDigest: string;
         changedPaths: string[];
         candidateReleaseVersion: {
+          from_sha256: string;
           to_version: string;
           to_sha256: string;
           surface_sha256: string;
@@ -656,7 +697,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       expect(reconstructed.releaseVersion).toBe(reconstructed.candidateReleaseVersion.to_version);
       expect(reconstructed.releaseVersion).toBe(reconstructed.currentVersion);
       expect(reconstructed.normalizedPackageDigest).toBe(
-        "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+        reconstructed.candidateReleaseVersion.from_sha256,
       );
       expect(
         reconstructed.versionVariants.map(({ version, packageManifestDigest, surfaceDigest }) => ({
@@ -664,18 +705,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           packageManifestDigest,
           surfaceDigest,
         })),
-      ).toEqual([
-        {
-          version: "0.7.12",
-          packageManifestDigest: "5181e197bcb2007bf582098724eac351ee528640a26e0283b51ccca567690919",
-          surfaceDigest: "40466a8a690787106d097518f720ac93d360a486191f545b8c063bf93e534bd9",
-        },
-        {
-          version: "0.7.13",
-          packageManifestDigest: "0ec51a0e0f1c23aca31c257f26350d6a4cc763acbdffa4661d8910fefda8396d",
-          surfaceDigest: "8ebcd7d8a47d508ceaa8e08b040f4754f204d04706bc5295675545e1149a7041",
-        },
-      ]);
+      ).toEqual(reconstructed.approvedVariants);
       for (const variant of reconstructed.versionVariants) {
         expect(variant.changedPaths).toEqual(reconstructed.changedPaths);
       }
