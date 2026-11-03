@@ -1,0 +1,204 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611030256-AN0ZJ4 Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bun run test:fast packages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-2\nScope: branch_pr task 202611030256-AN0ZJ4 Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611030256-AN0ZJ4 Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bun run test:fast packages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-2\nScope: branch_pr task 202611030256-AN0ZJ4 Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611030256-AN0ZJ4 Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611030256-AN0ZJ4 Verification Contract check real_e2e (1/2)\n\nCheck: real_e2e\nCommand: bun run test:fast packages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-2\nScope: branch_pr task 202611030256-AN0ZJ4 Verification Contract check real_e2e (2/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611030256-AN0ZJ4 Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bun run test:fast packages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-2\nScope: branch_pr task 202611030256-AN0ZJ4 Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:7d526f3ca34c2d5a4a071de7bca6ee059c9acd3cdbc05ab758391a371c8549a9",
+  "implementation_sha": "53bd96230365ebe724123e8cfe0825eb0db2d4cf",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:46b9741356b621edf0fa4ca02cbad92e1c60c167573d301721d41fe404763595",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run test:fast packages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run test:fast packages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run test:fast packages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run test:fast packages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:0473bb9d71aca6f0286d65d878ac866b05eda7dabbcfa2bd6d92488c43a78eb6",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:57830a6fa52290dbb81947ee24476d3ba6a497da8ee98f860d261fea290d2c84",
+      "environment": {
+        "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+        "runtime": {
+          "architecture": "arm64",
+          "bun_major": null,
+          "node_major": "26",
+          "platform": "darwin"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:1443152084dd25c5a4b2c7ecc4645c49de844094d41ace973ec50e599d8d8e52",
+        "digest": "sha256:43e348b7efc020c97cfbb0cf2916140042228f6b70fbcbe1da9872226be50df6",
+        "references": [
+          {
+            "digest": "sha256:3dd966d896a8e4803c35074dc31e79aeaa69285e0e12b694bb2b1f7b3358796b",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:3dd966d896a8e4803c35074dc31e79aeaa69285e0e12b694bb2b1f7b3358796b",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202611030256-AN0ZJ4/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "b05dd10d681e2a50bdcd45a986a0cf4673537e5e",
+        "digest": "sha256:2c91785dae12dcb3f3acbb93765742e8806cac3b9c277980713902efdcef232e",
+        "strategy": "branch_diff",
+        "target_sha": "53bd96230365ebe724123e8cfe0825eb0db2d4cf"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:b9e4ca827f040896604949d27a20114015af1148ebed0378f0baf361fa0be262",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "b05dd10d681e2a50bdcd45a986a0cf4673537e5e",
+        "digest": "sha256:6d066b114c2a3912e2c5d80559111b1e3168ed0bc0a5ec9f2188138e446a80d5",
+        "primary_task_id": "202611030256-AN0ZJ4",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_publish",
+          "effect_release_metadata",
+          "effect_security_boundary",
+          "repository_branch_pr_floor",
+          "reversibility_recovery_required"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202611030256-AN0ZJ4"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:2582d02cc390d6b5ca7e9401744ee758a81fafe76f29969c97146b6b0b921110"
+        },
+        "checks": {
+          "digest": "sha256:57ceba9b00244442d20b5a65469f63e3dbf34f080b7dc5c59f24117036cd0124",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "real_e2e",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:3bdb84fd3eed2f0df05a4385d81a9be852d8db5bf1b7d6bc69cfaf9f83562cb8"
+        },
+        "digest": "sha256:d76e219e35912c1d23856bb618d218a13495eeda32da53707945b38e4f8a2661",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:d90255a4e7b72dc0f9f45c8edfd14713b16f5995ae2cff0b0ede48b94821244c",
+          "digest": "sha256:d90255a4e7b72dc0f9f45c8edfd14713b16f5995ae2cff0b0ede48b94821244c",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:987929940f3820e61292591e8ce12a537c18ae14094a524cdad5978e41cebd01"
+        },
+        "schema_version": 1,
+        "task_id": "202611030256-AN0ZJ4"
+      }
+    },
+    "digest": "sha256:e1ecbd4aa9182b724081e294fdd51461474e59b211b027649f720f13f763cca9",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:5739155ce9ad1d6d9fd1a6958ae73eead4a5eeca2bbb121733b308fb3a591d2f",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:3bdb84fd3eed2f0df05a4385d81a9be852d8db5bf1b7d6bc69cfaf9f83562cb8",
+      "verify_steps_digest": "sha256:2b5ce73659a020a9c5c38ae5befff4302742ddd3fd6e2718fddb34c16c052c5a"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-11-03T04:35:20.837Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run test:fast packages/agentplane/src/commands/shared/native-quarantine-artifact-proof.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator-quarantine.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:2b5ce73659a020a9c5c38ae5befff4302742ddd3fd6e2718fddb34c16c052c5a",
+  "task_id": "202611030256-AN0ZJ4",
+  "verification_command": "agentplane verify 202611030256-AN0ZJ4 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
