@@ -310,6 +310,59 @@ describe("canonical final Verification Contract projection", () => {
     expect(mocks.checks).not.toHaveBeenCalled();
   });
 
+  it.each(["direct", "branch_pr"] as const)(
+    "uses the %s repository rules for initial, post-check and restored targets",
+    async (mode) => {
+      const f = fixture(mode);
+      mocks.target.mockImplementation(({ workflowMode }) =>
+        Promise.resolve(workflowMode === mode ? evaluatorTarget : null),
+      );
+      await f.run();
+      expect(mocks.checks).toHaveBeenCalledOnce();
+      expect(f.apply).toHaveBeenCalledOnce();
+      expect(mocks.target.mock.calls.length).toBeGreaterThanOrEqual(2);
+      const validation = f.runtime.input.mock.calls[0]![0].validation;
+      await expect(
+        restoreKernelFinalValidation(
+          f.command as never,
+          {
+            ...f.record,
+            aggregate: { ...f.record.aggregate, final_validation: validation },
+          } as never,
+          storedIdentity,
+        ),
+      ).resolves.toMatchObject({ evidence_digest: validation.evidence_digests[0] });
+      for (const [call] of mocks.target.mock.calls) expect(call.workflowMode).toBe(mode);
+    },
+  );
+
+  it("refuses an unavailable direct-mode commit before running checks", async () => {
+    const f = fixture("direct");
+    mocks.target.mockResolvedValue(null);
+    await expect(f.run()).rejects.toThrow("commit identity is unavailable");
+    expect(mocks.checks).not.toHaveBeenCalled();
+    expect(f.apply).not.toHaveBeenCalled();
+  });
+
+  it.each(["direct", "branch_pr"] as const)(
+    "refuses a changed %s target after checks without persisting success",
+    async (mode) => {
+      const f = fixture(mode);
+      mocks.target.mockResolvedValueOnce(evaluatorTarget).mockResolvedValue("c".repeat(40));
+      await expect(f.run()).rejects.toThrow("inputs changed during checks");
+      expect(mocks.checks).toHaveBeenCalledOnce();
+      expect(f.apply).not.toHaveBeenCalled();
+      expect(mocks.project).not.toHaveBeenCalled();
+    },
+  );
+
+  it("refuses changed direct-mode repository content after checks", async () => {
+    const f = fixture("direct");
+    f.runtime.observe.mockResolvedValue({ fingerprint: changedFingerprint });
+    await expect(f.run()).rejects.toThrow("inputs changed during checks");
+    expect(f.apply).not.toHaveBeenCalled();
+  });
+
   it("persists FAILED evidence and requires a USER corrective Plan for an old completed code item with no commands", async () => {
     const f = fixture();
     f.task.mutation_scope = "code";
