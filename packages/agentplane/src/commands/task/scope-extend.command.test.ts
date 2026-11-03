@@ -776,6 +776,20 @@ it(
         raw = await readFile(file, "utf8");
       await rename(file, `${file}.retained`);
       await expect(command.taskBackend.getTask(f.id)).rejects.toThrow();
+      const active = await invoke(f.root, ["task", "active", "--json"]);
+      expect(active.code, active.stdout + active.stderr).toBe(0);
+      const diagnostic = JSON.parse(active.stdout) as { items: { task: { id: string } }[] };
+      expect(diagnostic.items.find((item) => item.task.id === f.id)).toMatchObject({
+        task: { id: f.id, status: "malformed" },
+        next_action: { code: "kernel_record_invalid", command: null },
+        kernel: {
+          ready: false,
+          authority: { mutation: "read_only", grants_authority: false },
+          error: { reason: "completed_scope_admission_unproven" },
+        },
+      });
+      const strict = await invoke(f.root, ["task", "active", "--strict-read", "--json"]);
+      expect(strict.code).not.toBe(0);
       for (const argv of [
         ["task", "show", f.id],
         ["task", "list", "--all"],
@@ -791,6 +805,8 @@ it(
       );
       await expect(command.taskBackend.listTasks()).rejects.toThrow();
       await expect(command.taskBackend.listProjectionTasks!()).rejects.toThrow();
+      const refused = await invoke(f.root, ["task", "advance", f.id, "--agent-json"]);
+      expect(refused.code).not.toBe(0);
       await rename(file, `${file}.forged-retained`);
       await rename(`${file}.retained`, file);
       const restored = await command.taskBackend.getTask(f.id);

@@ -1,5 +1,6 @@
 import type { TaskSummary } from "../../backends/task-backend.js";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { COMPLETED_SCOPE_ADMISSIONS } from "../../adapters/task-backend/completed-scope-permit.js";
 import { CliError } from "../../shared/errors.js";
 import { readTaskKernel, projectTaskKernelRead } from "./kernel-read.js";
 import { mapLimit } from "../../backends/task-backend/shared/concurrency.js";
@@ -8,6 +9,7 @@ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { toStringList } from "../../cli/spec/parse-utils.js";
 import { listTaskSummariesMemo, type CommandContext } from "../shared/task-backend.js";
+import { listCompletedScopeDiagnosticProjection } from "../shared/task-backend-branch-snapshot.js";
 import { renderCliArgv } from "../shared/workflow-operation-projection.js";
 
 import { handleTaskListWarnings, queryTaskProjection, type TaskListFilters } from "./shared.js";
@@ -224,12 +226,21 @@ export async function buildActiveWorkItems(opts: {
   filters: TaskListFilters;
 }): Promise<{ filteredCount: number; items: ActiveWorkItem[] }> {
   // A contradictory legacy status must not hide a canonical Task before its record is read.
-  const summaries = await listTaskSummariesMemo(opts.ctx);
+  const diagnostics = opts.filters.strictRead
+    ? null
+    : await listCompletedScopeDiagnosticProjection(opts.ctx);
+  const summaries = diagnostics?.tasks ?? (await listTaskSummariesMemo(opts.ctx));
   const canonical = await mapLimit(
     summaries.filter((task) => hasKernel(task)),
     ACTIVE_ROUTE_CONCURRENCY,
     async (summary): Promise<ActiveWorkItem | null> => {
-      const read = await readTaskKernel(opts.ctx, summary.id);
+      const read = diagnostics?.failures.has(summary.id)
+        ? {
+            kind: "malformed" as const,
+            reason: "completed_scope_admission_unproven",
+            fields: [COMPLETED_SCOPE_ADMISSIONS],
+          }
+        : await readTaskKernel(opts.ctx, summary.id);
       if (read.kind === "legacy_unmigrated") {
         throw new CliError({
           code: "E_VALIDATION",

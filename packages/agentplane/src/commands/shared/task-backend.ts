@@ -39,6 +39,7 @@ import {
   resolveTaskBranchFromContext,
   taskBranchHasLocalRef,
   installCompletedScopeReaders,
+  type CompletedScopeDiagnosticProjection,
 } from "./task-backend-branch-snapshot.js";
 
 export {
@@ -47,6 +48,7 @@ export {
 } from "./task-backend-branch-snapshot.js";
 
 type CommandMemo = {
+  completedScopeDiagnosticProjection?: CompletedScopeDiagnosticProjection;
   tasks?: Promise<TaskData[]>;
   taskProjection?: Promise<TaskSummary[]>;
   taskBranchInventory?: Promise<{
