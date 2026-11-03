@@ -216,7 +216,9 @@ function apBinPath(prefix) {
 const main = defineScript({
   name: "check-local-tarball-install-smoke.mjs",
   async run() {
-    const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-local-install-smoke-"));
+    const tempRoot = realpathSync(
+      mkdtempSync(path.join(os.tmpdir(), "agentplane-local-install-smoke-")),
+    );
     const packDir = path.join(tempRoot, "packs");
     const prefix = path.join(tempRoot, "prefix");
     const repo = path.join(tempRoot, "repo");
