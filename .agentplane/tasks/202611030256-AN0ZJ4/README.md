@@ -1,10 +1,11 @@
 ---
 id: "202611030256-AN0ZJ4"
 title: "Bind quarantine publication to the canonical Kernel revision"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "Same-revision admission requires the sealed canonical Task digest and authority lineage. ExactN-to-N+1 begin receipt/event reconstruction, current claim/attempt, plan/contract/repository/scope and byte/filesystem/retry guards remain. Changed fingerprint and same-revision rehashed-record negatives are covered."
     - "Read AgentPlane-owned native evidence: fullCI PASS1287039ms and unchanged five-file check PASS146tests76618ms. Verified input seals plus both execution manifest byte hashes and implementationHEAD bindings. EVAL performed read-only inspection and did not rerun or claim native verification."
     - "Existing test bodies are retained; fixture revision assertions follow the selected native issued record and explicitly verify begin revision8 and actual backend offset.139previous+7new focused cases pass. Production WorkOrder builders replace the manual fixture. Budgets/baseline/lint/workers/timeouts are unchanged. Historical1451filename typo is explicitly corrected by1460reference and authenticated1453supplement."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:46f38f386a75cdc5679eec3cec311155f5f71e67b2669a6485b2aaeb14eaf295"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-03T04:43:56.505Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -276,9 +293,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "53bd96230365ebe724123e8cfe0825eb0db2d4cf"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "cf2ee866fb0a75a734f350d3b7632a9d4a59e602"
+  message: "🧩 AN0ZJ4 task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -286,9 +306,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-03T04:43:56.505Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "cf2ee866fb0a75a734f350d3b7632a9d4a59e602"
 doc_version: 3
-doc_updated_at: "2026-11-03T04:35:21.604Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-03T04:43:56.505Z"
+doc_updated_by: "CODER"
 description: "Complete the already approved exact seven-file native quarantine publication mechanism. The actual GSQP8B WorkOrder and canonical Kernel both have revision 11 while the local backend README persistence version is 12. Reproduce this using the actual local backend adapter, then prove the immutable canonical fingerprint and exact current claim rather than conflating backend and Kernel revisions. Keep authenticated native begin continuation, exact Git/base/afterimage/backup scope proofs, stale/forged denial, default/configured paths and commit-retry guards. No historical Task execution, DONE/PASS assignment, manual Task/WorkOrder normalization, data/credential/runtime mutation or guard bypass. Full CI, independent review, canonical PR/merge and hosted close remain required."
 sections:
   Summary: |-
@@ -415,6 +443,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:0c6db1ac8841b95d2e306fdb1a51f7db6c062c786d06461f63df653a7920e0d9"
     work_order_id: "sha256:b2640eeaff722a7e694e4c69fa7bb8dd3fbba36846a678ad3b3a613e0ec0624d"
+  implementation_commit:
+    hash: "53bd96230365ebe724123e8cfe0825eb0db2d4cf"
+    message: "🚧 AN0ZJ4 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "b05dd10d681e2a50bdcd45a986a0cf4673537e5e"
@@ -1473,3 +1504,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:46f38f386a75cdc5679eec3cec311155f5f71e67b2669a6485b2aaeb14eaf295`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-03T04:43:56.505Z`
