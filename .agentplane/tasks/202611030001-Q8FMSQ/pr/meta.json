@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:77c31e8d1999c33552c226b44d571370d4d0e425acd3dcb00e780b4259d51e99",
   "pr_number": 6972,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6972",
+  "pre_merge_closure": {
+    "basis_commit": "aab1ef38814740d9a81e964a23a747ede1f9ea22",
+    "branch": "task/202611030001-Q8FMSQ/bind-native-quarantine-publication-to-the-exact",
+    "pr_number": 6972,
+    "recorded_at": "2026-11-03T01:41:25.487Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

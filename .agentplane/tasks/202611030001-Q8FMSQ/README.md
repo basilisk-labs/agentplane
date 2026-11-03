@@ -1,10 +1,11 @@
 ---
 id: "202611030001-Q8FMSQ"
 title: "Bind native quarantine publication to the exact execution start"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -48,6 +49,22 @@ quality_review:
     - "Claim, attempt, contract, plan, repository identity/fingerprint, active authority, approved exact scope and repository/security effects remain mandatory. Exact Git/live quarantine projection, recoverable raw backup, BLOCKED status, UTF8/BOM, no-follow stable identity, dirty-path cleanup and interrupted-commit refusal are unchanged."
     - "Reviewed19 regressions using real KernelTaskLifecycle.begin and native WorkOrder construction: default/configured directories, real native coordinator commits, altered binding and rehashed beforeimage refusal, missing/different start evidence, intervening native audit write, rejected-hook and postcommit interruption retry without duplicate commit or loss of unrelated dirty bytes. The valid controlled5b7 baseline fails both admission cases and exact source restoration is retained."
     - "Native full CI passed1251004ms, including core7915passed1existingSkipped; unchanged focused five-file check passed139tests in75033ms on the final source. Recursively authenticated all22 retained manifests and all listed log bytes. Four nested exit2/exit3 commands are intentional failure-aggregation fixtures matched to current verification-contract.test.ts188-231. No new checks or repository mutations were performed by EVALUATOR."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:d5a0afe34239e97ce7e6a20b35f6809ef0ec10c8b0238ce256574738f7cb2556"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-03T01:41:25.409Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -275,9 +292,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "5126b5442d89a22bcfe2dd4d37aa4363a95c6a82"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "aab1ef38814740d9a81e964a23a747ede1f9ea22"
+  message: "🧩 Q8FMSQ task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -285,9 +305,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-03T01:41:25.409Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "aab1ef38814740d9a81e964a23a747ede1f9ea22"
 doc_version: 3
-doc_updated_at: "2026-11-03T01:32:09.315Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-03T01:41:25.409Z"
+doc_updated_by: "CODER"
 description: "Complete the already approved native quarantine publication mechanism for sb within the same exact seven source files. Reproduce GSQP8B immutable WorkOrder revision 7 followed by normal native begin revision 8; prove the exact issued claim and start transition rather than requiring impossible revision equality. Preserve immutable WorkOrders, source/Git byte proofs, scope/approval checks, cleanup and interrupted commit guards. No historical Task execution, DONE/PASS assignment, data/credential/runtime mutation or guard bypass."
 sections:
   Summary: |-
@@ -415,6 +443,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:8ec148cbfe5e4db240171ebb3e3fc55d3dc17cab4e2a9610a92b811f4271806a"
     work_order_id: "sha256:78954480725cb987f403003a27c99c55dbe763bdf0d70f8d4daa179bb8947f1f"
+  implementation_commit:
+    hash: "5126b5442d89a22bcfe2dd4d37aa4363a95c6a82"
+    message: "🚧 Q8FMSQ task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5b7ba95fdbdcf214e75c1b23b597684eac87ab07"
@@ -1106,3 +1137,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:d5a0afe34239e97ce7e6a20b35f6809ef0ec10c8b0238ce256574738f7cb2556`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-03T01:41:25.409Z`
