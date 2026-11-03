@@ -1,4 +1,4 @@
  .../native-quarantine-artifact-proof.test.ts       | 94 ++++++++++++++++++++--
  .../shared/native-quarantine-artifact-proof.ts     | 35 ++++----
- ...ernel-repository-coordinator-quarantine.test.ts | 77 +++++++++---------
- 3 files changed, 148 insertions(+), 58 deletions(-)
+ ...ernel-repository-coordinator-quarantine.test.ts | 89 ++++++++++----------
+ 3 files changed, 155 insertions(+), 63 deletions(-)

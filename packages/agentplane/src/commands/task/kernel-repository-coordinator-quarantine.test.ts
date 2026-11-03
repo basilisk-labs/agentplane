@@ -291,11 +291,14 @@ async function fixture(
       paths: { workflow_dir: workflowDir, tasks_path: workflowDir },
     },
     git: {
-      stage: async (files: string[]) => {
+      stage: (files: string[]) => {
         git(repo.root, "add", "-A", "--", ...files);
+        return Promise.resolve();
       },
-      statusStagedPaths: async () =>
-        git(repo.root, "diff", "--cached", "--name-only").split("\n").filter(Boolean),
+      statusStagedPaths: () =>
+        Promise.resolve(
+          git(repo.root, "diff", "--cached", "--name-only").split("\n").filter(Boolean),
+        ),
       invalidateStatus: vi.fn(),
     },
   } as unknown as CommandContext;
@@ -334,10 +337,6 @@ async function fixture(
     workOrder: order,
   };
   const directory = await mkdtemp(path.join(repo.root, ".git/quarantine-exchange-"));
-  const status = statusBeforeQuarantine ?? {
-    command: "git status --short --untracked-files=all",
-    lines: git(repo.root, "status", "--short", "--untracked-files=all").split("\n"),
-  };
   // Retain the same native baseline shape. Git and byte proof are real; only formal commit transport is isolated below.
   await writeFile(
     path.join(directory, "repository-baseline.json"),
@@ -352,7 +351,10 @@ async function fixture(
       branch,
       head: base,
       tree: git(repo.root, "rev-parse", "HEAD^{tree}"),
-      status,
+      status: statusBeforeQuarantine ?? {
+        command: "git status --short --untracked-files=all",
+        lines: git(repo.root, "status", "--short", "--untracked-files=all").split("\n"),
+      },
     }),
   );
   mocks.commit.mockImplementation(() => {
