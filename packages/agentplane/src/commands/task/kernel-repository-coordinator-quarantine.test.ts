@@ -9,7 +9,6 @@ import {
   taskKernel as k,
   withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
-import { buildStateFingerprint, type AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import type { CommandContext } from "../shared/task-backend.js";
 import { makeKernelRecord, readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import { LocalTaskByteStore } from "../../backends/task-backend/local-task-byte-store.js";
@@ -18,6 +17,7 @@ import {
   nativeQuarantineCandidatePaths,
 } from "../shared/native-quarantine-artifact-proof.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+import { buildKernelAgentWorkOrder, resumeKernelWorkOrder } from "./kernel-work-order.js";
 import { previewLifecycleOwnerMigration } from "./migration-preview.js";
 import { persistQuarantine } from "./migration-quarantine.js";
 import { assertBranchTaskArtifactOwnership } from "../pr/internal/branch-task-artifact-ownership.js";
@@ -283,69 +283,48 @@ async function fixture(
   for (const file of cleanupPaths) await rm(path.join(repo.root, file));
   const backup = `${workflowDir}/${store.backupLocation(snapshot)}`;
   const pair = [readme, backup].toSorted();
-  const issuedAuthorityDigest = k.kernelDigest("fixture delegated authority");
-  const present = (source: string, value: unknown) => ({
-    state: "present" as const,
-    source,
-    value,
-  });
-  const absent = {
-    state: "unavailable" as const,
-    source: "canonical_episode",
-    reason_code: "not_required_for_semantic_episode",
-  };
-  const order = {
-    work_order_id: k.kernelDigest("fixture issued WorkOrder"),
-    role: "EXECUTOR",
-    task: { id: primaryId, revision: 7, work_item_id: "quarantine" },
-    canonical_binding: {
-      phase: "implementation",
-      task_id: primaryId,
-      repository_identity: repositoryIdentity,
-      plan_revision: 1,
-      plan_digest: plan.digest,
-      repository_fingerprint: fingerprint,
-      authority_digest: issuedAuthorityDigest,
+  const command = {
+    resolvedProject: { gitRoot: repo.root },
+    backendId: "local",
+    config: {
+      branch: { task_prefix: "task" },
+      paths: { workflow_dir: workflowDir, tasks_path: workflowDir },
+    },
+    git: {
+      stage: async (files: string[]) => {
+        git(repo.root, "add", "-A", "--", ...files);
+      },
+      statusStagedPaths: async () =>
+        git(repo.root, "diff", "--cached", "--name-only").split("\n").filter(Boolean),
+      invalidateStatus: vi.fn(),
+    },
+  } as unknown as CommandContext;
+  const order = await buildKernelAgentWorkOrder({
+    command,
+    record,
+    implementation: resumeKernelWorkOrder({
+      record,
       work_item_id: "quarantine",
-      claim_id: claimId,
-      attempt: 1,
-      contract_digest: contractDigest,
-    },
-    authority: {
-      sandbox: "workspace-write",
-      allowed_tool_classes: ["workspace_write"],
-      writable_roots: scopeRoots.map((root) => path.join(repo.root, root)),
-    },
-    state_fingerprint: buildStateFingerprint({
+      authority,
+      repository_fingerprint: fingerprint,
+    })!,
+    context: {
       task_id: primaryId,
       task_revision: canonical.revision,
-      git_head: base,
-      worktree: repo.root,
-      components: {
-        task: present("canonical_task", record.digest),
-        git: present("native_repository_content", fingerprint),
-        backend_projection: present("canonical_backend", "local"),
-        plan: present("canonical_plan", {
-          revision: plan.revision,
-          digest: plan.digest,
-          state: plan.state,
-        }),
-        policy: present("native_policy", []),
-        capability: present("canonical_capability", {
-          authority_digest: issuedAuthorityDigest,
-          capabilities: requirements.capabilities,
-          repository_effects: requirements.repository_effects,
-          external_effects: requirements.external_effects,
-        }),
-        authority: present("canonical_authority", {
-          issued: issuedAuthorityDigest,
-          lineage: authority.digest,
-        }),
-        knowledge: absent,
-        provider: absent,
+      mutation_id: "fixture-issuance",
+      repository_identity: repositoryIdentity,
+      repository_fingerprint: fingerprint,
+      actor: {
+        id: "fixture-executor",
+        kind: "AGENT",
+        transport: "manual",
+        capabilities: ["repository_write"],
       },
-    }),
-  } as unknown as AgentWorkOrderV2;
+      occurred_at: "2026-11-03T00:00:00.000Z",
+      approval_receipts: { trusted_issuers: [], max_ttl_minutes: 15, clock_skew_seconds: 0 },
+      ceiling: authority,
+    },
+  });
   const proof = {
     gitRoot: repo.root,
     baseCommit: base,
@@ -376,24 +355,6 @@ async function fixture(
       status,
     }),
   );
-  const command = {
-    resolvedProject: { gitRoot: repo.root },
-    config: {
-      branch: { task_prefix: "task" },
-      paths: { workflow_dir: workflowDir, tasks_path: workflowDir },
-    },
-    git: {
-      stage: (files: string[]) => {
-        git(repo.root, "add", "-A", "--", ...files);
-        return Promise.resolve();
-      },
-      statusStagedPaths: () =>
-        Promise.resolve(
-          git(repo.root, "diff", "--cached", "--name-only").split("\n").filter(Boolean),
-        ),
-      invalidateStatus: vi.fn(),
-    },
-  } as unknown as CommandContext;
   mocks.commit.mockImplementation(() => {
     git(repo.root, "commit", "-m", "fixture native quarantine publication");
     return Promise.resolve(0);
