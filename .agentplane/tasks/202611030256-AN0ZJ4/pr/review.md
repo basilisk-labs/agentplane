@@ -6,7 +6,7 @@ Created: 2026-11-03T03:08:37.842Z
 
 - Task: `202611030256-AN0ZJ4`
 - Title: Bind quarantine publication to the canonical Kernel revision
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611030256-AN0ZJ4/bind-quarantine-publication-to-the-canonical-ker`
 - Canonical task record: `.agentplane/tasks/202611030256-AN0ZJ4/README.md`
 
