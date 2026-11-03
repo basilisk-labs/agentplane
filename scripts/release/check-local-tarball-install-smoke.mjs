@@ -500,6 +500,21 @@ const main = defineScript({
       });
       process.stdout.write(`installed Recipe matrix OK (scenarios=${recipeMatrix.count})\n`);
 
+      const authoringExamples = JSON.parse(
+        run(process.execPath, [
+          path.resolve("packages/recipes/scripts/validate-doc-examples.mjs"),
+          path.dirname(installedModules),
+        ]),
+      );
+      assert.equal(
+        authoringExamples.package_version,
+        JSON.parse(readFileSync("packages/recipes/package.json", "utf8")).version,
+        "authoring examples must qualify the same packed Recipe version",
+      );
+      process.stdout.write(
+        `installed authoring examples OK ${JSON.stringify(authoringExamples)}\n`,
+      );
+
       const planningMatrix = runInstalledPlanningMatrix({
         agentplane,
         tempRoot: path.join(tempRoot, "planning-matrix"),
