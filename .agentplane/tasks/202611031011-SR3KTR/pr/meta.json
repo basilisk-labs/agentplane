@@ -3,7 +3,8 @@
   "branch": "task/202611031011-SR3KTR/preserve-gitlab-source-branches-and-qualify-lega",
   "created_at": "2026-11-03T13:13:09.563Z",
   "diffstat_sha256": "sha256:f6fac9e5ec6a3a976c72eec9ffc8f2a01da49f5aafd8280296629c618b9275e2",
-  "last_verified_at": null,
+  "last_verified_at": "2026-11-03T14:33:50.684Z",
+  "last_verified_diffstat_sha256": "sha256:f6fac9e5ec6a3a976c72eec9ffc8f2a01da49f5aafd8280296629c618b9275e2",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202611031011-SR3KTR",
   "updated_at": "2026-11-03T13:13:09.563Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
