@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202611030001-Q8FMSQ/bind-native-quarantine-publication-to-the-exact",
+  "created_at": "2026-11-03T00:42:26.289Z",
+  "diffstat_sha256": "sha256:77c31e8d1999c33552c226b44d571370d4d0e425acd3dcb00e780b4259d51e99",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202611030001-Q8FMSQ",
+  "updated_at": "2026-11-03T00:42:26.289Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

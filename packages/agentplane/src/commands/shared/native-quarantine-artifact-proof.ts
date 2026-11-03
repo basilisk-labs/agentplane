@@ -5,7 +5,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { parseTaskReadme, taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
-import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import { makeKernelRecord, readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { validateTaskId } from "../../backends/task-backend/shared.js";
 import { taskBytesDigest } from "../../backends/task-backend/local-task-byte-store.js";
@@ -200,7 +200,80 @@ function approvedRoots(task: TaskData, repositoryIdentity: k.Sha256Digest) {
           ),
       ),
   );
-  return { roots, plan, authority, workItems: aggregate.work_items };
+  return { roots, plan, authority, workItems: aggregate.work_items, record: read.record };
+}
+
+function matchesIssuedRevision(
+  task: TaskData,
+  approved: NonNullable<ReturnType<typeof approvedRoots>>,
+  order: AgentWorkOrderV2,
+): boolean {
+  const { aggregate, events, documents } = approved.record;
+  const revision = order.task.revision;
+  if (task.revision !== aggregate.revision) return false;
+  if (revision === aggregate.revision) return true;
+  // Native begin prepares the immutable WorkOrder before persisting its one start transition.
+  // Accept that exact command and receipt, never an arbitrary newer Task revision.
+  if (revision === null || aggregate.revision !== revision + 1) return false;
+  const subsequent = events.filter((event) => event.task_revision > revision);
+  if (subsequent.length !== 1) return false;
+  const event = subsequent[0]!;
+  const receipt = aggregate.mutation_receipts[event.mutation_id];
+  if (!receipt) return false;
+  const binding = order.canonical_binding;
+  if (binding?.phase !== "implementation") return false;
+  const item = aggregate.work_items[binding.work_item_id];
+  if (!item || item.revision < 2) return false;
+  const command: k.TaskCommand = {
+    kind: "transition_work_item",
+    task_id: task.id,
+    expected_task_revision: revision,
+    expected_state_fingerprint: approved.authority.repository_fingerprint,
+    work_item_id: binding.work_item_id,
+    claim_id: binding.claim_id,
+    action: "begin",
+  };
+  const { [event.mutation_id]: started, ...previousReceipts } = aggregate.mutation_receipts;
+  const before = makeKernelRecord(
+    approved.record.repository_identity,
+    {
+      ...aggregate,
+      revision,
+      work_items: {
+        ...aggregate.work_items,
+        [binding.work_item_id]: { ...item, state: "CLAIMED", revision: item.revision - 1 },
+      },
+      mutation_receipts: previousReceipts,
+    },
+    events.filter((retained) => retained.task_revision <= revision),
+    documents,
+  );
+  const fingerprint = order.state_fingerprint;
+  return Boolean(
+    started &&
+    event.kind === "work_item_transitioned" &&
+    event.task_id === task.id &&
+    event.task_revision === aggregate.revision &&
+    event.command_digest === k.kernelDigest(command) &&
+    receipt.command_digest === event.command_digest &&
+    receipt.before_revision === revision &&
+    receipt.after_revision === aggregate.revision &&
+    receipt.effect_ids.length === 0 &&
+    receipt.event_digests.length === 1 &&
+    receipt.event_digests[0] === k.kernelDigest(event) &&
+    receipt.aggregate_digest ===
+      k.kernelDigest({ ...aggregate, mutation_receipts: previousReceipts }) &&
+    fingerprint.task_id === task.id &&
+    fingerprint.task_revision === revision &&
+    fingerprint.components.task.digest ===
+      k.kernelDigest({ state: "present", source: "canonical_task", value: before.digest }) &&
+    fingerprint.components.authority.digest ===
+      k.kernelDigest({
+        state: "present",
+        source: "canonical_authority",
+        value: { issued: binding.authority_digest, lineage: approved.authority.digest },
+      }),
+  );
 }
 
 function matchesIssuedWorkOrder(
@@ -217,7 +290,7 @@ function matchesIssuedWorkOrder(
   return Boolean(
     order?.role === "EXECUTOR" &&
     order.task.id === task.id &&
-    order.task.revision === task.revision &&
+    matchesIssuedRevision(task, approved, order) &&
     order.authority.sandbox === "workspace-write" &&
     order.authority.allowed_tool_classes.includes("workspace_write") &&
     binding?.repository_identity === repositoryIdentity &&
