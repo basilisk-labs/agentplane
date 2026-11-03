@@ -1,5 +1,15 @@
 import { execFile } from "node:child_process";
-import { access, cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import {
+  access,
+  cp,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  realpath,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -101,7 +111,7 @@ function registerTestTempPath(tempPath: string): void {
 async function ensureGitTemplateRoot(): Promise<string> {
   if (gitTemplateRoot) return gitTemplateRoot;
   gitTemplatePromise ??= (async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-template-"));
+    const root = await realpath(await mkdtemp(path.join(os.tmpdir(), "agentplane-git-template-")));
     await execFileAsync("git", ["init", "-q", "--initial-branch=main"], {
       cwd: root,
       env: cleanGitEnv(),
@@ -227,7 +237,7 @@ export function stubTaskBackend(
 
 export async function mkGitRepoRoot(): Promise<string> {
   const template = await ensureGitTemplateRoot();
-  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+  const root = await realpath(await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-")));
   await copyDirContents(template, root);
   testRoots.add(root);
   return root;
@@ -243,7 +253,7 @@ export async function mkGitRepoRootWithCommit(): Promise<string> {
 }
 
 export async function mkTempDir(): Promise<string> {
-  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+  const root = await realpath(await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-")));
   testRoots.add(root);
   return root;
 }
