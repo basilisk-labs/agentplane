@@ -527,8 +527,8 @@ export async function listTaskSummariesMemo(
     const statuses = new Set(opts.projectionStatus.map((status) => status.trim().toUpperCase()));
     return summaries.filter((summary) => statuses.has(String(summary.status).trim().toUpperCase()));
   };
-  const canonicalSummaries = async (): Promise<TaskSummary[]> =>
-    (await ctx.taskBackend.listTasks()).map(toTaskSummary);
+  const canonicalSummaries = (): Promise<TaskSummary[]> =>
+    ctx.taskBackend.listTasks().then((tasks) => tasks.map(toTaskSummary));
   const loadTask = (taskId: string, branch: string) =>
     loadTaskFromContext({
       ctx,
