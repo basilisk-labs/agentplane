@@ -1,5 +1,5 @@
 import type { Dirent, Stats } from "node:fs";
-import { lstat, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { lstat, mkdtemp, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -116,7 +116,7 @@ export async function createOwnedVitestTempRoot(
   parent: string,
   createdAt = new Date(),
 ): Promise<string> {
-  const root = await mkdtemp(path.join(parent, VITEST_TEMP_ROOT_PREFIX));
+  const root = await mkdtemp(path.join(await realpath(parent), VITEST_TEMP_ROOT_PREFIX));
   try {
     const marker: VitestTempRootMarker = {
       schema_version: 1,
