@@ -1,13 +1,17 @@
 import { execFile } from "node:child_process";
+import { realpath, symlink } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { promisify } from "node:util";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   cleanGitEnv,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
   mkGitRepoRootWithCommit,
+  mkTempDir,
   splitOutputLines,
 } from "./cli.js";
 
@@ -18,6 +22,22 @@ describe("@agentplane/testkit/cli", () => {
     expect(cleanGitEnv).toBeTypeOf("function");
     expect(splitOutputLines("a\nb\n")).toEqual(["a", "b"]);
   });
+
+  it.each([mkGitRepoRoot, mkTempDir])(
+    "returns a canonical fixture path through an aliased temporary directory (%#)",
+    async (createRoot) => {
+      const parent = await mkTempDir();
+      const alias = path.join(parent, "alias");
+      await symlink(os.tmpdir(), alias, process.platform === "win32" ? "junction" : "dir");
+      for (const name of ["TMPDIR", "TMP", "TEMP"]) vi.stubEnv(name, alias);
+      try {
+        const root = await createRoot();
+        expect(root).toBe(await realpath(root));
+      } finally {
+        vi.unstubAllEnvs();
+      }
+    },
+  );
 
   it("creates deterministic main-branch repositories without host Git configuration", async () => {
     const root = await mkGitRepoRoot();

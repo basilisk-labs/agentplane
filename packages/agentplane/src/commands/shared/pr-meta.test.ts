@@ -194,6 +194,13 @@ describe("pr-meta shell invocations", () => {
     expect(startProcess).not.toHaveBeenCalled();
   });
 
+  it.each([parsePrMeta, parsePrMetaForwardCompatible])(
+    "preserves malformed JSON as a validation syntax error (%#)",
+    (parse) => {
+      expect(() => parse("{ not-json", "202601010101-ABCDE")).toThrow(SyntaxError);
+    },
+  );
+
   it("rejects invalid pr/meta schema shapes", () => {
     expect(() =>
       parsePrMeta(

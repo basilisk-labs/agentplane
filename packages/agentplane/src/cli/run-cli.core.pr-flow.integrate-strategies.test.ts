@@ -538,7 +538,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
   );
 
   it(
-    "integrate supports rebase strategy",
+    "integrate supports rebase strategy for a current qualified base",
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       await configureGitUser(root);
@@ -582,6 +582,10 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
+      await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
+      await execFileAsync("git", ["add", "base.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "chore base update"], { cwd: root });
+
       const branch = `task/${taskId}/rebase`;
       await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
       await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
@@ -604,9 +608,6 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-      await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
-      await execFileAsync("git", ["add", "base.txt"], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", "chore base update"], { cwd: root });
 
       const io = captureStdIO();
       try {
@@ -620,7 +621,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("✅ integrate");
       } finally {
         io.restore();

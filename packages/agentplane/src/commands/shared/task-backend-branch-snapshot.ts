@@ -42,6 +42,11 @@ import { resolveLogicalRepositoryIdentity } from "../task/execution-authority-co
 import type { CommandContext } from "./task-backend.js";
 import { resolveCommonGitDirectory } from "../../shared/env.js";
 
+type AuthenticationFailure = (task: TaskData, error: CliError) => void;
+export type CompletedScopeDiagnosticProjection = (
+  onFailure: AuthenticationFailure,
+) => Promise<TaskSummary[]>;
+
 export async function readCompletedScopeCommandSource(
   command: CommandContext,
   taskId: string,
@@ -84,6 +89,7 @@ async function authenticateSource(
   raw: string,
   readmePath: string,
   sourceRoot = ctx.resolvedProject.gitRoot,
+  onFailure?: AuthenticationFailure,
 ) {
   if (!needsCompletedScopeAuthentication(task)) return task;
   try {
@@ -111,11 +117,14 @@ async function authenticateSource(
       throw new Error(read.kind === "malformed" ? read.reason : read.kind);
     return task;
   } catch (error) {
-    throw new CliError({
+    const failure = new CliError({
       code: "E_VALIDATION",
       message: `Completed scope source authentication failed: ${error instanceof Error ? error.message : String(error)}`,
       context: { reason_code: "completed_scope_admission_unproven", task_id: task.id },
     });
+    if (!onFailure) throw failure;
+    onFailure(task, failure);
+    return { ...task };
   }
 }
 
@@ -124,7 +133,7 @@ export function installCompletedScopeReaders(ctx: CommandContext) {
   const backend = ctx.taskBackend;
   if (!(backend instanceof LocalBackend)) return;
   const getTask = backend.getTask.bind(backend);
-  const authenticate = async (task: TaskData | null) => {
+  const authenticate = async (task: TaskData | null, onFailure?: AuthenticationFailure) => {
     if (!task || !needsCompletedScopeAuthentication(task)) return task;
     let file = path.join(backend.root, task.id, "README.md");
     let sourceRoot = ctx.resolvedProject.gitRoot;
@@ -141,7 +150,7 @@ export function installCompletedScopeReaders(ctx: CommandContext) {
       label: "completed scope source Task",
       max_bytes: 64 * 1024 * 1024,
     });
-    return await authenticateSource(ctx, task, raw, file, sourceRoot);
+    return await authenticateSource(ctx, task, raw, file, sourceRoot, onFailure);
   };
   backend.getTask = async (id) => await authenticate(await getTask(id));
   const list = backend.listTasksWithWarnings.bind(backend);
@@ -153,17 +162,52 @@ export function installCompletedScopeReaders(ctx: CommandContext) {
     };
   };
   const projection = backend.listProjectionTasks.bind(backend);
-  backend.listProjectionTasks = async (opts) => {
+  const project = async (
+    opts?: { status?: readonly string[] },
+    onFailure?: AuthenticationFailure,
+  ) => {
     const summaries = await projection(opts);
     return await Promise.all(
       summaries.map(async (summary) => {
         if (!needsCompletedScopeAuthentication(summary)) return summary;
-        const full = await authenticate(await getTask(summary.id));
+        const full = await authenticate(await getTask(summary.id), onFailure);
         if (!full) throw new Error(`Completed scope source Task is missing: ${summary.id}`);
         return transferCompletedScopePermit(full, toTaskSummary(full));
       }),
     );
   };
+  backend.listProjectionTasks = (opts) => project(opts);
+  ctx.memo.completedScopeDiagnosticProjection = (onFailure) => project(undefined, onFailure);
+}
+
+/** Diagnostics retain unreadable records as blockers without issuing authentication permits. */
+export async function listCompletedScopeDiagnosticProjection(ctx: CommandContext) {
+  const load = ctx.memo.completedScopeDiagnosticProjection;
+  if (!load) return null;
+  const failures = new Map<string, CliError>();
+  const onFailure: AuthenticationFailure = (task, error) => failures.set(task.id, error);
+  const tasks = await supplementTaskProjectionFromWorktrees({
+    ctx,
+    tasks: await load(onFailure),
+    loadTask: async (taskId, branch) => {
+      failures.delete(taskId);
+      const task = await loadTaskFromBranchSnapshot({
+        ctx,
+        taskId,
+        branch,
+        readmePath: path.join(
+          ctx.resolvedProject.gitRoot,
+          ctx.config.paths.workflow_dir,
+          taskId,
+          "README.md",
+        ),
+        onAuthenticationFailure: onFailure,
+      });
+      if (!task) throw new Error(`Diagnostic Task source is missing: ${taskId}`);
+      return task;
+    },
+  });
+  return { tasks, failures };
 }
 
 /** A raw transactional copy needs its own source check before native metadata work. */
@@ -392,6 +436,7 @@ export async function loadTaskFromBranchSnapshot(opts: {
   readmePath: string;
   branch?: string | null;
   requireWorktree?: boolean;
+  onAuthenticationFailure?: AuthenticationFailure;
 }): Promise<TaskData | null> {
   if (!backendSupportsTaskBranchSnapshots(opts.ctx)) {
     return null;
@@ -433,6 +478,7 @@ export async function loadTaskFromBranchSnapshot(opts: {
         liveText,
         liveReadmePath,
         authoritativeWorktree.path,
+        opts.onAuthenticationFailure,
       );
     } catch (error) {
       if (
@@ -479,7 +525,14 @@ export async function loadTaskFromBranchSnapshot(opts: {
       readmePath: opts.readmePath,
       text,
     });
-    return await authenticateSource(opts.ctx, task, text, opts.readmePath);
+    return await authenticateSource(
+      opts.ctx,
+      task,
+      text,
+      opts.readmePath,
+      undefined,
+      opts.onAuthenticationFailure,
+    );
   }
   return null;
 }

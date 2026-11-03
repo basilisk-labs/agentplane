@@ -28,6 +28,7 @@ export async function installFakeGhPrLookup(opts: {
   mergedAt?: string | null;
   mergeCommitSha?: string | null;
   headSha?: string;
+  publishRemote?: string;
   baseSha?: string;
   prNumber?: number;
   protectedBranch?: string;
@@ -39,6 +40,7 @@ export async function installFakeGhPrLookup(opts: {
     fakeBin,
     [
       'import fs from "node:fs";',
+      'import { execFileSync } from "node:child_process";',
       "const args = process.argv.slice(2);",
       "const logPath = process.env.AGENTPLANE_GH_LOG;",
       "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
@@ -61,6 +63,12 @@ export async function installFakeGhPrLookup(opts: {
         head: { ref: opts.branch, sha: opts.headSha ?? "remote-head-sha" },
         base: { ref: "main", sha: opts.baseSha ?? "provider-base-sha" },
       })};`,
+      ...(opts.publishRemote
+        ? [
+            `pr.head.sha = execFileSync("git", ["ls-remote", "--heads", ${JSON.stringify(opts.publishRemote)}, ${JSON.stringify(`refs/heads/${opts.branch}`)}], { encoding: "utf8" }).trim().split(/\\s+/, 1)[0] || null;`,
+            `pr.base.sha = execFileSync("git", ["ls-remote", "--heads", ${JSON.stringify(opts.publishRemote)}, "refs/heads/main"], { encoding: "utf8" }).trim().split(/\\s+/, 1)[0] || null;`,
+          ]
+        : []),
       'if (route === "repos/example/repo/pulls" && params.get("head") === expectedHead) {',
       "  console.log(JSON.stringify([pr]));",
       "  process.exit(0);",
@@ -100,6 +108,7 @@ export async function installFakeGhPrApi(opts: {
   branch: string;
   existingResponse?: object[];
   createResponse: object;
+  publishRemote?: string;
   createError?: string;
   rejectEnvKey?: string;
   rejectEnvValue?: string;
@@ -111,6 +120,7 @@ export async function installFakeGhPrApi(opts: {
     fakeBin,
     [
       'import fs from "node:fs";',
+      'import { execFileSync } from "node:child_process";',
       "const args = process.argv.slice(2);",
       "const logPath = process.env.AGENTPLANE_GH_LOG;",
       "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
@@ -127,20 +137,29 @@ export async function installFakeGhPrApi(opts: {
       `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
       `const existingResponse = ${JSON.stringify(opts.existingResponse ?? [])};`,
       `const createResponse = ${JSON.stringify(opts.createResponse)};`,
+      `const publishRemote = ${JSON.stringify(opts.publishRemote ?? null)};`,
+      'const createdPath = new URL("created-pr.json", import.meta.url);',
+      'const created = fs.existsSync(createdPath) ? JSON.parse(fs.readFileSync(createdPath, "utf8")) : null;',
+      "const observations = [...existingResponse, ...(created ? [created] : [])];",
+      "function observed(pr) {",
+      "  if (!publishRemote) return pr;",
+      `  const sha = execFileSync("git", ["ls-remote", "--heads", publishRemote, ${JSON.stringify(`refs/heads/${opts.branch}`)}], { encoding: "utf8" }).trim().split(/\\s+/, 1)[0] || null;`,
+      `  return { ...pr, head: { ...pr.head, ref: ${JSON.stringify(opts.branch)}, sha } };`,
+      "}",
       `const createError = ${JSON.stringify(opts.createError ?? null)};`,
       'let method = "GET";',
       "for (let i = 2; i < args.length; i += 1) {",
       '  if (args[i] === "-X" && typeof args[i + 1] === "string") method = String(args[i + 1]).toUpperCase();',
       "}",
       'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("head") === expectedHead) {',
-      "  console.log(JSON.stringify(existingResponse));",
+      "  console.log(JSON.stringify(observations.map(observed)));",
       "  process.exit(0);",
       "}",
       'if (route.startsWith("repos/example/repo/pulls/") && method === "GET") {',
       '  const prNumber = Number(route.split("/").at(-1));',
-      "  const matching = existingResponse.find((candidate) => candidate && candidate.number === prNumber);",
+      "  const matching = observations.find((candidate) => candidate && candidate.number === prNumber);",
       "  if (matching) {",
-      "    console.log(JSON.stringify(matching));",
+      "    console.log(JSON.stringify(observed(matching)));",
       "    process.exit(0);",
       "  }",
       "}",
@@ -149,7 +168,8 @@ export async function installFakeGhPrApi(opts: {
       "    console.error(createError);",
       "    process.exit(1);",
       "  }",
-      "  console.log(JSON.stringify(createResponse));",
+      "  fs.writeFileSync(createdPath, JSON.stringify(createResponse));",
+      "  console.log(JSON.stringify(observed(createResponse)));",
       "  process.exit(0);",
       "}",
       'console.log("[]");',
@@ -183,12 +203,21 @@ export async function installFakeGhPrApiRequiringPublishedPacketHead(opts: {
       `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
       `const requiredSubject = ${JSON.stringify(opts.packetCommitSubject)};`,
       `const publishRemote = ${JSON.stringify(opts.publishRemote)};`,
+      'const createdPath = new URL("created-pr.json", import.meta.url);',
+      "function observed() {",
+      `  const sha = execFileSync("git", ["ls-remote", "--heads", publishRemote, ${JSON.stringify(`refs/heads/${opts.branch}`)}], { encoding: "utf8" }).trim().split(/\\s+/, 1)[0] || null;`,
+      `  return { number: 888, html_url: "https://github.com/example/repo/pull/888", state: "open", merged_at: null, merge_commit_sha: null, head: { ref: ${JSON.stringify(opts.branch)}, sha }, base: { ref: "main" } };`,
+      "}",
       'let method = "GET";',
       "for (let i = 2; i < args.length; i += 1) {",
       '  if (args[i] === "-X" && typeof args[i + 1] === "string") method = String(args[i + 1]).toUpperCase();',
       "}",
       'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("head") === expectedHead) {',
-      '  console.log("[]");',
+      "  console.log(JSON.stringify(fs.existsSync(createdPath) ? [observed()] : []));",
+      "  process.exit(0);",
+      "}",
+      'if (route === "repos/example/repo/pulls/888" && method === "GET" && fs.existsSync(createdPath)) {',
+      "  console.log(JSON.stringify(observed()));",
       "  process.exit(0);",
       "}",
       'if (route === "repos/example/repo/pulls" && method === "POST") {',
@@ -202,17 +231,8 @@ export async function installFakeGhPrApiRequiringPublishedPacketHead(opts: {
       `    console.error(${JSON.stringify('gh: HTTP 422: Validation Failed ({"message":"Validation Failed","errors":[{"resource":"PullRequest","field":"head","code":"invalid","message":"Head sha can\'t be blank"}]})')});`,
       "    process.exit(1);",
       "  }",
-      `  console.log(${JSON.stringify(
-        JSON.stringify({
-          number: 888,
-          html_url: "https://github.com/example/repo/pull/888",
-          state: "open",
-          merged_at: null,
-          merge_commit_sha: null,
-          head: { sha: "remote-head-sha" },
-          base: { ref: "main" },
-        }),
-      )});`,
+      '  fs.writeFileSync(createdPath, "created");',
+      "  console.log(JSON.stringify(observed()));",
       "  process.exit(0);",
       "}",
       'console.log("[]");',

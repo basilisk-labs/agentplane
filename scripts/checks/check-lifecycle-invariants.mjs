@@ -29,6 +29,7 @@ const checks = [
     files: [
       "packages/agentplane/src/commands/shared/workflow-step-branch.ts",
       "packages/agentplane/src/commands/shared/workflow-step.ts",
+      "packages/agentplane/src/commands/shared/workflow-operation-params.ts",
     ],
     patterns: [
       "close_tail_missing",

@@ -1,4 +1,13 @@
-import { access, mkdir, mkdtemp, readFile, symlink, utimes, writeFile } from "node:fs/promises";
+import {
+  access,
+  mkdir,
+  mkdtemp,
+  readFile,
+  realpath,
+  symlink,
+  utimes,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
@@ -46,6 +55,17 @@ async function writeMarker(
 }
 
 describe("testkit temporary-root cleanup", () => {
+  it("creates canonical owned roots through an aliased parent", async () => {
+    const parent = await mkOwnedTestDir();
+    const target = path.join(parent, "target");
+    const alias = path.join(parent, "alias");
+    await mkdir(target);
+    await symlink(target, alias, process.platform === "win32" ? "junction" : "dir");
+    const root = await createOwnedVitestTempRoot(alias);
+    expect(root).toBe(await realpath(root));
+    expect(path.dirname(root)).toBe(await realpath(target));
+  });
+
   it("uses bounded retries for transient cross-platform filesystem locks", async () => {
     const remover = vi.fn(() => Promise.resolve());
 

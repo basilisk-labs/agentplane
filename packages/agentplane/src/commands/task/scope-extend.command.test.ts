@@ -13,7 +13,16 @@ import {
 type Packet = { action: { kind: string }; exchange: NonNullable<AgentActionPacket["exchange"]> };
 import * as commitOwner from "../guard/impl/commit.js";
 import { CliError } from "../../shared/errors.js";
-import { readFile, writeFile, mkdir, symlink, rename, readdir, chmod } from "node:fs/promises";
+import {
+  readFile,
+  writeFile,
+  mkdir,
+  symlink,
+  rename,
+  readdir,
+  chmod,
+  realpath,
+} from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import * as proof from "../../adapters/task-backend/completed-scope-admission.js";
@@ -680,11 +689,22 @@ it.each([false, true])(
   { timeout: 120_000 },
   async (written) => {
     const { f, args, command, before } = await completedScopeFixture(false, true);
-    const file = path.join(f.root, command.config.paths.workflow_dir, f.id, "README.md");
+    const file = await realpath(
+      path.join(
+        command.resolvedProject.gitRoot,
+        command.config.paths.workflow_dir,
+        f.id,
+        "README.md",
+      ),
+    );
     const original = writes.writeTextIfChanged;
     let interrupt = true;
     const stop = vi.spyOn(writes, "writeTextIfChanged").mockImplementation(async (...call) => {
-      if (call[0] === file && interrupt) {
+      if (
+        interrupt &&
+        path.basename(call[0]) === "README.md" &&
+        (await realpath(call[0])) === file
+      ) {
         interrupt = false;
         if (written) await original(...call);
         throw new Error("Injected interruption at Task publication");
@@ -693,6 +713,7 @@ it.each([false, true])(
     });
     const failed = await invoke(f.root, args);
     stop.mockRestore();
+    expect(interrupt).toBe(false);
     expect(failed.code).not.toBe(0);
     const common = await taskBackend.resolveCommandGitCommonDir(command);
     const parent = path.join(common, "agentplane/completed-scope", f.id);
@@ -776,6 +797,20 @@ it(
         raw = await readFile(file, "utf8");
       await rename(file, `${file}.retained`);
       await expect(command.taskBackend.getTask(f.id)).rejects.toThrow();
+      const active = await invoke(f.root, ["task", "active", "--json"]);
+      expect(active.code, active.stdout + active.stderr).toBe(0);
+      const diagnostic = JSON.parse(active.stdout) as { items: { task: { id: string } }[] };
+      expect(diagnostic.items.find((item) => item.task.id === f.id)).toMatchObject({
+        task: { id: f.id, status: "malformed" },
+        next_action: { code: "kernel_record_invalid", command: null },
+        kernel: {
+          ready: false,
+          authority: { mutation: "read_only", grants_authority: false },
+          error: { reason: "completed_scope_admission_unproven" },
+        },
+      });
+      const strict = await invoke(f.root, ["task", "active", "--strict-read", "--json"]);
+      expect(strict.code).not.toBe(0);
       for (const argv of [
         ["task", "show", f.id],
         ["task", "list", "--all"],
@@ -791,6 +826,8 @@ it(
       );
       await expect(command.taskBackend.listTasks()).rejects.toThrow();
       await expect(command.taskBackend.listProjectionTasks!()).rejects.toThrow();
+      const refused = await invoke(f.root, ["task", "advance", f.id, "--agent-json"]);
+      expect(refused.code).not.toBe(0);
       await rename(file, `${file}.forged-retained`);
       await rename(`${file}.retained`, file);
       const restored = await command.taskBackend.getTask(f.id);

@@ -1,10 +1,9 @@
 import { expect } from "vitest";
 import { configureGitUser, tempRepo } from "@agentplane/testkit";
-import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { readFile, mkdir } from "node:fs/promises";
+import { readFile, mkdir, writeFile, realpath } from "node:fs/promises";
 import * as taskBackend from "../shared/task-backend.js";
 import * as proof from "../../adapters/task-backend/completed-scope-admission.js";
 import { git } from "./kernel-completed-external-rework.testkit.js";
@@ -57,13 +56,14 @@ export async function checkCompletedScopeFinish(ctx: CommandContext, id: string,
 
 async function checkHistoricalScope(before: TaskData, admitted: TaskData) {
   const repo = await tempRepo({ withDefaultConfig: true, branch: "main" });
+  const root = await realpath(repo.root);
   await configureGitUser(repo.root);
   await writeFile(path.join(repo.root, "seed.txt"), "unrelated repository\n");
   execFileSync("git", ["add", "."], { cwd: repo.root });
   execFileSync("git", ["commit", "-m", "seed historical reader"], { cwd: repo.root });
-  const command = await loadCommandContext({ cwd: repo.root });
+  const command = await loadCommandContext({ cwd: root });
   await command.taskBackend.writeTask(before);
-  const fresh = await loadCommandContext({ cwd: repo.root });
+  const fresh = await loadCommandContext({ cwd: root });
   const listed = await fresh.taskBackend.listTasks();
   const historical = listed.find((task) => task.id === before.id)!;
   expect(historical.extensions!.task_kernel).toEqual(before.extensions!.task_kernel);
@@ -76,7 +76,13 @@ async function checkHistoricalScope(before: TaskData, admitted: TaskData) {
   await command.taskBackend.writeTask(admitted);
   const config = structuredClone(command.config);
   config.paths.workflow_dir = "operations/native/tasks";
-  const custom = await loadCommandContext({ cwd: repo.root, config });
+  config.tasks_backend.config_path = "operations/native/backend.json";
+  await mkdir(path.join(repo.root, "operations/native"), { recursive: true });
+  await writeFile(
+    path.join(repo.root, config.tasks_backend.config_path),
+    JSON.stringify({ id: "local", version: 1, settings: { dir: config.paths.workflow_dir } }),
+  );
+  const custom = await loadCommandContext({ cwd: root, config });
   await custom.taskBackend.writeTask(before);
   const foreign = new Proxy(custom.taskBackend, { getPrototypeOf: () => null });
   const owner = await resolveTaskOwnerCommandContext({

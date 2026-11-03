@@ -5,6 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, expect, it, vi } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { GitContext } from "@agentplaneorg/core/git";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import {
   aggregate,
@@ -77,6 +78,7 @@ async function fixture() {
   const config = defaultConfig();
   config.workflow_mode = "branch_pr";
   const command = {
+    git: new GitContext({ gitRoot: root }),
     resolvedProject: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
     config,
     memo: {},

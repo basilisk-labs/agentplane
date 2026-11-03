@@ -216,7 +216,9 @@ function apBinPath(prefix) {
 const main = defineScript({
   name: "check-local-tarball-install-smoke.mjs",
   async run() {
-    const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-local-install-smoke-"));
+    const tempRoot = realpathSync(
+      mkdtempSync(path.join(os.tmpdir(), "agentplane-local-install-smoke-")),
+    );
     const packDir = path.join(tempRoot, "packs");
     const prefix = path.join(tempRoot, "prefix");
     const repo = path.join(tempRoot, "repo");
@@ -497,6 +499,21 @@ const main = defineScript({
         runFailure,
       });
       process.stdout.write(`installed Recipe matrix OK (scenarios=${recipeMatrix.count})\n`);
+
+      const authoringExamples = JSON.parse(
+        run(process.execPath, [
+          path.resolve("packages/recipes/scripts/validate-doc-examples.mjs"),
+          path.dirname(installedModules),
+        ]),
+      );
+      assert.equal(
+        authoringExamples.package_version,
+        JSON.parse(readFileSync("packages/recipes/package.json", "utf8")).version,
+        "authoring examples must qualify the same packed Recipe version",
+      );
+      process.stdout.write(
+        `installed authoring examples OK ${JSON.stringify(authoringExamples)}\n`,
+      );
 
       const planningMatrix = runInstalledPlanningMatrix({
         agentplane,

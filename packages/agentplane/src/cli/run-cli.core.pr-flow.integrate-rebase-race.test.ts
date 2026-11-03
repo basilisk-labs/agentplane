@@ -123,9 +123,6 @@ describe("runCli integrate rebase race", () => {
       });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
-      await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
-      await execFileAsync("git", ["add", "base.txt"], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", "chore base update"], { cwd: root });
 
       const io = captureStdIO();
       try {
@@ -140,7 +137,7 @@ describe("runCli integrate rebase race", () => {
           "--root",
           root,
         ]);
-        expect(code).toBe(5);
+        expect(code, io.stderr).toBe(5);
         expect(io.stderr).toContain("Base branch moved before fast-forward integration");
       } finally {
         io.restore();

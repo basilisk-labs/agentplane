@@ -20,7 +20,7 @@ export function parsePrMeta(raw: string, taskId: string): PrMeta {
     parsed = JSON.parse(raw) as unknown;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`JSON Parse error: ${message}`);
+    throw new SyntaxError(`JSON Parse error: ${message}`, { cause: err });
   }
   const meta = validateTaskPrMeta(parsed);
   if (meta.task_id !== taskId) throw new Error("pr/meta.json task_id mismatch");
@@ -33,7 +33,7 @@ export function parsePrMetaForwardCompatible(raw: string, taskId: string): PrMet
     parsed = JSON.parse(raw) as unknown;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`JSON Parse error: ${message}`);
+    throw new SyntaxError(`JSON Parse error: ${message}`, { cause: err });
   }
   try {
     const meta = validateTaskPrMeta(parsed);

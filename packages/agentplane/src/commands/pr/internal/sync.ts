@@ -397,6 +397,8 @@ export async function syncPrArtifacts(opts: {
       });
       return { meta, prDir, resolved };
     } finally {
+      // Artifact writes bypass GitContext, so publication needs a fresh status observation.
+      ctx.git.invalidateStatus();
       await restoreIncidentRegistryIfNeeded({
         gitRoot: resolved.gitRoot,
         previousText: incidentsTextBefore,

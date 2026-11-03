@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
+  cpSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -23,6 +24,7 @@ const TEST_ROOT = path.join(REPO_ROOT, ".agentplane/cache/rf04-test-targets");
 const temporaryRoots: string[] = [];
 const TEMPORARY_ROOT_CLEANUP_ATTEMPTS = 4;
 const RETRYABLE_CLEANUP_CODES = new Set(["EBUSY", "ENOTEMPTY", "EPERM"]);
+const bunPackageKey = (name: string) => name.replace(/\+[^@+]+$/u, "");
 
 type TemporaryRootRemover = (root: string) => void;
 
@@ -720,7 +722,7 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     ).toThrow("does not link");
   });
 
-  it("runs the real exact-anchor CURRENT_AGENT adapter-failure entrypoint offline", async () => {
+  it("runs the real exact-anchor CURRENT_AGENT adapter-failure entrypoint with frozen dependencies", async () => {
     const baseline = await importModule<{
       stableJson(value: unknown, spaces?: number): string;
     }>("scripts/lib/agent-efficiency-baseline.mjs");
@@ -778,8 +780,34 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       cwd: subject,
     });
     execFileSync("/usr/bin/git", ["config", "core.hooksPath", "/dev/null"], { cwd: subject });
-    // Keep host Git maintenance outside the mocked episode boundary without changing the
-    // immutable RF-04 capture harness or weakening its .git mutation detector.
+    // Prepare frozen inputs before the replay's isolated execution.
+    execFileSync(
+      "bun",
+      [
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--filter=agentplane*",
+        "--filter=@agentplaneorg/core",
+        `--cache-dir=${path.join(root, "dependency-cache")}`,
+      ],
+      { cwd: subject, timeout: 60_000 },
+    );
+    const frozenStore = path.join(subject, "node_modules/.bun");
+    const store = path.join(REPO_ROOT, "node_modules/.bun");
+    const installed = new Set(readdirSync(store).map(bunPackageKey));
+    for (const name of readdirSync(frozenStore)) {
+      const target = path.join(store, name);
+      if (name === "node_modules" || installed.has(bunPackageKey(name))) continue;
+      temporaryRoots.push(target);
+      cpSync(path.join(frozenStore, name), target, {
+        recursive: true,
+        verbatimSymlinks: true,
+        errorOnExist: true,
+        force: false,
+      });
+    }
+    // Disable fixture Git maintenance before capture and retain the .git mutation detector.
     const fixtureRoot = path.join(subject, ".rf04-fixture");
     mkdirSync(fixtureRoot, { recursive: true });
     const sterileGitEnvironment = {

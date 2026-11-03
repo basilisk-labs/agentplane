@@ -24,6 +24,7 @@ import {
 
 async function installFakeGlab(opts: {
   branch: string;
+  publishRemote: string;
 }): Promise<{ fakeBin: string; logPath: string }> {
   const fakeBin = await mkTempDir();
   const logPath = path.join(fakeBin, "glab.log");
@@ -31,6 +32,7 @@ async function installFakeGlab(opts: {
   const source = [
     "#!/usr/bin/env node",
     'const fs = require("node:fs");',
+    'const { execFileSync } = require("node:child_process");',
     "const args = process.argv.slice(2);",
     `fs.appendFileSync(${JSON.stringify(logPath)}, JSON.stringify(args) + "\\n");`,
     'if (args[0] !== "api") process.exit(2);',
@@ -41,7 +43,10 @@ async function installFakeGlab(opts: {
     'const method = methodIndex >= 0 ? args[methodIndex + 1] : "GET";',
     'if (endpoint === "projects/example%2Frepo") { process.stdout.write(JSON.stringify({ id: 7 })); process.exit(0); }',
     `if (endpoint.includes("/merge_requests?") && method === "GET") { process.stdout.write("[]"); process.exit(0); }`,
-    `if (endpoint.endsWith("/merge_requests") && method === "POST") { process.stdout.write(JSON.stringify({ iid: 42, web_url: "https://gitlab.com/example/repo/-/merge_requests/42", state: "opened", source_branch: ${JSON.stringify(opts.branch)}, target_branch: "main", source_project_id: 7, sha: "head-sha", has_conflicts: false, detailed_merge_status: "mergeable", diff_refs: { base_sha: "base-sha", head_sha: "head-sha" } })); process.exit(0); }`,
+    `if ((endpoint.endsWith("/merge_requests") && method === "POST") || (endpoint.endsWith("/merge_requests/42") && method === "GET")) {`,
+    `  const sha = execFileSync("git", ["--git-dir", ${JSON.stringify(opts.publishRemote)}, "rev-parse", ${JSON.stringify(`refs/heads/${opts.branch}`)}], { encoding: "utf8" }).trim();`,
+    `  process.stdout.write(JSON.stringify({ iid: 42, web_url: "https://gitlab.com/example/repo/-/merge_requests/42", state: "opened", source_branch: ${JSON.stringify(opts.branch)}, target_branch: "main", source_project_id: 7, sha, has_conflicts: false, detailed_merge_status: "mergeable", diff_refs: { base_sha: "base-sha", head_sha: sha } })); process.exit(0);`,
+    "}",
     "process.stderr.write(`unexpected glab endpoint: ${method} ${endpoint}`);",
     "process.exit(4);",
     "",
@@ -66,7 +71,7 @@ describe("runCli GitLab change-request flow", { timeout: PR_FLOW_INTEGRATION_TIM
       cwd: root,
       env: cleanGitEnv(),
     });
-    await configurePushableOrigin(root);
+    const publishRemote = await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskOutput = captureStdIO();
@@ -101,7 +106,7 @@ describe("runCli GitLab change-request flow", { timeout: PR_FLOW_INTEGRATION_TIM
       cwd: root,
       env: cleanGitEnv(),
     });
-    const { fakeBin, logPath } = await installFakeGlab({ branch });
+    const { fakeBin, logPath } = await installFakeGlab({ branch, publishRemote });
     const originalPath = process.env.PATH;
     process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
     const output = captureStdIO();
@@ -147,5 +152,8 @@ describe("runCli GitLab change-request flow", { timeout: PR_FLOW_INTEGRATION_TIM
       .map((line) => JSON.parse(line) as string[]);
     expect(calls.length).toBeGreaterThan(0);
     expect(calls.every((args) => args[0] === "api" && args.includes("--hostname"))).toBe(true);
+    expect(calls.some((args) => args.includes("projects/example%2Frepo/merge_requests/42"))).toBe(
+      true,
+    );
   });
 });
