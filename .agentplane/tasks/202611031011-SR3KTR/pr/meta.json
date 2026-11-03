@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f6fac9e5ec6a3a976c72eec9ffc8f2a01da49f5aafd8280296629c618b9275e2",
   "pr_number": 6974,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6974",
+  "pre_merge_closure": {
+    "basis_commit": "0bb5522535fd4a7b9ede3818b157a10633df5669",
+    "branch": "task/202611031011-SR3KTR/preserve-gitlab-source-branches-and-qualify-lega",
+    "pr_number": 6974,
+    "recorded_at": "2026-11-03T14:55:44.482Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
