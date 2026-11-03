@@ -1,1 +1,1 @@
-🚧 AN0ZJ4 task: Bind quarantine publication to the canonical Kernel revision [202611030256-AN0ZJ4]
+✅ AN0ZJ4 task: Bind quarantine publication to the canonical Kernel revision [202611030256-AN0ZJ4]
