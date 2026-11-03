@@ -934,10 +934,12 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git ls-files --error-unmatch -- .agentplane/config.json >/dev/null 2>&1; then
+            git add -- .agentplane/config.json
+          fi
           git add \
             "${{ steps.release_evidence.outputs.readme_path }}" \
             .agentplane/WORKFLOW.md \
-            .agentplane/config.json \
             bun.lock \
             docs/reference/generated-reference.mdx \
             packages/agentplane/package.json \
