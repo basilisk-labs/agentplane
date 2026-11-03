@@ -3,7 +3,8 @@
   "branch": "task/202611030256-AN0ZJ4/bind-quarantine-publication-to-the-canonical-ker",
   "created_at": "2026-11-03T03:08:37.842Z",
   "diffstat_sha256": "sha256:251e44b17aa34dfc74a86fe26ce71749c84bfc8ddcd1b901d4874989c5146fa0",
-  "last_verified_at": null,
+  "last_verified_at": "2026-11-03T04:35:20.837Z",
+  "last_verified_diffstat_sha256": "sha256:251e44b17aa34dfc74a86fe26ce71749c84bfc8ddcd1b901d4874989c5146fa0",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202611030256-AN0ZJ4",
   "updated_at": "2026-11-03T03:08:37.842Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
