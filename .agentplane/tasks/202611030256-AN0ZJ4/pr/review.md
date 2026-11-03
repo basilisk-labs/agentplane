@@ -31,8 +31,8 @@ Created: 2026-11-03T03:08:37.842Z
 ```text
  .../native-quarantine-artifact-proof.test.ts       | 94 ++++++++++++++++++++--
  .../shared/native-quarantine-artifact-proof.ts     | 35 ++++----
- ...ernel-repository-coordinator-quarantine.test.ts | 44 +++++++++-
- 3 files changed, 151 insertions(+), 22 deletions(-)
+ ...ernel-repository-coordinator-quarantine.test.ts | 77 +++++++++---------
+ 3 files changed, 148 insertions(+), 58 deletions(-)
 ```
 
 </details>
