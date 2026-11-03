@@ -1,1 +1,1 @@
-🚧 Q8FMSQ task: Bind native quarantine publication to the exact execution start [202611030001-Q8FMSQ]
+✅ Q8FMSQ task: Bind native quarantine publication to the exact execution start [202611030001-Q8FMSQ]
