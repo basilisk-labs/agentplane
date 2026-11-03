@@ -6,7 +6,7 @@ Created: 2026-11-03T00:42:26.289Z
 
 - Task: `202611030001-Q8FMSQ`
 - Title: Bind native quarantine publication to the exact execution start
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611030001-Q8FMSQ/bind-native-quarantine-publication-to-the-exact`
 - Canonical task record: `.agentplane/tasks/202611030001-Q8FMSQ/README.md`
 
