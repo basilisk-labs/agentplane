@@ -64,7 +64,7 @@ describe(
   "runCli PR validation and hydration flow (pr open hydration scenarios)",
   { timeout: PR_FLOW_LONG_TIMEOUT_MS },
   () => {
-    it("pr open reports linked GitHub PR identity when pr metadata already has one", async () => {
+    it("pr open --sync-only reports stored GitHub PR identity", async () => {
       const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
@@ -98,6 +98,7 @@ describe(
       await runCliSilent([
         "pr",
         "open",
+        "--sync-only",
         taskId,
         "--author",
         "CODER",
@@ -121,6 +122,7 @@ describe(
         const code = await runCli([
           "pr",
           "open",
+          "--sync-only",
           taskId,
           "--author",
           "CODER",
@@ -153,7 +155,7 @@ describe(
           env: cleanGitEnv(),
         },
       );
-      await configurePushableOrigin(root);
+      const publishRemote = await configurePushableOrigin(root);
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
       let taskId = "";
@@ -182,8 +184,10 @@ describe(
       }
 
       const branch = `task/${taskId}/existing-pr`;
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
       const { fakeBin, logPath } = await installFakeGhPrLookup({
         scenarioName: "open-existing",
+        publishRemote,
         branch,
       });
       const originalPath = process.env.PATH;
@@ -245,7 +249,7 @@ describe(
           env: cleanGitEnv(),
         },
       );
-      await configurePushableOrigin(root);
+      const publishRemote = await configurePushableOrigin(root);
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
       let taskId = "";
@@ -274,6 +278,7 @@ describe(
       }
 
       const branch = `task/${taskId}/remote-create-second-pass`;
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
       await runCliSilent([
         "pr",
         "open",
@@ -302,6 +307,7 @@ describe(
 
       const { fakeBin, logPath } = await installFakeGhPrApi({
         scenarioName: "open-create-second-pass",
+        publishRemote,
         branch,
         createResponse: {
           number: 654,
@@ -363,7 +369,7 @@ describe(
       expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(githubBodyBefore);
     });
 
-    it("pr open leaves only PR metadata dirty when a rerun links a newly created remote PR", async () => {
+    it("pr open commits and publishes only PR metadata when a rerun links a newly created remote PR", async () => {
       const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
@@ -378,7 +384,7 @@ describe(
           env: cleanGitEnv(),
         },
       );
-      await configurePushableOrigin(root);
+      const publishRemote = await configurePushableOrigin(root);
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
       let taskId = "";
@@ -390,7 +396,7 @@ describe(
           "--title",
           "PR open rerun tracks remote PR identity",
           "--description",
-          "Rerunning pr open after remote PR creation should track remote identity without advancing HEAD.",
+          "Rerunning pr open publishes the new remote identity in one separate metadata commit.",
           "--priority",
           "med",
           "--owner",
@@ -431,6 +437,7 @@ describe(
 
       const { fakeBin, logPath } = await installFakeGhPrApi({
         scenarioName: "open-rerun-stable",
+        publishRemote,
         branch,
         createResponse: {
           number: 777,
@@ -470,7 +477,25 @@ describe(
       const { stdout: afterHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
         cwd: root,
       });
-      expect(afterHeadStdout.trim()).toBe(beforeHead);
+      expect(afterHeadStdout.trim()).not.toBe(beforeHead);
+      const { stdout: committedPaths } = await execFileAsync(
+        "git",
+        ["diff", "--name-only", beforeHead, "HEAD"],
+        { cwd: root },
+      );
+      expect(committedPaths.trim()).toBe(`.agentplane/tasks/${taskId}/pr/meta.json`);
+      const { stdout: commitCount } = await execFileAsync(
+        "git",
+        ["rev-list", "--count", `${beforeHead}..HEAD`],
+        { cwd: root },
+      );
+      expect(commitCount.trim()).toBe("1");
+      const { stdout: publishedHead } = await execFileAsync(
+        "git",
+        ["--git-dir", publishRemote, "rev-parse", `refs/heads/${branch}`],
+        { cwd: root },
+      );
+      expect(publishedHead.trim()).toBe(afterHeadStdout.trim());
       expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(firstReview);
       expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(firstGithubBody);
 
@@ -490,7 +515,7 @@ describe(
         ["status", "--short", "--untracked-files=no"],
         { cwd: root },
       );
-      expect(statusOut.trim()).toBe(`M .agentplane/tasks/${taskId}/pr/meta.json`);
+      expect(statusOut.trim()).toBe("");
     });
 
     it("pr open refreshes review/body when a second run observes an existing remote PR", async () => {
@@ -508,6 +533,7 @@ describe(
           env: cleanGitEnv(),
         },
       );
+      const publishRemote = await configurePushableOrigin(root);
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
       let taskId = "";
@@ -536,6 +562,7 @@ describe(
       }
 
       const branch = `task/${taskId}/existing-pr-second-pass`;
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
       await runCliSilent([
         "pr",
         "open",
@@ -566,6 +593,7 @@ describe(
 
       const { fakeBin, logPath } = await installFakeGhPrLookup({
         scenarioName: "open-existing-second-pass",
+        publishRemote,
         branch,
       });
       const originalPath = process.env.PATH;

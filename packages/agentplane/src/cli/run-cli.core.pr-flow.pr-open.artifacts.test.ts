@@ -105,11 +105,9 @@ describe("runCli pr open flow artifacts", { timeout: PR_FLOW_INTEGRATION_TIMEOUT
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ pr open");
-      expect(io.stdout).toContain(
-        "local PR artifacts synced; remote change-request creation failed",
-      );
+      expect(code, io.stderr).toBe(5);
+      expect(io.stdout).not.toContain("✅ pr open");
+      expect(io.stderr).toContain("PR publication left uncommitted task artifacts");
     } finally {
       io.restore();
     }

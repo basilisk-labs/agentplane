@@ -264,6 +264,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
 
       const { fakeBin } = await installFakeGhPrApi({
         scenarioName: "open-inherited-main-upstream",
+        publishRemote: publishRemotePath,
         branch,
         createResponse: {
           number: 916,
@@ -537,6 +538,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
     });
     const { fakeBin } = await installFakeGhPrApi({
       scenarioName: "open-unpublished-branch",
+      publishRemote: publishRemotePath,
       branch,
       createResponse: {
         number: 912,
@@ -672,6 +674,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
 
     const { fakeBin } = await installFakeGhPrApi({
       scenarioName: "open-unpublished-committed-artifacts",
+      publishRemote: publishRemotePath,
       branch,
       createResponse: {
         number: 913,
@@ -809,6 +812,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
 
       const { fakeBin } = await installFakeGhPrApi({
         scenarioName: "open-existing-published-head",
+        publishRemote: publishRemotePath,
         branch,
         createResponse: {
           number: 914,
@@ -831,7 +835,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
         fakeGitPath,
         [
           "#!/usr/bin/env node",
-          "const { spawnSync } = require('node:child_process');",
+          "const { spawnSync, execFileSync } = require('node:child_process');",
           `const realGit = ${JSON.stringify(realGit)};`,
           `const publishRemote = ${JSON.stringify(publishRemotePath)};`,
           "const args = process.argv.slice(2);",
@@ -840,8 +844,12 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
           "  process.exit(0);",
           "}",
           "if (args[0] === 'push' && args.includes('--no-verify')) {",
-          "  console.error('simulated push failure for published-branch regression');",
-          "  process.exit(1);",
+          '  const local = execFileSync(realGit, ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();',
+          `  const published = execFileSync(realGit, ["--git-dir", publishRemote, "rev-parse", ${JSON.stringify(`refs/heads/${branch}`)}], { encoding: "utf8" }).trim();`,
+          "  if (local === published) {",
+          "    console.error('redundant push of an already published head');",
+          "    process.exit(1);",
+          "  }",
           "}",
           "const result = spawnSync(realGit, args, { stdio: 'inherit', env: process.env });",
           "if (result.error) throw result.error;",

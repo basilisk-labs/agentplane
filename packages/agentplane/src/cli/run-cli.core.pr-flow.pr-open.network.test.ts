@@ -78,7 +78,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
       cwd: root,
       env: cleanGitEnv(),
     });
-    await configurePushableOrigin(root);
+    const publishRemote = await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore test setup"], {
       cwd: root,
@@ -118,6 +118,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     });
     const { fakeBin, logPath } = await installFakeGhPrApi({
       scenarioName: "open-create",
+      publishRemote,
       branch,
       createResponse: {
         number: 654,
@@ -276,7 +277,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
       cwd: root,
       env: cleanGitEnv(),
     });
-    await configurePushableOrigin(root);
+    const publishRemote = await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
@@ -312,6 +313,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     });
     const { fakeBin, logPath } = await installFakeGhPrApi({
       scenarioName: "open-dotenv-auth",
+      publishRemote,
       branch,
       rejectEnvKey: "GITHUB_TOKEN",
       rejectEnvValue: "dotenv-bad-token",

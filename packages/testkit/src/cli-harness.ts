@@ -1,6 +1,7 @@
 import { execFile } from "node:child_process";
 import {
   access,
+  chmod,
   cp,
   mkdir,
   mkdtemp,
@@ -31,6 +32,7 @@ export * from "./cli-harness/stdio.js";
 export * from "./runtime-env.js";
 
 const execFileAsync = promisify(execFile);
+const quoteShellArgument = (value: string) => `'${value.replaceAll("'", "'\"'\"'")}'`;
 
 const EVALUATOR_FIXTURE_POLICY_PATHS = [
   ".agentplane/policy/context.must.md",
@@ -518,6 +520,48 @@ export async function prepareHostedIntegrateFixture(opts: {
     cwd: opts.root,
     env,
   });
+  await execFileAsync("git", ["push", "--no-verify", publishRemote, "main:refs/heads/main"], {
+    cwd: opts.root,
+    env,
+  });
+  const transportBin = await mkTempDir();
+  const { stdout: gitLocations } = await execFileAsync(
+    process.platform === "win32" ? "where" : "which",
+    ["git"],
+    { cwd: opts.root, env },
+  );
+  if (process.platform === "win32") {
+    await writeFile(
+      path.join(transportBin, "git-transport.mjs"),
+      [
+        'import { spawnSync } from "node:child_process";',
+        "const args = process.argv.slice(2);",
+        'if (args.includes("ls-remote")) {',
+        '  const index = args.indexOf("https://github.com/example/repo.git");',
+        `  if (index >= 0) args[index] = ${JSON.stringify(publishRemote)};`,
+        "}",
+        `const result = spawnSync(${JSON.stringify(gitLocations.trim().split(/\r?\n/u)[0])}, args, { stdio: "inherit", env: process.env });`,
+        "if (result.error) throw result.error;",
+        "process.exit(result.status ?? 1);",
+      ].join("\n"),
+    );
+  }
+  const transportLauncher = path.join(
+    transportBin,
+    process.platform === "win32" ? "git.cmd" : "git",
+  );
+  const realGit = gitLocations.trim().split(/\r?\n/u)[0]!;
+  // Preserve the provider URL while live Git proof reads the isolated bare repository.
+  await writeFile(
+    transportLauncher,
+    process.platform === "win32"
+      ? '@echo off\r\nnode "%~dp0\\git-transport.mjs" %*\r\n'
+      : `#!/bin/sh\nif [ "$1" = "ls-remote" ]; then\n  exec ${quoteShellArgument(realGit)} -c ${quoteShellArgument(`url.${publishRemote}.insteadOf=https://github.com/example/repo.git`)} "$@"\nfi\nexec ${quoteShellArgument(realGit)} "$@"\n`,
+  );
+  if (process.platform !== "win32") await chmod(transportLauncher, 0o755);
+  const previousPath = process.env.PATH;
+  process.env.PATH = `${transportBin}${path.delimiter}${previousPath ?? ""}`;
+  testEnvRestorations.push(() => restoreEnvValue("PATH", previousPath));
 
   const previousGhBin = process.env.AGENTPLANE_GH_BIN;
   const previousGhArgs = process.env.AGENTPLANE_GH_ARGS;
@@ -541,14 +585,10 @@ export async function prepareHostedIntegrateFixture(opts: {
     process.env.AGENTPLANE_GH_LOG = fakeGh.logPath;
   };
 
-  const { stdout: initialHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-    cwd: opts.root,
-    env,
-  });
   const initialFakeGh = await installFakeGhPrLookup({
     scenarioName: `${opts.scenarioName}-initial`,
     branch: opts.branch,
-    headSha: initialHeadRaw.trim(),
+    publishRemote,
   });
   registerTestTempPath(initialFakeGh.fakeBin);
   activateFakeGh(initialFakeGh);
@@ -623,14 +663,10 @@ export async function prepareHostedIntegrateFixture(opts: {
     "--yes",
   ]);
 
-  const { stdout: closureHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-    cwd: opts.root,
-    env,
-  });
   const publishFakeGh = await installFakeGhPrLookup({
     scenarioName: `${opts.scenarioName}-publish`,
     branch: opts.branch,
-    headSha: closureHeadRaw.trim(),
+    publishRemote,
   });
   registerTestTempPath(publishFakeGh.fakeBin);
   activateFakeGh(publishFakeGh);
@@ -739,7 +775,7 @@ export async function prepareHostedIntegrateFixture(opts: {
   const finalFakeGh = await installFakeGhPrLookup({
     scenarioName: `${opts.scenarioName}-final`,
     branch: opts.branch,
-    headSha,
+    publishRemote,
     ...(opts.protectedBase ? { protectedBranch: "main" } : {}),
   });
   registerTestTempPath(finalFakeGh.fakeBin);

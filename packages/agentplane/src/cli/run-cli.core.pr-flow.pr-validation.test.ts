@@ -705,6 +705,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       const code = await runCli([
         "pr",
         "open",
+        "--sync-only",
         taskId,
         "--author",
         "CODER",
@@ -752,34 +753,20 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       ioTask.restore();
     }
 
-    await runCliSilent([
-      "pr",
-      "open",
-      taskId,
-      "--author",
-      "CODER",
-      "--branch",
-      `task/${taskId}/pr-open`,
-      "--root",
-      root,
-    ]);
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
+    for (const author of ["CODER", "REVIEWER"]) {
+      const code = await runCliSilent([
         "pr",
         "open",
+        "--sync-only",
         taskId,
         "--author",
-        "REVIEWER",
+        author,
         "--branch",
         `task/${taskId}/pr-open`,
         "--root",
         root,
       ]);
       expect(code).toBe(0);
-    } finally {
-      io.restore();
     }
   });
 
@@ -984,6 +971,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
     await runCliSilent([
       "pr",
       "open",
+      "--sync-only",
       taskId,
       "--author",
       "CODER",
@@ -999,7 +987,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
     const io = captureStdIO();
     try {
       const code = await runCli(["pr", "check", taskId, "--root", root]);
-      expect(code).toBe(3);
+      expect(code, io.stderr).toBe(3);
       expect(io.stderr).toContain("JSON Parse error:");
     } finally {
       io.restore();
@@ -1089,7 +1077,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
       expect(io.stderr).toContain(
-        "agentplane pr <open|update|check|flow status|conflict-rework|note|close|close-superseded>",
+        "agentplane pr <open|adopt|update|check|flow status|conflict-rework|note|close|close-superseded>",
       );
     } finally {
       io.restore();

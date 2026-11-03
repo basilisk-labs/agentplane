@@ -12,6 +12,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { GitContext } from "@agentplaneorg/core/git";
 
 const ports = vi.hoisted(() => ({
   task: vi.fn(),
@@ -86,6 +87,7 @@ async function fixture(provider: "github" | "gitlab" = "github") {
   };
   ports.task.mockResolvedValue({ task });
   const ctx = {
+    git: new GitContext({ gitRoot: root }),
     resolvedProject: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
     config,
     taskBackend: { getTask: vi.fn().mockResolvedValue(task), writeTask: vi.fn() },
