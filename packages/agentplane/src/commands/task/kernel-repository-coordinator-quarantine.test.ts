@@ -9,7 +9,7 @@ import {
   taskKernel as k,
   withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import { buildStateFingerprint, type AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import type { CommandContext } from "../shared/task-backend.js";
 import { makeKernelRecord, readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import { LocalTaskByteStore } from "../../backends/task-backend/local-task-byte-store.js";
@@ -283,6 +283,17 @@ async function fixture(
   for (const file of cleanupPaths) await rm(path.join(repo.root, file));
   const backup = `${workflowDir}/${store.backupLocation(snapshot)}`;
   const pair = [readme, backup].toSorted();
+  const issuedAuthorityDigest = k.kernelDigest("fixture delegated authority");
+  const present = (source: string, value: unknown) => ({
+    state: "present" as const,
+    source,
+    value,
+  });
+  const absent = {
+    state: "unavailable" as const,
+    source: "canonical_episode",
+    reason_code: "not_required_for_semantic_episode",
+  };
   const order = {
     work_order_id: k.kernelDigest("fixture issued WorkOrder"),
     role: "EXECUTOR",
@@ -294,7 +305,7 @@ async function fixture(
       plan_revision: 1,
       plan_digest: plan.digest,
       repository_fingerprint: fingerprint,
-      authority_digest: k.kernelDigest("fixture delegated authority"),
+      authority_digest: issuedAuthorityDigest,
       work_item_id: "quarantine",
       claim_id: claimId,
       attempt: 1,
@@ -305,6 +316,35 @@ async function fixture(
       allowed_tool_classes: ["workspace_write"],
       writable_roots: scopeRoots.map((root) => path.join(repo.root, root)),
     },
+    state_fingerprint: buildStateFingerprint({
+      task_id: primaryId,
+      task_revision: canonical.revision,
+      git_head: base,
+      worktree: repo.root,
+      components: {
+        task: present("canonical_task", record.digest),
+        git: present("native_repository_content", fingerprint),
+        backend_projection: present("canonical_backend", "local"),
+        plan: present("canonical_plan", {
+          revision: plan.revision,
+          digest: plan.digest,
+          state: plan.state,
+        }),
+        policy: present("native_policy", []),
+        capability: present("canonical_capability", {
+          authority_digest: issuedAuthorityDigest,
+          capabilities: requirements.capabilities,
+          repository_effects: requirements.repository_effects,
+          external_effects: requirements.external_effects,
+        }),
+        authority: present("canonical_authority", {
+          issued: issuedAuthorityDigest,
+          lineage: authority.digest,
+        }),
+        knowledge: absent,
+        provider: absent,
+      },
+    }),
   } as unknown as AgentWorkOrderV2;
   const proof = {
     gitRoot: repo.root,

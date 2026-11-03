@@ -210,8 +210,26 @@ function matchesIssuedRevision(
 ): boolean {
   const { aggregate, events, documents } = approved.record;
   const revision = order.task.revision;
-  if (task.revision !== aggregate.revision) return false;
-  if (revision === aggregate.revision) return true;
+  const fingerprint = order.state_fingerprint;
+  const binding = order.canonical_binding;
+  if (
+    binding?.phase !== "implementation" ||
+    fingerprint.task_id !== task.id ||
+    fingerprint.task_revision !== revision ||
+    fingerprint.components.authority.digest !==
+      k.kernelDigest({
+        state: "present",
+        source: "canonical_authority",
+        value: { issued: binding.authority_digest, lineage: approved.authority.digest },
+      })
+  )
+    return false;
+  // The backend's persistence version is independent of the sealed Kernel revision.
+  if (revision === aggregate.revision)
+    return (
+      fingerprint.components.task.digest ===
+      k.kernelDigest({ state: "present", source: "canonical_task", value: approved.record.digest })
+    );
   // Native begin prepares the immutable WorkOrder before persisting its one start transition.
   // Accept that exact command and receipt, never an arbitrary newer Task revision.
   if (revision === null || aggregate.revision !== revision + 1) return false;
@@ -220,8 +238,6 @@ function matchesIssuedRevision(
   const event = subsequent[0]!;
   const receipt = aggregate.mutation_receipts[event.mutation_id];
   if (!receipt) return false;
-  const binding = order.canonical_binding;
-  if (binding?.phase !== "implementation") return false;
   const item = aggregate.work_items[binding.work_item_id];
   if (!item || item.revision < 2) return false;
   const command: k.TaskCommand = {
@@ -248,7 +264,6 @@ function matchesIssuedRevision(
     events.filter((retained) => retained.task_revision <= revision),
     documents,
   );
-  const fingerprint = order.state_fingerprint;
   return Boolean(
     started &&
     event.kind === "work_item_transitioned" &&
@@ -263,16 +278,8 @@ function matchesIssuedRevision(
     receipt.event_digests[0] === k.kernelDigest(event) &&
     receipt.aggregate_digest ===
       k.kernelDigest({ ...aggregate, mutation_receipts: previousReceipts }) &&
-    fingerprint.task_id === task.id &&
-    fingerprint.task_revision === revision &&
     fingerprint.components.task.digest ===
-      k.kernelDigest({ state: "present", source: "canonical_task", value: before.digest }) &&
-    fingerprint.components.authority.digest ===
-      k.kernelDigest({
-        state: "present",
-        source: "canonical_authority",
-        value: { issued: binding.authority_digest, lineage: approved.authority.digest },
-      }),
+      k.kernelDigest({ state: "present", source: "canonical_task", value: before.digest }),
   );
 }
 

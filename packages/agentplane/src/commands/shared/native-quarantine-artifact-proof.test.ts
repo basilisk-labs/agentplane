@@ -231,7 +231,10 @@ function git(root: string, ...args: string[]): string {
   return result.stdout.trimEnd();
 }
 
-async function startedFixture(workflowDir = ".agentplane/tasks") {
+async function startedFixture(
+  workflowDir = ".agentplane/tasks",
+  options: { persistenceWrites?: number; issueAfterBegin?: boolean } = {},
+) {
   const repo = await tempRepo({ branch: "main" });
   repositories.push(repo);
   git(repo.root, "commit", "--allow-empty", "-m", "fixture repository");
@@ -381,6 +384,10 @@ async function startedFixture(workflowDir = ".agentplane/tasks") {
   primary.execution_contract!.authority.allowed_capabilities = requirements.capabilities;
   const backend = new LocalBackend({ dir: path.join(repo.root, workflowDir) });
   await backend.writeTask(primary);
+  for (let index = 0; index < (options.persistenceWrites ?? 0); index += 1) {
+    const current = (await backend.getTask(primaryId))!;
+    await backend.writeTask({ ...current, title: `Retained presentation revision ${index}` });
+  }
   await mkdir(path.dirname(path.join(repo.root, readme)), { recursive: true });
   await writeFile(path.join(repo.root, readme), f.source);
   await writeFile(path.join(repo.root, "user.txt"), "original user data\n");
@@ -441,13 +448,14 @@ async function startedFixture(workflowDir = ".agentplane/tasks") {
       invalidateStatus: vi.fn(),
     },
   } as unknown as CommandContext;
+  const issuedRecord = options.issueAfterBegin ? started.result.record : before.record;
   const order = await buildKernelAgentWorkOrder({
     command,
-    record: before.record,
+    record: issuedRecord,
     implementation: started.work_order,
     context: {
       task_id: primaryId,
-      task_revision: 7,
+      task_revision: issuedRecord.aggregate.revision,
       mutation_id: "fixture-issuance",
       repository_identity: identity,
       repository_fingerprint: fingerprint,
@@ -457,8 +465,9 @@ async function startedFixture(workflowDir = ".agentplane/tasks") {
       ceiling: parent,
     },
   });
-  expect(order.task.revision).toBe(7);
+  expect(order.task.revision).toBe(issuedRecord.aggregate.revision);
   expect(started.result.record.aggregate.revision).toBe(8);
+  expect((await backend.getTask(primaryId))!.revision).toBe(8 + (options.persistenceWrites ?? 0));
   const directory = await mkdtemp(path.join(repo.root, ".git/native-start-"));
   await writeFile(
     path.join(directory, "repository-baseline.json"),
@@ -467,7 +476,7 @@ async function startedFixture(workflowDir = ".agentplane/tasks") {
       kind: "canonical_repository_baseline",
       task_id: primaryId,
       work_item_id: definition.id,
-      task_revision: 7,
+      task_revision: issuedRecord.aggregate.revision,
       work_order_id: order.work_order_id,
       checkout: repo.root,
       branch,
@@ -522,7 +531,7 @@ async function startedFixture(workflowDir = ".agentplane/tasks") {
         renderTaskReadme(
           {
             ...current,
-            revision: next.aggregate.revision,
+            revision: next.aggregate.revision + (options.persistenceWrites ?? 0),
             extensions: { ...current.extensions, task_kernel: next },
           },
           body,
@@ -536,6 +545,27 @@ async function startedFixture(workflowDir = ".agentplane/tasks") {
 }
 
 describe("native quarantine after real issuance and execution start", () => {
+  it.each([
+    [".agentplane/tasks", false],
+    ["state/task-records", false],
+    [".agentplane/tasks", true],
+    ["state/task-records", true],
+  ] as const)(
+    "admits and commits with a backend persistence offset under %s (issued after begin: %s)",
+    async (workflowDir, issueAfterBegin) => {
+      const f = await startedFixture(workflowDir, { persistenceWrites: 2, issueAfterBegin });
+      const immutable = JSON.stringify(f.order);
+      expect([...(await nativeQuarantineArtifactPaths(f.proof))].toSorted()).toEqual(
+        f.proof.changedPaths.toSorted(),
+      );
+      expect(await f.commit()).toMatchObject({ changed_paths: f.proof.changedPaths.toSorted() });
+      expect(JSON.stringify(f.order)).toBe(immutable);
+      expect(await readFile(path.join(f.root, "user.txt"), "utf8")).toBe(
+        "unrelated dirty user data\n",
+      );
+    },
+  );
+
   it.each([".agentplane/tasks", "state/task-records"])(
     "admits the exact native start under %s",
     async (workflowDir) => {
@@ -547,6 +577,58 @@ describe("native quarantine after real issuance and execution start", () => {
       expect(JSON.stringify(f.order)).toBe(immutable);
     },
   );
+
+  it.each(["task", "authority"] as const)(
+    "authenticates the issued %s fingerprint at the same canonical revision",
+    async (component) => {
+      const f = await startedFixture(".agentplane/tasks", {
+        persistenceWrites: 1,
+        issueAfterBegin: true,
+      });
+      const changed = structuredClone(f.order);
+      changed.state_fingerprint.components[component].digest = k.kernelDigest("other state");
+      expect([
+        ...(await nativeQuarantineArtifactPaths({ ...f.proof, workOrder: changed })),
+      ]).toEqual([]);
+    },
+  );
+
+  it("refuses a rehashed canonical record at the same revision despite a backend offset", async () => {
+    const f = await startedFixture("state/task-records", {
+      persistenceWrites: 2,
+      issueAfterBegin: true,
+    });
+    const { [f.input.mutation_id]: started, ...previousReceipts } =
+      f.record.aggregate.mutation_receipts;
+    const aggregate = {
+      ...f.record.aggregate,
+      audit_comments: [
+        {
+          author: "USER",
+          actor_id: "USER",
+          body: "unrecorded canonical change",
+          occurred_at: f.input.occurred_at,
+          mutation_id: "forged-history",
+        },
+      ],
+      mutation_receipts: previousReceipts,
+    };
+    await f.rewrite(
+      makeKernelRecord(
+        f.record.repository_identity,
+        {
+          ...aggregate,
+          mutation_receipts: {
+            ...previousReceipts,
+            [f.input.mutation_id]: { ...started!, aggregate_digest: k.kernelDigest(aggregate) },
+          },
+        },
+        f.record.events,
+        f.record.documents,
+      ),
+    );
+    expect([...(await nativeQuarantineArtifactPaths(f.proof))]).toEqual([]);
+  });
 
   it.each([".agentplane/tasks", "state/task-records"])(
     "commits the retained native pair after begin under %s",
