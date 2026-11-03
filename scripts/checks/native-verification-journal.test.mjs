@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
+import { execFileSync, spawnSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { isNativeVerificationJournal } from "./native-verification-journal.mjs";
 
@@ -125,4 +130,60 @@ test("rejects a forged minimal running status without native run metadata", () =
     ),
   );
   assert.equal(isNativeVerificationJournal(filePath, value.read), false);
+});
+
+test("artifact gate reads an aggregate above 64 MiB and still rejects staged tampering", () => {
+  const directory = mkdtempSync(path.join(os.tmpdir(), "agentplane-artifact-batches-"));
+  const script = fileURLToPath(new URL("check-agentplane-artifacts.mjs", import.meta.url));
+  const git = (...args) =>
+    execFileSync("git", ["-c", "core.hooksPath=/dev/null", ...args], {
+      cwd: directory,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+  const runGate = () => spawnSync(process.execPath, [script], { cwd: directory, encoding: "utf8" });
+  try {
+    git("init", "-q", "-b", "main");
+    git("config", "user.name", "Artifact fixture");
+    git("config", "user.email", "artifact-fixture@example.com");
+    mkdirSync(path.join(directory, root), { recursive: true });
+    writeFileSync(path.join(directory, ".gitattributes"), ".agentplane export-ignore\n");
+    const value = fixture();
+    const entries = [];
+    for (const [stream, byte] of [
+      ["stdout", 120],
+      ["stderr", 121],
+    ]) {
+      const bytes = Buffer.concat([
+        Buffer.from('"'),
+        Buffer.alloc(34 * 1024 * 1024, byte),
+        Buffer.from('"\n'),
+      ]);
+      writeFileSync(path.join(directory, root, `${stream}.jsonl`), bytes);
+      entries.push({
+        path: `${stream}.jsonl`,
+        bytes: bytes.length,
+        digest: `sha256:${createHash("sha256").update(bytes).digest("hex")}`,
+      });
+    }
+    writeFileSync(path.join(directory, root, "status.json"), JSON.stringify(value.status));
+    writeFileSync(
+      path.join(directory, root, "manifest.json"),
+      JSON.stringify({ ...value.manifest, files: entries }),
+    );
+    git("add", "--all");
+    git("commit", "-qm", "fixture native verification above one batch");
+    const valid = runGate();
+    assert.equal(valid.status, 0, valid.stderr);
+    assert.match(valid.stdout, /agentplane artifact policy OK/);
+
+    writeFileSync(path.join(directory, filePath), '"tampered"\n');
+    assert.equal(runGate().status, 0, "the gate must inspect index bytes, not unstaged bytes");
+    git("add", filePath);
+    const tampered = runGate();
+    assert.notEqual(tampered.status, 0);
+    assert.match(tampered.stderr, /new tracked volatile/);
+    assert.ok(tampered.stderr.includes(filePath));
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });

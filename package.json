@@ -96,7 +96,7 @@
     "release:prepublish:heavy": "bun run release:ci-check",
     "release:prepublish": "bun run release:prepublish:fast && bun run release:prepublish:heavy",
     "release:parity": "node scripts/release/check-release-parity.mjs",
-    "artifacts:check": "node scripts/checks/check-agentplane-artifacts.mjs",
+    "artifacts:check": "node --test scripts/checks/native-verification-journal.test.mjs && node scripts/checks/check-agentplane-artifacts.mjs",
     "task-state:check": "node scripts/checks/check-task-state.mjs",
     "package:tarball:check": "node scripts/release/check-package-tarball.mjs",
     "package:install-smoke": "node scripts/release/check-local-tarball-install-smoke.mjs",

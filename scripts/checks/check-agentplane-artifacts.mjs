@@ -40,32 +40,62 @@ function isVolatileAgentplanePath(filePath, allowNativeJournal = false) {
 
 let sparseBlobs;
 
-function readSparseBlobs() {
-  const paths = listTrackedFiles().filter((filePath) =>
+function readSparseBlobs(trackedFiles) {
+  const paths = trackedFiles.filter((filePath) =>
     /^\.agentplane\/tasks\/[^/]+\/supervision\/verification-runs\//u.test(filePath),
   );
-  const output = execFileSync("git", ["cat-file", "--batch"], {
-    cwd: process.cwd(),
+  if (paths.length === 0) return new Map();
+  const headers = execFileSync("git", ["cat-file", "--batch-check"], {
     input: paths.map((filePath) => `:${filePath}\n`).join(""),
+    encoding: "utf8",
     maxBuffer: COMMAND_MAX_BUFFER_BYTES,
-  });
+  })
+    .trimEnd()
+    .split("\n");
+  if (headers.length !== paths.length) throw new Error("tracked verification inventory changed");
   const blobs = new Map();
-  let offset = 0;
-  for (const filePath of paths) {
-    const end = output.indexOf(10, offset);
-    const header = output.toString("utf8", offset, end);
+  let batch = [];
+  let batchBytes = 0;
+  const readBatch = () => {
+    if (batch.length === 0) return;
+    const output = execFileSync("git", ["cat-file", "--batch"], {
+      input: batch.map((entry) => `${entry.oid}\n`).join(""),
+      maxBuffer: COMMAND_MAX_BUFFER_BYTES,
+    });
+    let offset = 0;
+    for (const entry of batch) {
+      const end = output.indexOf(10, offset);
+      if (end === -1 || output.toString("utf8", offset, end) !== entry.header)
+        throw new Error(`tracked verification blob identity changed: ${entry.filePath}`);
+      const start = end + 1;
+      if (output[start + entry.size] !== 10)
+        throw new Error(`truncated tracked verification blob: ${entry.filePath}`);
+      blobs.set(entry.filePath, output.subarray(start, start + entry.size));
+      offset = start + entry.size + 1;
+    }
+    if (offset !== output.length) throw new Error("unexpected tracked verification batch bytes");
+    batch = [];
+    batchBytes = 0;
+  };
+  for (const [index, filePath] of paths.entries()) {
+    const header = headers[index];
     const match = /^[0-9a-f]{40,64} blob (\d+)$/u.exec(header);
     if (!match) throw new Error(`cannot read tracked verification blob: ${filePath}`);
     const size = Number(match[1]);
-    blobs.set(filePath, output.subarray(end + 1, end + 1 + size));
-    offset = end + size + 2;
+    const bytes = size + Buffer.byteLength(header) + 2;
+    if (!Number.isSafeInteger(bytes) || bytes > COMMAND_MAX_BUFFER_BYTES)
+      throw new Error(`tracked verification blob exceeds the read limit: ${filePath}`);
+    if (batchBytes + bytes > COMMAND_MAX_BUFFER_BYTES) readBatch();
+    batch.push({ filePath, oid: header.split(" ")[0], header, size });
+    batchBytes += bytes;
   }
+  readBatch();
   return blobs;
 }
 
 function readTrackedFile(filePath) {
   // Validate the tracked index, including in sparse or locally dirty worktrees.
-  sparseBlobs ??= readSparseBlobs();
+  if (!sparseBlobs) throw new Error("tracked verification snapshot was not loaded");
   const bytes = sparseBlobs.get(filePath);
   if (!bytes) throw new Error(`missing tracked verification blob: ${filePath}`);
   return bytes;
@@ -115,10 +145,10 @@ function formatList(items) {
 }
 
 function checkTrackedVolatile() {
+  const trackedFiles = listTrackedFiles();
+  sparseBlobs = readSparseBlobs(trackedFiles);
   const offenders = [];
-  for (const filePath of listTrackedFiles().filter((item) =>
-    isVolatileAgentplanePath(item, true),
-  )) {
+  for (const filePath of trackedFiles.filter((item) => isVolatileAgentplanePath(item, true))) {
     const committedAt = lastCommitEpochSeconds(filePath);
     if (!committedAt || committedAt > HISTORICAL_VOLATILE_CUTOFF_EPOCH_SECONDS) {
       offenders.push(filePath);
