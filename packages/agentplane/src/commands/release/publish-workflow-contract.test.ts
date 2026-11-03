@@ -32,6 +32,80 @@ function step(job: WorkflowJob, name: string) {
 }
 
 describe("publish workflow contract", () => {
+  it.each(["missing", "tracked", "untracked", "unrelated"])(
+    "stages only approved release follow-up paths (%s)",
+    async (scenario) => {
+      const workflow = parseYaml(await readFile(PUBLISH_WORKFLOW_PATH, "utf8")) as PublishWorkflow;
+      const script = step(
+        workflow.jobs.publish,
+        "Apply release task evidence on a follow-up branch",
+      )?.run;
+      if (!script) throw new Error("Missing release follow-up script");
+      const start = script.indexOf('git config user.name "github-actions[bot]"');
+      const end = script.indexOf("commit_subject=", start);
+      expect(start).toBeGreaterThanOrEqual(0);
+      expect(end).toBeGreaterThan(start);
+      const staging = script
+        .slice(start, end)
+        .replaceAll("${{ steps.release_evidence.outputs.readme_path }}", "task.md");
+      const root = await mkdtemp(path.join(tmpdir(), "agentplane-followup-staging-"));
+      const paths = [
+        "task.md",
+        ".agentplane/WORKFLOW.md",
+        "bun.lock",
+        "docs/reference/generated-reference.mdx",
+        "packages/agentplane/package.json",
+        "packages/core/package.json",
+        "packages/recipes/package.json",
+        "packages/recipes/src/index.ts",
+        "packages/spec/examples/acr.json",
+        "packages/testkit/package.json",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+      ];
+      const configPath = ".agentplane/config.json";
+      const git = (...args: string[]) =>
+        execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: "pipe" }).trim();
+      try {
+        for (const file of [...paths, "unrelated.txt"]) {
+          await mkdir(path.dirname(path.join(root, file)), { recursive: true });
+          await writeFile(path.join(root, file), "before\n");
+        }
+        if (scenario === "tracked") await writeFile(path.join(root, configPath), "before\n");
+        git("init", "--initial-branch=main");
+        git("config", "user.name", "Release fixture");
+        git("config", "user.email", "release-fixture@example.invalid");
+        git("add", "-A");
+        git("-c", "commit.gpgsign=false", "commit", "-m", "release fixture");
+        for (const file of paths) await writeFile(path.join(root, file), "after\n");
+        if (scenario === "tracked" || scenario === "untracked") {
+          await writeFile(path.join(root, configPath), "after\n");
+        }
+        if (scenario === "unrelated") await writeFile(path.join(root, "unrelated.txt"), "after\n");
+        const run = () =>
+          execFileSync("bash", ["-c", `set -euo pipefail\n${staging}`], {
+            cwd: root,
+            encoding: "utf8",
+            stdio: "pipe",
+          });
+        if (scenario === "unrelated") {
+          expect(run).toThrow("next development version mutation left unstaged tracked files");
+          expect(git("diff", "--name-only")).toBe("unrelated.txt");
+        } else {
+          expect(run).not.toThrow();
+          expect(git("diff", "--name-only")).toBe("");
+        }
+        const expected = scenario === "tracked" ? [...paths, configPath] : paths;
+        expect(git("diff", "--cached", "--name-only").split(/\r?\n/u)).toEqual(expected.toSorted());
+        if (scenario === "untracked") {
+          expect(git("ls-files", "--", configPath)).toBe("");
+          expect(await readFile(path.join(root, configPath), "utf8")).toBe("after\n");
+        }
+      } finally {
+        await rm(root, { recursive: true, force: true });
+      }
+    },
+  );
+
   it.each(["false", "true"])(
     "uses current setup tooling and passes tag repair only for %s",
     async (repair) => {

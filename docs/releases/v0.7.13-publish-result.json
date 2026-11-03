@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "success": true,
+  "reasonCode": "publish_succeeded",
+  "message": "Publish result recorded for v0.7.13 (0.7.13) at 4806d9ab70604c2beaaf9443cbd2817690962b72.",
+  "nextAction": "Use this artifact as the canonical post-publish outcome for the release SHA.",
+  "sha": "4806d9ab70604c2beaaf9443cbd2817690962b72",
+  "version": "0.7.13",
+  "tag": "v0.7.13",
+  "releaseReady": {
+    "runId": "41682030001"
+  },
+  "distribution": {
+    "requested": true,
+    "loaded": true,
+    "path": "/home/runner/work/agentplane/agentplane/.agentplane/.release/publish/distribution/release-distribution.json",
+    "reason": "loaded",
+    "manifest": {
+      "schemaVersion": 1,
+      "manifestKind": "release_distribution",
+      "version": "0.7.13",
+      "tag": "v0.7.13",
+      "sha": "4806d9ab70604c2beaaf9443cbd2817690962b72",
+      "releaseAssets": [
+        {
+          "name": "agentplane-upgrade.tar.gz",
+          "kind": "upgrade_bundle",
+          "sha256": "22172386fdcc6639af61573af388cce7235703b236311054a9ebef6c88d5eb84",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/agentplane-upgrade.tar.gz"
+        },
+        {
+          "name": "install.sh",
+          "kind": "installer",
+          "sha256": "fb3a89f3da91a907153e1b9d0d0521471de435efaeee14e4b3ce9a9c8098b5e6",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/install.sh"
+        },
+        {
+          "name": "install.ps1",
+          "kind": "installer",
+          "sha256": "f28cb083e7d0be2007321ca2a0f46adfacd7f575f3ed337f8a16f5aeced544f5",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/install.ps1"
+        },
+        {
+          "name": "agentplane-bun-v0.7.13-darwin-arm64.tar.gz",
+          "kind": "bun_executable",
+          "sha256": "8a95c0c428715323be132b2214d90e295aa655e9a9e8a40ca051bc5c5180ff64",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/agentplane-bun-v0.7.13-darwin-arm64.tar.gz"
+        },
+        {
+          "name": "agentplane-bun-v0.7.13-darwin-x64.tar.gz",
+          "kind": "bun_executable",
+          "sha256": "b1c16dddb2dc500a5e35c94b5b96584c1807e0fbad15e017634ff5a34c02d1e9",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/agentplane-bun-v0.7.13-darwin-x64.tar.gz"
+        },
+        {
+          "name": "agentplane-bun-v0.7.13-linux-x64.tar.gz",
+          "kind": "bun_executable",
+          "sha256": "ff8d86041ce7a66af168ddb3fea88a4df8df081a083e455614348081e1530d23",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/agentplane-bun-v0.7.13-linux-x64.tar.gz"
+        },
+        {
+          "name": "agentplane-bun-v0.7.13-linux-arm64.tar.gz",
+          "kind": "bun_executable",
+          "sha256": "034bfc365f4a07184a6416a8f3d6b485ad6c1990a6f411df5f6aeda81c97aa56",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/agentplane-bun-v0.7.13-linux-arm64.tar.gz"
+        },
+        {
+          "name": "agentplane-bun-v0.7.13-win32-x64.zip",
+          "kind": "bun_executable",
+          "sha256": "951113ce25168ad40b593c6f24c9ad9a2f9951a794488e790adcbedb24f99dff",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/agentplane-bun-v0.7.13-win32-x64.zip"
+        },
+        {
+          "name": "SHA256SUMS",
+          "kind": "checksum_manifest",
+          "sha256": "3ba721557339936754faa7e2a07658edfc9f22da8b94c2aa39aee2da9569e5d7",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/SHA256SUMS"
+        },
+        {
+          "name": "bun-assets.json",
+          "kind": "bun_manifest",
+          "sha256": "ba8066a55f66beaeb3a74fda3a15520ed945952162d14e99199f18729250ed80",
+          "url": "https://github.com/basilisk-labs/agentplane/releases/download/v0.7.13/bun-assets.json"
+        }
+      ],
+      "channels": {
+        "npm": {
+          "status": "pending",
+          "required": true
+        },
+        "githubRelease": {
+          "status": "pending",
+          "required": true
+        },
+        "ghcr": {
+          "status": "pending",
+          "required": true
+        },
+        "homebrewTap": {
+          "status": "skipped_missing_credentials",
+          "requiredSecret": "HOMEBREW_TAP_TOKEN",
+          "recovery": "Add HOMEBREW_TAP_TOKEN and rerun only this credentials-gated distribution module for the same release manifest."
+        },
+        "scoopBucket": {
+          "status": "skipped_missing_credentials",
+          "requiredSecret": "SCOOP_BUCKET_TOKEN",
+          "recovery": "Add SCOOP_BUCKET_TOKEN and rerun only this credentials-gated distribution module for the same release manifest."
+        },
+        "setupAgentplane": {
+          "status": "skipped_missing_credentials",
+          "requiredSecret": "SETUP_AGENTPLANE_TOKEN",
+          "recovery": "Add SETUP_AGENTPLANE_TOKEN and rerun only this credentials-gated distribution module for the same release manifest."
+        }
+      }
+    }
+  },
+  "external": {
+    "requested": true,
+    "modules": [
+      {
+        "requested": true,
+        "loaded": true,
+        "path": "/home/runner/work/agentplane/agentplane/.agentplane/.release/publish/homebrew/homebrew-publish-result.json",
+        "name": "homebrew",
+        "repository": "basilisk-labs/homebrew-tap",
+        "status": "published",
+        "reasonCode": null,
+        "prUrl": "https://github.com/basilisk-labs/homebrew-tap/pull/57",
+        "branch": "agentplane/v0.7.13",
+        "metadata": {
+          "attempted": true,
+          "updated": ["topics", "repository"],
+          "warnings": [],
+          "ok": true
+        },
+        "mergeAttempts": [
+          {
+            "mode": "merge",
+            "status": "success"
+          }
+        ],
+        "verification": {
+          "ok": true,
+          "branch": "main",
+          "sha": "ae0afa663225a910d10d84ec5c120142ec5689a1",
+          "mismatches": []
+        },
+        "setupTag": null,
+        "nextAction": "External distribution published through https://github.com/basilisk-labs/homebrew-tap/pull/57."
+      },
+      {
+        "requested": true,
+        "loaded": true,
+        "path": "/home/runner/work/agentplane/agentplane/.agentplane/.release/publish/scoop/scoop-publish-result.json",
+        "name": "scoop",
+        "repository": "basilisk-labs/scoop-bucket",
+        "status": "published",
+        "reasonCode": null,
+        "prUrl": "https://github.com/basilisk-labs/scoop-bucket/pull/55",
+        "branch": "agentplane/v0.7.13",
+        "metadata": {
+          "attempted": true,
+          "updated": ["topics", "repository"],
+          "warnings": [],
+          "ok": true
+        },
+        "mergeAttempts": [
+          {
+            "mode": "merge",
+            "status": "success"
+          }
+        ],
+        "verification": {
+          "ok": true,
+          "branch": "main",
+          "sha": "bf09ee196baefa34324d2ab44b5953f721307cff",
+          "mismatches": []
+        },
+        "setupTag": null,
+        "nextAction": "External distribution published through https://github.com/basilisk-labs/scoop-bucket/pull/55."
+      },
+      {
+        "requested": true,
+        "loaded": true,
+        "path": "/home/runner/work/agentplane/agentplane/.agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json",
+        "name": "setup-agentplane",
+        "repository": "basilisk-labs/setup-agentplane",
+        "status": "published",
+        "reasonCode": null,
+        "prUrl": "https://github.com/basilisk-labs/setup-agentplane/pull/55",
+        "branch": "agentplane/v0.7.13",
+        "metadata": {
+          "attempted": true,
+          "updated": ["topics", "repository"],
+          "warnings": [],
+          "ok": true
+        },
+        "mergeAttempts": [
+          {
+            "mode": "merge",
+            "status": "success"
+          }
+        ],
+        "verification": {
+          "ok": true,
+          "branch": "main",
+          "sha": "bc09881331aa7dd708fff3f3ecbcae5a99a5555e",
+          "mismatches": []
+        },
+        "setupTag": {
+          "status": "published",
+          "tag": "v0.7.13",
+          "sha": "bc09881331aa7dd708fff3f3ecbcae5a99a5555e"
+        },
+        "nextAction": "External distribution published through https://github.com/basilisk-labs/setup-agentplane/pull/55."
+      }
+    ]
+  },
+  "packages": {
+    "core": {
+      "alreadyPublished": false,
+      "stepOutcome": "success",
+      "published": true,
+      "source": "published_in_run"
+    },
+    "recipes": {
+      "alreadyPublished": false,
+      "stepOutcome": "success",
+      "published": true,
+      "source": "published_in_run"
+    },
+    "cli": {
+      "alreadyPublished": false,
+      "stepOutcome": "success",
+      "published": true,
+      "source": "published_in_run"
+    }
+  },
+  "channels": {
+    "stable": {
+      "promoted": true,
+      "reasonCode": "candidate_advances_stable_channel"
+    },
+    "npm": {
+      "tag": "latest"
+    }
+  },
+  "checks": {
+    "npmSmoke": {
+      "passed": true,
+      "outcome": "success"
+    },
+    "ghcr": {
+      "published": true,
+      "outcome": "success"
+    },
+    "tag": {
+      "ensured": true,
+      "outcome": "success",
+      "existed": false
+    },
+    "githubRelease": {
+      "created": true,
+      "outcome": "success"
+    }
+  },
+  "failures": [],
+  "job": {
+    "status": "success",
+    "workflow": "Publish release",
+    "runId": "41685975159",
+    "runAttempt": "1",
+    "eventName": "workflow_dispatch"
+  }
+}

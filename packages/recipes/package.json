@@ -1,6 +1,6 @@
 {
   "name": "@agentplaneorg/recipes",
-  "version": "0.7.13",
+  "version": "0.7.14-beta.1",
   "description": "Recipe modules for repeatable Agentplane audit-layer workflows.",
   "keywords": [
     "agentplane",
@@ -55,7 +55,7 @@
     "test": "cd ../.. && vitest --config vitest.workspace.ts run --project recipes"
   },
   "dependencies": {
-    "@agentplaneorg/core": "0.7.13",
+    "@agentplaneorg/core": "0.7.14-beta.1",
     "zod": "4.6.7"
   }
 }
