@@ -15,8 +15,8 @@ Implement only the four explicitly user-approved GitLab provider files to preser
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
