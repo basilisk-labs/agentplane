@@ -164,7 +164,7 @@ describe("sync-gitlab", () => {
     ).toHaveLength(1);
   });
 
-  it("requests source-branch removal when creating fork and same-project MRs", async () => {
+  it("preserves source branches when creating fork and same-project MRs", async () => {
     const forkPayloads: Record<string, unknown>[] = [];
     mocks.runGlabApiJson
       .mockResolvedValueOnce({ id: 7 })
@@ -191,7 +191,7 @@ describe("sync-gitlab", () => {
         target_branch: "main",
         title: "Title",
         description: "Body",
-        remove_source_branch: true,
+        remove_source_branch: false,
         target_project_id: 9,
       },
     ]);
@@ -228,7 +228,7 @@ describe("sync-gitlab", () => {
         target_branch: "main",
         title: "Title",
         description: "Body",
-        remove_source_branch: true,
+        remove_source_branch: false,
       },
     ]);
   });
@@ -252,47 +252,50 @@ describe("sync-gitlab", () => {
     });
   });
 
-  it("updates the linked MR through the target project and explicit host", async () => {
-    const updatePayloads: Record<string, unknown>[] = [];
-    mocks.runGlabApiJson.mockImplementationOnce(async (call: GlabCall) => {
-      updatePayloads.push(await payloadFrom(call));
-      return mr();
-    });
+  it.each([identity, { ...identity, sourceProject: identity.targetProject }])(
+    "preserves the source branch when updating a linked MR: $sourceProject",
+    async (mrIdentity) => {
+      const updatePayloads: Record<string, unknown>[] = [];
+      mocks.runGlabApiJson.mockImplementationOnce(async (call: GlabCall) => {
+        updatePayloads.push(await payloadFrom(call));
+        return mr();
+      });
 
-    await expect(
-      tryUpdateGitLabMr({
-        gitRoot: "/repo",
-        identity,
-        observed: {
-          provider: "gitlab",
-          identity,
-          prNumber: 42,
-          prUrl: "https://gitlab.example.test/group/sub/project/-/merge_requests/42",
-          status: "OPEN",
-          mergedAt: null,
-          mergeCommit: null,
-          base: "main",
-          headSha: "head-sha",
-          headRef: "task/T-1/work",
+      await expect(
+        tryUpdateGitLabMr({
+          gitRoot: "/repo",
+          identity: mrIdentity,
+          observed: {
+            provider: "gitlab",
+            identity: mrIdentity,
+            prNumber: 42,
+            prUrl: "https://gitlab.example.test/group/sub/project/-/merge_requests/42",
+            status: "OPEN",
+            mergedAt: null,
+            mergeCommit: null,
+            base: "main",
+            headSha: "head-sha",
+            headRef: "task/T-1/work",
+          },
+          title: "Updated title",
+          body: "Updated body",
+        }),
+      ).resolves.toMatchObject({ observed: { provider: "gitlab", prNumber: 42 } });
+
+      expect(mocks.runGlabApiJson).toHaveBeenCalledWith(
+        expect.objectContaining({
+          hostname: "gitlab.example.test",
+          endpoint: "projects/group%2Fsub%2Fproject/merge_requests/42",
+          method: "PUT",
+        }),
+      );
+      expect(updatePayloads).toEqual([
+        {
+          title: "Updated title",
+          description: "Updated body",
+          remove_source_branch: false,
         },
-        title: "Updated title",
-        body: "Updated body",
-      }),
-    ).resolves.toMatchObject({ observed: { provider: "gitlab", prNumber: 42 } });
-
-    expect(mocks.runGlabApiJson).toHaveBeenCalledWith(
-      expect.objectContaining({
-        hostname: "gitlab.example.test",
-        endpoint: "projects/group%2Fsub%2Fproject/merge_requests/42",
-        method: "PUT",
-      }),
-    );
-    expect(updatePayloads).toEqual([
-      {
-        title: "Updated title",
-        description: "Updated body",
-        remove_source_branch: true,
-      },
-    ]);
-  });
+      ]);
+    },
+  );
 });

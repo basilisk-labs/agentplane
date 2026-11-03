@@ -376,7 +376,7 @@ export async function tryCreateGitLabMr(opts: {
         target_branch: baseBranch,
         title: opts.title,
         description: opts.body,
-        remove_source_branch: true,
+        remove_source_branch: false,
         ...(opts.identity.sourceProject === opts.identity.targetProject
           ? {}
           : { target_project_id: targetProjectId }),
@@ -427,8 +427,8 @@ export async function tryUpdateGitLabMr(opts: {
       {
         title: opts.title,
         description: opts.body,
-        // Reconcile MRs created before this default was introduced.
-        remove_source_branch: true,
+        // Branch cleanup requires separate authority after integration.
+        remove_source_branch: false,
       },
       (payloadPath) =>
         runGlabApiJson<GitLabMergeRequestRecord>({

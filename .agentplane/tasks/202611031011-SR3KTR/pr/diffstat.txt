@@ -1,0 +1,5 @@
+ .../pr/integrate/internal/gitlab-mr-merge.test.ts  | 194 ++++++++++++++++++++-
+ .../pr/integrate/internal/gitlab-mr-merge.ts       |  54 ++++--
+ .../src/commands/pr/internal/sync-gitlab.test.ts   |  91 +++++-----
+ .../src/commands/pr/internal/sync-gitlab.ts        |   6 +-
+ 4 files changed, 276 insertions(+), 69 deletions(-)
