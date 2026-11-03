@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202611030256-AN0ZJ4/bind-quarantine-publication-to-the-canonical-ker",
+  "created_at": "2026-11-03T03:08:37.842Z",
+  "diffstat_sha256": "sha256:b888c3c5071570a26ac6427381fff840875f52b1e9c4d4bcc0363d324a4b54ea",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202611030256-AN0ZJ4",
+  "updated_at": "2026-11-03T03:08:37.842Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
