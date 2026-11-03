@@ -65,7 +65,7 @@ export async function runProtectedBaseGitLabMerge(opts: {
       `${JSON.stringify(
         {
           sha: opts.expectedHeadSha,
-          should_remove_source_branch: true,
+          should_remove_source_branch: false,
           ...(!opts.exactBaseParentProof ? { squash: false } : {}),
         },
         null,
@@ -74,17 +74,18 @@ export async function runProtectedBaseGitLabMerge(opts: {
       "utf8",
     );
     try {
+      if (!opts.exactBaseParentProof && (!opts.baseBranch || !opts.expectedBaseSha)) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "Qualified integration base is required before GitLab merge.",
+        });
+      }
+      await opts.preMutationGuard();
       if (!opts.exactBaseParentProof) {
-        if (!opts.baseBranch || !opts.expectedBaseSha) {
-          throw new CliError({
-            code: "E_VALIDATION",
-            message: "Qualified integration base is required before GitLab merge.",
-          });
-        }
         try {
           const project = await runGlabApiJson<{
-            merge_method?: string;
-            auto_rebase_enabled?: boolean;
+            merge_method?: unknown;
+            automatic_rebase_enabled?: unknown;
           } | null>({
             cwd: opts.gitRoot,
             hostname: opts.identity.hostname,
@@ -92,10 +93,36 @@ export async function runProtectedBaseGitLabMerge(opts: {
           });
           // H-only SHA is insufficient for merge commits. A server fast-forward
           // requirement rejects a base that advances beyond the qualified head.
-          if (project?.merge_method !== "ff" || project.auto_rebase_enabled !== false)
-            throw new Error(
-              "Server fast-forward enforcement with automatic rebase explicitly disabled is required.",
-            );
+          // Read server policy after the read-only head/base guard so policy
+          // changes during that guard cannot use an earlier capability result.
+          if (project?.merge_method !== "ff")
+            throw new Error("Server fast-forward enforcement is required.");
+          if (project.automatic_rebase_enabled !== false) {
+            if (Object.hasOwn(project, "automatic_rebase_enabled"))
+              throw new Error("Automatic rebase must be explicitly disabled.");
+            // Automatic rebase was introduced in GitLab 18.0. Older stable
+            // releases omit this field; absence alone is not capability proof.
+            const server = await runGlabApiJson<{ version?: unknown } | null>({
+              cwd: opts.gitRoot,
+              hostname: opts.identity.hostname,
+              endpoint: "version",
+            });
+            const version = server?.version;
+            const release =
+              typeof version === "string"
+                ? /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:ee|ce))?$/u.exec(version)
+                : null;
+            if (
+              !release ||
+              release[0] !== version ||
+              release.slice(1).some((part) => !Number.isSafeInteger(Number(part))) ||
+              Number(release[1]) < 1 ||
+              Number(release[1]) >= 18
+            )
+              throw new Error(
+                "Missing automatic_rebase_enabled requires a stable GitLab release older than 18.0.",
+              );
+          }
         } catch (error) {
           throw new CliError({
             code: "E_HANDOFF",
@@ -108,7 +135,6 @@ export async function runProtectedBaseGitLabMerge(opts: {
           });
         }
       }
-      await opts.preMutationGuard();
     } catch (error) {
       throw new PreMutationGuardFailure(error);
     }
