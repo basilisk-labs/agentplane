@@ -1,10 +1,11 @@
 ---
 id: "202611040705-816NB9"
 title: "Require fresh verification after native GitLab branch updates"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -50,6 +51,22 @@ quality_review:
     - "Criteria 5 and 10: commands/pr/provider-update-verification-proof.ts:343 derives the latest completed non-adopted GitLab M from the same authenticated journal/proof reader used by ownership checks. Completed operations with missing, unreadable, altered or mismatched proof cannot clear the floor. commands/shared/quality-review-target.ts:393 enforces floor ancestry through review reuse, artifact tails, rewrite shortcuts and first-parent traversal, including M carried through a second merge parent. commands/shared/task-verification-records.ts:293 checks recorded implementation/target ancestry and digest-bound actual execution manifest heads before equivalent-input, legacy or snapshot acceptance. The shared consumers used by route, EVALUATOR and integration therefore cannot use pre-M accepted records. Frozen B and combined-tree coverage are retained; the existing fresh native verification producer is unchanged."
     - "Criteria 5, 6 and 10 regression evidence: provider-update-effect-recovery.test.ts:125 uses real named main at R, frozen execution context, genuinely accepted native v5 full records and native EVALUATOR results before M. Both source-import and empty/equivalent-input bases are exercised for normal completion and applied recovery. Old full/review evidence is refused through local and Git-snapshot record paths; a newly retained full execution still requires a new EVALUATOR; fresh full plus review exposes only the existing closure/integration authority route. The producer assertions compare actual manifest byte digests, unique new observation paths, implementation.head and subprocess stdout HEAD, while retaining old observation bytes. Proof tests also cover chained M2 floors, pending/missing/corrupt proofs, generated tails, rewrites, second-parent ancestry, portable producer paths and declared-M/actual-H refusal. Positive GitHub/adopted reuse is retained."
     - "Fresh native evidence: native-validation-0d99b9e06457dde06601f7ec5aa032c3b8bbe8e8070e09c7aec356fa9633eba6.json authenticates all three required commands on 2305b70c4db6f6831bae7ba00f5f64328ed56777: focused 239 passed in 192703 ms, full CI exit 0 in 1396912 ms, journal 58 passed in 8402 ms. Independently authenticated 23 manifests, 69 raw streams and 418675 retained bytes. Required build/runtime/docs-schema/core/CLI groups passed; full-only platform checks report 7 files/100 tests and significant guards 8 files/105 tests/17 source targets. The four nested exit-2/3 manifests are the explicit verification-contract.test.ts:188-235 negative fixtures, not failed required groups. Earlier failed native attempts and the pre-run pending statements in reports remain historical evidence; they were not reused as passing receipts."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:cea09bb0e54c3ef1dfaf201ed44858ad14dc331561c27158ab233c0f1f14911f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-04T13:46:11.990Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -381,9 +398,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "2305b70c4db6f6831bae7ba00f5f64328ed56777"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "09bbbae97f12a7949aef9c3d70b7291128cddc01"
+  message: "✅ 816NB9 task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -391,9 +411,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-04T13:46:11.990Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "09bbbae97f12a7949aef9c3d70b7291128cddc01"
 doc_version: 3
-doc_updated_at: "2026-11-04T13:30:19.136Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-04T13:46:11.990Z"
+doc_updated_by: "CODER"
 description: "Prevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion."
 sections:
   Summary: |-
@@ -547,6 +575,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e"
     work_order_id: "sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
+  implementation_commit:
+    hash: "2305b70c4db6f6831bae7ba00f5f64328ed56777"
+    message: "🚧 816NB9 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4806d9ab70604c2beaaf9443cbd2817690962b72"
@@ -1556,3 +1587,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:cea09bb0e54c3ef1dfaf201ed44858ad14dc331561c27158ab233c0f1f14911f`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-04T13:46:11.990Z`
