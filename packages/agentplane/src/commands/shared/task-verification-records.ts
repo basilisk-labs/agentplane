@@ -1,3 +1,4 @@
+import { verificationCoversProviderUpdateFloor } from "../pr/provider-update-verification-proof.js";
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
@@ -30,6 +31,7 @@ export type VerificationRecordTargetContext = {
   baseRef?: string | null;
   execution?: TaskExecutionContext;
   evidenceRef?: string | null;
+  headSha?: string | null;
 };
 
 type VerificationRecordAssessmentReason =
@@ -231,6 +233,19 @@ function rejectedAssessment(
   };
 }
 
+function acceptedAssessment(
+  reason: "verification_current" | "verification_reused_equivalent_input" = "verification_current",
+): VerificationRecordAssessment {
+  return {
+    accepted: true,
+    reason,
+    recoveryHint: null,
+    recordPath: null,
+    recordedInputDigest: null,
+    currentInputDigest: null,
+  };
+}
+
 function recordMetadataMatches(record: Record<string, unknown>, task: TaskData): boolean {
   const verification = task.verification;
   return Boolean(
@@ -252,9 +267,7 @@ async function assessCurrentVerification(
   targetContext?: VerificationRecordTargetContext,
   requireConcreteCheckDetails = true,
 ): Promise<VerificationRecordAssessment> {
-  const verification = task.verification;
-  const scopeDigest = verifyStepsDigest(task);
-  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !task.verification) {
     return rejectedAssessment("verification_invalid_record");
   }
   const record = raw as Record<string, unknown>;
@@ -278,8 +291,22 @@ async function assessCurrentVerification(
     }
   }
 
+  const recordedInput = parseVerificationInput(record.input);
+  const checked = recordedInput?.schema_version === 5 ? recordedInput.checked_input : recordedInput;
+  if (
+    targetContext &&
+    !(await verificationCoversProviderUpdateFloor({
+      ...targetContext,
+      taskId: task.id,
+      implementationSha: record.implementation_sha,
+      targetSha: checked?.implementation.target_sha,
+      references: checked?.evidence.references,
+      commands: parseVerificationCheckDetails(record.details)?.map((check) => check.command) ?? [],
+    }).catch(() => false))
+  )
+    return rejectedAssessment("verification_implementation_changed");
+
   if (record.schema_version === 2) {
-    const recordedInput = parseVerificationInput(record.input);
     if (!recordedInput || !targetContext || !evaluatedSha) {
       return rejectedAssessment("verification_invalid_record");
     }
@@ -332,18 +359,16 @@ async function assessCurrentVerification(
     }
     if (recordedInput.digest === currentInput.digest) {
       return {
-        accepted: true,
-        reason:
+        ...acceptedAssessment(
           (recordedInput.schema_version === 5
             ? recordedInput.checked_input.implementation.target_sha
             : recordedInput.implementation.target_sha) ===
-          (currentInput.schema_version === 5
-            ? currentInput.checked_input.implementation.target_sha
-            : currentInput.implementation.target_sha)
+            (currentInput.schema_version === 5
+              ? currentInput.checked_input.implementation.target_sha
+              : currentInput.implementation.target_sha)
             ? "verification_current"
             : "verification_reused_equivalent_input",
-        recoveryHint: null,
-        recordPath: null,
+        ),
         recordedInputDigest: recordedInput.digest,
         currentInputDigest: currentInput.digest,
       };
@@ -363,19 +388,12 @@ async function assessCurrentVerification(
   if (targetContext?.execution) {
     return rejectedAssessment("verification_route_context_changed");
   }
-  if (record.scope_digest !== scopeDigest) {
+  if (record.scope_digest !== verifyStepsDigest(task)) {
     return rejectedAssessment("verification_metadata_changed");
   }
   if (evaluatedSha === null) {
     return record.implementation_sha === null
-      ? {
-          accepted: true,
-          reason: "verification_current",
-          recoveryHint: null,
-          recordPath: null,
-          recordedInputDigest: null,
-          currentInputDigest: null,
-        }
+      ? acceptedAssessment()
       : rejectedAssessment("verification_legacy_unverifiable");
   }
   const implementationSha =
@@ -393,16 +411,7 @@ async function assessCurrentVerification(
         previousEvaluatedSha: evaluatedSha,
         workflowMode: targetContext.workflowMode,
       })) === evaluatedSha);
-  return accepted
-    ? {
-        accepted: true,
-        reason: "verification_current",
-        recoveryHint: null,
-        recordPath: null,
-        recordedInputDigest: null,
-        currentInputDigest: null,
-      }
-    : rejectedAssessment("verification_legacy_unverifiable");
+  return accepted ? acceptedAssessment() : rejectedAssessment("verification_legacy_unverifiable");
 }
 
 async function assessVerificationRecord(
@@ -513,7 +522,9 @@ export async function hasAcceptedVerificationRecord(opts: {
     taskRoot: opts.taskRoot,
     task: opts.task,
     evaluatedSha: opts.evaluatedSha,
-    targetContext: opts.targetContext,
+    targetContext: opts.targetContext
+      ? { ...opts.targetContext, headSha: opts.snapshotRef ?? opts.targetContext.headSha }
+      : undefined,
     requireConcreteCheckDetails: opts.requireConcreteCheckDetails,
   });
   opts.onAssessment?.(localAssessment);
@@ -530,7 +541,7 @@ export async function hasAcceptedVerificationRecord(opts: {
         record,
         opts.task,
         opts.evaluatedSha,
-        { ...opts.targetContext!, evidenceRef: opts.snapshotRef },
+        { ...opts.targetContext!, headSha: opts.snapshotRef, evidenceRef: opts.snapshotRef },
         opts.requireConcreteCheckDetails,
       ),
     ),

@@ -1,6 +1,7 @@
 import {
   gitDiffNames,
   gitIsAncestor,
+  gitProofIsAncestor,
   gitRevParse,
   gitShowFile,
   resolveBaseBranch,
@@ -8,6 +9,7 @@ import {
 import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
+import { providerUpdateVerificationFloor } from "../pr/provider-update-verification-proof.js";
 import { baseSyncMergeReviewPaths } from "./quality-review-merge.js";
 
 const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
@@ -32,10 +34,6 @@ export function recordedTaskImplementationCommitSha(
   if (implementationSha) return implementationSha;
   const taskCommitSha = task.commit?.hash?.trim() ?? "";
   return taskCommitSha || null;
-}
-
-function normalizeWorkflowDir(value: string): string {
-  return value.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
 }
 
 export function isManagedTaskArtifact(relativePath: string): boolean {
@@ -392,7 +390,10 @@ export async function resolveQualityReviewTargetSha(opts: {
       : await gitRevParse(opts.gitRoot, ["HEAD"]).catch(() => null);
   if (!head) return null;
 
-  const workflowDir = normalizeWorkflowDir(opts.workflowDir);
+  const floor = await providerUpdateVerificationFloor(opts.gitRoot, opts.taskId);
+  if (floor && !(await gitProofIsAncestor(opts.gitRoot, floor, head)))
+    throw new Error("Review head precedes the native GitLab validation floor");
+  const workflowDir = opts.workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
   const taskIds = [...new Set([opts.taskId, ...(opts.taskIds ?? [])])];
   const taskArtifactPrefixes = taskIds.map((taskId) => ({
     taskId,
@@ -411,7 +412,8 @@ export async function resolveQualityReviewTargetSha(opts: {
     const candidate = opts.previousEvaluatedSha?.trim();
     if (!candidate) return null;
     const resolved = await gitRevParse(opts.gitRoot, [`${candidate}^{commit}`]).catch(() => null);
-    if (!resolved) return null;
+    if (!resolved || (floor && !(await gitProofIsAncestor(opts.gitRoot, floor, resolved))))
+      return null;
     if (await gitIsAncestor(opts.gitRoot, resolved, head)) return resolved;
     const rewrittenChanges = await gitDiffNames(opts.gitRoot, resolved, head, {
       range: "two-dot",
@@ -450,10 +452,13 @@ export async function resolveQualityReviewTargetSha(opts: {
   let currentTaskArtifactHead: string | null = null;
 
   for (;;) {
-    if (current === previousEvaluatedSha) {
+    if (current === floor || current === previousEvaluatedSha) {
       return currentTaskArtifactHead ?? current;
     }
 
+    const parent = await gitRevParse(opts.gitRoot, [`${current}^`]).catch(() => null);
+    if (!parent || (floor && !(await gitProofIsAncestor(opts.gitRoot, floor, parent))))
+      return currentTaskArtifactHead ?? current;
     const mergeParent = await gitRevParse(opts.gitRoot, [`${current}^2`]).catch(() => null);
     const isBaseSyncMerge = Boolean(
       mergeParent && baseHeadSha && (await gitIsAncestor(opts.gitRoot, mergeParent, baseHeadSha)),
@@ -503,13 +508,6 @@ export async function resolveQualityReviewTargetSha(opts: {
       }
     }
 
-    let parent: string;
-    try {
-      parent = await gitRevParse(opts.gitRoot, [`${current}^`]);
-    } catch {
-      return currentTaskArtifactHead ?? current;
-    }
-
     const changed = await gitDiffNames(opts.gitRoot, parent, current);
     if (changed.length === 0) {
       return currentTaskArtifactHead ?? current;
@@ -529,42 +527,15 @@ export async function resolveQualityReviewTargetSha(opts: {
     }
 
     if (touchesOnlyCurrentTaskSet) {
+      const advance = { gitRoot: opts.gitRoot, parent, current, changed, taskRelativePath };
       if (
-        await isAuthorityOnlyTaskReadmeAdvance({
-          gitRoot: opts.gitRoot,
-          parent,
-          current,
-          changed,
-          taskRelativePath,
-        })
-      ) {
-        current = parent;
-        continue;
-      }
-      if (
-        await isImplementationReceiptTaskReadmeAdvance({
-          gitRoot: opts.gitRoot,
-          parent,
-          current,
-          changed,
-          taskRelativePath,
-        })
-      ) {
-        current = parent;
-        continue;
-      }
-      if (
-        changed.every((name) => {
+        (await isAuthorityOnlyTaskReadmeAdvance(advance)) ||
+        (await isImplementationReceiptTaskReadmeAdvance(advance)) ||
+        (changed.every((name) => {
           const taskId = taskIdForPath(name);
           return taskId !== null && lifecycleTaskIdSet.has(taskId);
         }) &&
-        (await isLifecycleOnlyTaskReadmeAdvance({
-          gitRoot: opts.gitRoot,
-          parent,
-          current,
-          changed,
-          taskRelativePath,
-        }))
+          (await isLifecycleOnlyTaskReadmeAdvance(advance)))
       ) {
         current = parent;
         continue;

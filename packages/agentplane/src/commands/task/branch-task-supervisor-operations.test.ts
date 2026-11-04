@@ -1,5 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdir, readFile, rename, rmdir } from "node:fs/promises";
 import type * as CoreGit from "@agentplaneorg/core/git";
+import type * as CoreFs from "@agentplaneorg/core/fs";
+import {
+  buildStateFingerprint,
+  stopSupervisorExecutionEpisode,
+  validateSupervisorExecutionEpisodeJournal,
+} from "@agentplaneorg/core/schemas";
+import { mkGitRepoRoot } from "@agentplane/testkit";
 
 import { CliError } from "../../shared/errors.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -7,12 +15,62 @@ import type { CommandContext } from "../shared/task-backend.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import type * as SideEffectAuthority from "../shared/side-effect-authority.js";
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
+import {
+  createSupervisorEpisodeStore,
+  resolveSupervisorExecutionEpisodePath,
+  supervisePersistedWorkflowEpisode,
+} from "../shared/supervisor-execution-episode.js";
+import { WORKFLOW_OPERATION_REGISTRY } from "../shared/workflow-step.js";
+import { projectWorkflowOperationArgv } from "../shared/workflow-operation-projection.js";
+
+it.each([
+  ["gitlab", "E_RUNTIME", true, "effect_in_doubt"],
+  ["github", "E_RUNTIME", true, "operation_failed"],
+  ["gitlab", "E_VALIDATION", true, "operation_failed"],
+  ["gitlab", "E_RUNTIME", false, "operation_failed"],
+] as const)(
+  "retains a GitLab unknown update only for its typed signal: %s/%s/%s",
+  async (provider, code, typed, expected) => {
+    const root = await mkGitRepoRoot();
+    const { decision } = providerUpdateDecision(root, provider);
+    const execute = vi.fn().mockRejectedValue(
+      new CliError({
+        code,
+        message: "GitLab update readback is unproven; preserve the original intent.",
+        ...(typed ? { context: { reason_code: "provider_update_effect_in_doubt" } } : {}),
+      }),
+    );
+    const outcome = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute,
+      refresh: () => Promise.resolve(decision),
+    });
+    expect(execute).toHaveBeenCalledOnce();
+    expect(outcome.journal.stop?.reason).toBe(expected);
+    expect(outcome.journal.operations.at(-1)?.status).toBe(
+      expected === "effect_in_doubt" ? "intent" : "failed",
+    );
+    if (expected !== "effect_in_doubt") return;
+    const replay = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute,
+      refresh: () => Promise.resolve(decision),
+    });
+    expect(execute).toHaveBeenCalledOnce();
+    expect(replay.journal.operations).toEqual(outcome.journal.operations);
+  },
+);
 
 if (typeof vi.hoisted !== "function") {
   Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
 }
 
 const mocks = vi.hoisted(() => ({
+  atomicWrite: vi.fn<typeof CoreFs.atomicWriteFile>(),
   retainProof: vi.fn().mockResolvedValue(undefined),
   cmdFinish: vi.fn(),
   runNext: vi.fn(),
@@ -45,6 +103,11 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../pr/provider-update-verification-proof.js", () => ({
   retainProviderUpdateVerificationProof: mocks.retainProof,
 }));
+vi.mock("@agentplaneorg/core/fs", async (original) => {
+  const actual = await original<typeof CoreFs>();
+  mocks.atomicWrite.mockImplementation(actual.atomicWriteFile);
+  return { ...actual, atomicWriteFile: mocks.atomicWrite };
+});
 vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
   ...(await importOriginal<typeof CoreGit>()),
   findWorktreeForBranch: mocks.findWorktree,
@@ -160,6 +223,70 @@ function routeDecision(operation: WorkflowOperation): TaskRouteDecision {
     workspace: { baseBranch: "typescript", baseCheckoutPath: "/repo/task" },
     workflowStep: { id: operation.id, kind: "cli_operation", operation },
   } as unknown as TaskRouteDecision;
+}
+
+function providerUpdateDecision(root: string, provider: "github" | "gitlab") {
+  const operation = updateBranchOperation();
+  const component = { state: "present", source: "gitlab-update-test", value: {} } as const;
+  const fingerprint = buildStateFingerprint({
+    task_id: operation.params.taskId,
+    task_revision: 1,
+    git_head: "a".repeat(40),
+    worktree: root,
+    components: Object.fromEntries(
+      [
+        "task",
+        "git",
+        "backend_projection",
+        "policy",
+        "blueprint",
+        "knowledge",
+        "provider",
+        "authority",
+      ].map((key) => [key, component]),
+    ) as Parameters<typeof buildStateFingerprint>[0]["components"],
+  });
+  operation.params.identity = {
+    provider,
+    hostname: "gitlab.example.test",
+    remote: "origin",
+    sourceProject: "group/sub/project",
+    targetProject: "group/sub/project",
+    sourceUrl: "https://gitlab.example.test/group/sub/project.git",
+    targetUrl: "https://gitlab.example.test/group/sub/project.git",
+  };
+  operation.preconditionFingerprint = fingerprint;
+  operation.authorityRef = `route:${operation.params.taskId}:${fingerprint.digest}`;
+  operation.idempotencyKey = `provider.pr.update_branch:${operation.params.taskId}:${fingerprint.digest}:fixture`;
+  operation.expectedPostconditions =
+    WORKFLOW_OPERATION_REGISTRY["provider.pr.update_branch"].expectedPostconditions;
+  const decision = {
+    ...routeDecision(operation),
+    task: {
+      id: operation.params.taskId,
+      owner: "CODER",
+      title: "Preserve the GitLab unknown update intent",
+      status: "DOING",
+      planApproval: "approved",
+      verification: "pending",
+      commit: null,
+    },
+    workflowStep: {
+      id: operation.id,
+      kind: "cli_operation",
+      summary: "Update the exact GitLab task branch",
+      preconditionFingerprint: fingerprint,
+      operation,
+      execution: { actionKind: "local_command" },
+    },
+    executionPacket: {
+      actionKind: "local_command",
+      safeToMutate: true,
+      mustRunFrom: root,
+      exactArgv: projectWorkflowOperationArgv(operation),
+    },
+  } as TaskRouteDecision;
+  return { operation, decision };
 }
 
 function worktreePrepareOperation(): Extract<WorkflowOperation, { id: "worktree.prepare" }> {
@@ -312,6 +439,181 @@ describe("branch task supervisor operations", () => {
       headSha: "c".repeat(40),
     });
   });
+
+  it.each([
+    ["gitlab", "effect_in_doubt", "intent"],
+    ["github", "operation_failed", "failed"],
+  ] as const)(
+    "preserves the correct intent after %s proof-retention failure",
+    async (provider, reason, status) => {
+      const root = await mkGitRepoRoot();
+      const { decision } = providerUpdateDecision(root, provider);
+      const failure = new Error("injected durable proof retention failure");
+      mocks.retainProof.mockRejectedValueOnce(failure);
+      const execute = vi.fn(({ operation }: { operation: WorkflowOperation }) =>
+        executeBranchWorkflowOperation({ decision, operation }),
+      );
+      const result = await supervisePersistedWorkflowEpisode({
+        decision,
+        git_root: root,
+        task_revision: 1,
+        execute,
+        refresh: () => Promise.resolve(decision),
+      });
+      expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
+      expect(mocks.retainProof).toHaveBeenCalledOnce();
+      expect(result.journal.stop?.reason).toBe(reason);
+      expect(result.journal.operations.at(-1)?.status).toBe(status);
+      if (provider !== "gitlab") return;
+      const replay = await supervisePersistedWorkflowEpisode({
+        decision,
+        git_root: root,
+        task_revision: 1,
+        execute,
+        refresh: () => Promise.resolve(decision),
+      });
+      expect(execute).toHaveBeenCalledOnce();
+      expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
+      expect(replay.journal.operations).toEqual(result.journal.operations);
+    },
+  );
+
+  it("preserves a changed journal after GitLab proof-retention failure", async () => {
+    const root = await mkGitRepoRoot();
+    const { decision } = providerUpdateDecision(root, "gitlab");
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: decision.task.id,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    let retained = "";
+    mocks.retainProof.mockImplementationOnce(async () => {
+      const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
+      await store.write(stopSupervisorExecutionEpisode({ journal, reason: "human_review" }));
+      retained = await readFile(journalPath, "utf8");
+      throw new Error("injected retention failure after journal change");
+    });
+    const execute = vi.fn(({ operation }: { operation: WorkflowOperation }) =>
+      executeBranchWorkflowOperation({ decision, operation }),
+    );
+    await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute,
+      refresh: () => Promise.resolve(decision),
+    });
+    expect(retained).not.toBe("");
+    expect(await readFile(journalPath, "utf8")).toBe(retained);
+    await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute,
+      refresh: () => Promise.resolve(decision),
+    });
+    expect(await readFile(journalPath, "utf8")).toBe(retained);
+    expect(execute).toHaveBeenCalledOnce();
+    expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
+  });
+
+  it.each(["before", "after", "changed", "unreadable"] as const)(
+    "reconciles GitLab completion journal write failure, outcome=%s",
+    async (outcome) => {
+      const root = await mkGitRepoRoot();
+      const { decision } = providerUpdateDecision(root, "gitlab");
+      const actual = await vi.importActual<typeof CoreFs>("@agentplaneorg/core/fs");
+      const failure = new Error("injected completion journal I/O failure");
+      const captured: {
+        bytes?: string;
+        restore?: { file: string; backup: string; directoryCreated: boolean };
+      } = {};
+      const restoreReadback = async () => {
+        if (!captured.restore) return;
+        if (captured.restore.directoryCreated) await rmdir(captured.restore.file);
+        await rename(captured.restore.backup, captured.restore.file);
+        delete captured.restore;
+      };
+      let injected = false;
+      mocks.atomicWrite.mockImplementation(async (...args) => {
+        const [file, bytes] = args;
+        if (file.endsWith("/journal.json") && !injected) {
+          const value = JSON.parse(String(bytes)) as { cursor?: { phase?: string } };
+          if (value.cursor?.phase === "completed") {
+            injected = true;
+            if (outcome === "after") await actual.atomicWriteFile(...args);
+            if (outcome === "changed") {
+              const original = validateSupervisorExecutionEpisodeJournal(
+                JSON.parse(await readFile(file, "utf8")),
+              );
+              captured.bytes = JSON.stringify(
+                stopSupervisorExecutionEpisode({
+                  journal: original,
+                  reason: "effect_in_doubt",
+                }),
+              );
+              await actual.atomicWriteFile(file, captured.bytes);
+            }
+            if (outcome === "unreadable") {
+              captured.bytes = await readFile(file, "utf8");
+              const backup = `${file}.readback-unavailable-beforeimage`;
+              await rename(file, backup);
+              captured.restore = { file, backup, directoryCreated: false };
+              // A directory cannot be read as a journal on any supported platform.
+              // Preserve and restore the exact original file around this isolated fault.
+              await mkdir(file);
+              captured.restore.directoryCreated = true;
+            }
+            throw failure;
+          }
+        }
+        await actual.atomicWriteFile(...args);
+      });
+      const execute = vi.fn(({ operation }: { operation: WorkflowOperation }) =>
+        executeBranchWorkflowOperation({ decision, operation }),
+      );
+      try {
+        const result = await supervisePersistedWorkflowEpisode({
+          decision,
+          git_root: root,
+          task_revision: 1,
+          execute,
+          refresh: () => Promise.resolve(decision),
+        });
+        expect(injected).toBe(true);
+        expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
+        await restoreReadback();
+        const durable = await createSupervisorEpisodeStore(result.journal_path).read();
+        if (outcome === "after") {
+          expect(result.execution.result?.status).toBe("succeeded");
+          expect(durable).toMatchObject({ operations: [{ status: "completed" }] });
+        } else if (outcome === "before") {
+          expect(result.execution.result?.detail).toBe(failure.message);
+          expect(durable).toMatchObject({
+            status: "stopped",
+            stop: { reason: "effect_in_doubt" },
+            operations: [{ status: "intent" }],
+          });
+        } else {
+          expect(result.execution.result?.detail).toBe(failure.message);
+          expect(await readFile(result.journal_path, "utf8")).toBe(captured.bytes);
+          expect(durable).toMatchObject({ operations: [{ status: "intent" }] });
+        }
+        await supervisePersistedWorkflowEpisode({
+          decision,
+          git_root: root,
+          task_revision: 1,
+          execute,
+          refresh: () => Promise.resolve(decision),
+        });
+        expect(execute).toHaveBeenCalledOnce();
+        expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
+      } finally {
+        await restoreReadback();
+        mocks.atomicWrite.mockImplementation(actual.atomicWriteFile);
+      }
+    },
+  );
 
   it("executes exact supervisor-owned task branch base synchronization", async () => {
     const operation = syncBaseOperation();

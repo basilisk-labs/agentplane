@@ -1,12 +1,7 @@
-import { mkdir, readFile, rm, stat } from "node:fs/promises";
-import path from "node:path";
-
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
-  migrateSupervisorExecutionEpisodeJournal,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
-  recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   resumeSupervisorExecutionEpisodeAfterInternalAnomaly,
   startSupervisorExecutionEpisode,
@@ -15,8 +10,7 @@ import {
   type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
-import { atomicWriteFile } from "@agentplaneorg/core/fs";
-import { gitRevParse } from "@agentplaneorg/core/git";
+import { CliError } from "../../shared/errors.js";
 
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import {
@@ -35,138 +29,25 @@ import { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease
 
 export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
 
-const SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY = "agentplane/supervisor/episodes";
-
-/** Persisted only because schema_version=1 journals include this legacy field. */
-const LEGACY_DISABLED_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
-  max_episodes: Number.MAX_SAFE_INTEGER,
-  max_agent_runs: null,
-  max_input_tokens: null,
-  max_output_tokens: null,
-  max_total_tokens: null,
-  max_wall_time_ms: null,
-  max_changed_files: null,
-  max_diff_lines: null,
-  max_no_progress_episodes: null,
-};
-
-export type SupervisorEpisodeStore = {
-  read: () => Promise<unknown>;
-  write: (journal: SupervisorExecutionEpisodeJournal) => Promise<void>;
-  /**
-   * Replace a journal only if the persisted digest is still the digest the
-   * caller observed. This is the boundary between a read-only route decision
-   * and a provider invocation: a loser must not launch a second provider.
-   */
-  compareAndSwap: (
-    expected_digest: SupervisorExecutionEpisodeJournal["digest"] | null,
-    journal: SupervisorExecutionEpisodeJournal,
-  ) => Promise<boolean>;
-  path: string;
-};
-
-const JOURNAL_LOCK_STALE_AFTER_MS = 60_000;
-const JOURNAL_LOCK_RETRY_DELAY_MS = 10;
-const JOURNAL_LOCK_WAIT_MS = 5000;
-
-function persistedJournalDigest(
-  value: unknown,
-): SupervisorExecutionEpisodeJournal["digest"] | null {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const digest = (value as { digest?: unknown }).digest;
-  return typeof digest === "string" ? digest : null;
-}
-
-async function waitForJournalLock(lockPath: string): Promise<void> {
-  const deadline = Date.now() + JOURNAL_LOCK_WAIT_MS;
-  while (true) {
-    try {
-      await mkdir(lockPath, { mode: 0o700 });
-      return;
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
-      const lockAge = await stat(lockPath)
-        .then((entry) => Date.now() - entry.mtimeMs)
-        .catch(() => 0);
-      if (lockAge > JOURNAL_LOCK_STALE_AFTER_MS) {
-        await rm(lockPath, { recursive: true, force: true });
-        continue;
-      }
-      if (Date.now() >= deadline) {
-        throw new Error(`Timed out waiting for supervisor episode journal lock: ${lockPath}`);
-      }
-      await new Promise<void>((resolve) => setTimeout(resolve, JOURNAL_LOCK_RETRY_DELAY_MS));
-    }
-  }
-}
-
-async function withJournalLock<T>(filePath: string, work: () => Promise<T>): Promise<T> {
-  const lockPath = `${filePath}.lock`;
-  await mkdir(path.dirname(filePath), { recursive: true, mode: 0o700 });
-  await waitForJournalLock(lockPath);
-  try {
-    return await work();
-  } finally {
-    await rm(lockPath, { recursive: true, force: true });
-  }
-}
-
-function safeTaskPathSegment(taskId: string): string {
-  const normalized = taskId.trim();
-  if (
-    !normalized ||
-    normalized === "." ||
-    normalized === ".." ||
-    normalized.includes("\0") ||
-    normalized.includes("/") ||
-    normalized.includes("\\") ||
-    path.basename(normalized) !== normalized
-  ) {
-    throw new Error(`Supervisor episode task_id must be a path segment: ${JSON.stringify(taskId)}`);
-  }
-  return normalized;
-}
-
-export async function resolveSupervisorExecutionEpisodePath(opts: {
-  git_root: string;
-  common_git_dir?: string;
-  task_id: string;
-}): Promise<string> {
-  const taskId = safeTaskPathSegment(opts.task_id);
-  const commonGitDir = opts.common_git_dir
-    ? path.resolve(opts.common_git_dir)
-    : path.resolve(opts.git_root, await gitRevParse(opts.git_root, ["--git-common-dir"]));
-  return path.join(commonGitDir, SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY, taskId, "journal.json");
-}
-
-export function createSupervisorEpisodeStore(filePath: string): SupervisorEpisodeStore {
-  const read = async () => {
-    try {
-      return JSON.parse(await readFile(filePath, "utf8")) as unknown;
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
-      throw error;
-    }
-  };
-  const writeJournal = async (journal: SupervisorExecutionEpisodeJournal) => {
-    await atomicWriteFile(filePath, `${JSON.stringify(journal, null, 2)}\n`, "utf8");
-  };
-  return {
-    path: filePath,
-    read,
-    write: async (journal) => {
-      await withJournalLock(filePath, async () => writeJournal(journal));
-    },
-    compareAndSwap: async (expectedDigest, journal) => {
-      return withJournalLock(filePath, async () => {
-        const current = await read();
-        if (persistedJournalDigest(current) !== expectedDigest) return false;
-        await writeJournal(journal);
-        return true;
-      });
-    },
-  };
-}
+import {
+  createSupervisorEpisodeStore,
+  openSupervisorExecutionEpisode,
+  openGitLabSupervisorExecutionEpisode,
+  openLegacyWorkflowSupervisorExecutionEpisode,
+  publishLegacyWorkflowJournalTransition,
+  LegacyJournalOriginConflictError,
+  resolveSupervisorExecutionEpisodePath,
+  readProviderUpdateJournalProvider,
+  publishGitLabJournalTransition,
+  GitLabJournalPublicationError,
+  withGitLabJournalLease,
+} from "./supervisor-execution-journal.js";
+export {
+  openSupervisorExecutionEpisode,
+  resolveSupervisorExecutionEpisodePath,
+  createSupervisorEpisodeStore,
+  type SupervisorEpisodeStore,
+} from "./supervisor-execution-journal.js";
 
 /**
  * Hold the same task-wide execution lease used by managed and external work while a competing
@@ -185,59 +66,6 @@ export async function withSupervisorExecutionAdmissionFence<T>(opts: {
   } finally {
     await lease.release();
   }
-}
-
-function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
-  return structuredClone(LEGACY_DISABLED_SUPERVISOR_EXECUTION_BUDGET);
-}
-
-export async function openSupervisorExecutionEpisode(opts: {
-  git_root: string;
-  common_git_dir?: string;
-  task_id: string;
-  task_revision: number | null;
-  state_fingerprint_digest: string;
-  budget?: SupervisorExecutionBudget;
-  recover_intent?: boolean;
-}): Promise<{
-  journal: SupervisorExecutionEpisodeJournal;
-  store: SupervisorEpisodeStore;
-  journal_path: string;
-}> {
-  const journalPath = await resolveSupervisorExecutionEpisodePath({
-    git_root: opts.git_root,
-    common_git_dir: opts.common_git_dir,
-    task_id: opts.task_id,
-  });
-  const store = createSupervisorEpisodeStore(journalPath);
-  const budget = opts.budget ?? defaultSupervisorExecutionBudget();
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const input = await store.read();
-    const migration = migrateSupervisorExecutionEpisodeJournal({
-      input,
-      create: {
-        task_id: opts.task_id,
-        task_revision: opts.task_revision,
-        state_fingerprint_digest: opts.state_fingerprint_digest,
-        budget,
-      },
-    });
-    const journal =
-      migration.source === "current" && opts.recover_intent !== false
-        ? recoverSupervisorExecutionEpisodeJournal({
-            journal: migration.journal,
-            state_fingerprint_digest: opts.state_fingerprint_digest,
-          })
-        : migration.journal;
-    const observedDigest = persistedJournalDigest(input);
-    if (journal.digest === observedDigest) return { journal, store, journal_path: store.path };
-    if (await store.compareAndSwap(observedDigest, journal)) {
-      return { journal, store, journal_path: store.path };
-    }
-  }
-  throw new Error(
-    "Supervisor episode journal changed while it was being opened; retry the command.",
-  );
 }
 
 export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
@@ -345,17 +173,87 @@ export async function supervisePersistedWorkflowEpisode(opts: {
   journal: SupervisorExecutionEpisodeJournal;
   journal_path: string;
 }> {
-  const budget = opts.budget ?? defaultSupervisorExecutionBudget();
+  const journalPath = await resolveSupervisorExecutionEpisodePath({
+    git_root: opts.git_root,
+    task_id: opts.decision.task.id,
+  });
+  const guarded = await usesGitLabJournal(opts.decision, journalPath);
+  const run = () => runPersistedWorkflowEpisode(opts, guarded);
+  return guarded
+    ? await withGitLabJournalLease({
+        journal_path: journalPath,
+        run,
+        failed: ({ execution }) =>
+          execution.stop_reason !== null ||
+          execution.result?.status === "failed" ||
+          (execution.result?.exit_code ?? 0) !== 0,
+      })
+    : await run();
+}
+
+async function usesGitLabJournal(decision: TaskRouteDecision, journalPath: string) {
+  const operation =
+    decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation : null;
+  const provider =
+    operation?.id === "provider.pr.update_branch"
+      ? operation.params.identity.provider
+      : decision.prFlow?.pr?.provider;
+  const retained = await readProviderUpdateJournalProvider(
+    createSupervisorEpisodeStore(journalPath),
+  );
+  if (retained === "gitlab" && (decision.prFlow?.adoption || provider === "github"))
+    throw new CliError({
+      code: "E_RUNTIME",
+      message: "The current route conflicts with the retained task-owned GitLab update.",
+      context: { reason_code: "provider_update_journal_route_conflict" },
+    });
+  if (retained === "github" && provider === "gitlab")
+    throw new CliError({
+      code: "E_RUNTIME",
+      message: "The current route conflicts with the retained provider update.",
+      context: { reason_code: "provider_update_journal_route_conflict" },
+    });
+  if (retained === "gitlab") return true;
+  if (retained === "adopted" || retained === "github") return false;
+  if (decision.prFlow?.adoption) return false;
+  if (provider === "gitlab") return true;
+  if (provider === "github") return false;
+  if (retained === "unproven")
+    throw new CliError({
+      code: "E_RUNTIME",
+      message:
+        "The retained provider update has no proven identity. Refresh the provider route before changing its journal.",
+      context: { reason_code: "provider_update_journal_identity_unproven" },
+    });
+  return false;
+}
+
+async function runPersistedWorkflowEpisode(
+  opts: Parameters<typeof supervisePersistedWorkflowEpisode>[0],
+  gitLabJournal: boolean,
+) {
   const currentFingerprint = opts.decision.workflowStep.preconditionFingerprint.digest;
-  const opened = await openSupervisorExecutionEpisode({
+  const opened = await (
+    gitLabJournal
+      ? openGitLabSupervisorExecutionEpisode
+      : openLegacyWorkflowSupervisorExecutionEpisode
+  )({
     git_root: opts.git_root,
     task_id: opts.decision.task.id,
     task_revision: opts.task_revision ?? null,
     state_fingerprint_digest: currentFingerprint,
-    budget,
+    budget: opts.budget,
   });
   let journal = opened.journal;
   const store = opened.store;
+  const publishJournal = async (
+    before: SupervisorExecutionEpisodeJournal,
+    next: SupervisorExecutionEpisodeJournal,
+    phase: "dispatch" | "state" = "state",
+  ) => {
+    if (gitLabJournal) await publishGitLabJournalTransition({ store, before, next, phase });
+    else await publishLegacyWorkflowJournalTransition({ store, before, next });
+  };
   const operation =
     opts.decision.workflowStep.kind === "cli_operation"
       ? opts.decision.workflowStep.operation
@@ -381,12 +279,13 @@ export async function supervisePersistedWorkflowEpisode(opts: {
   // provider here would replay an already completed semantic episode.
   if (journal.status === "running" && journal.cursor.phase === "completed") {
     const refreshed = await opts.refresh();
-    journal = advanceSupervisorExecutionEpisodeState({
+    const advanced = advanceSupervisorExecutionEpisodeState({
       journal,
       state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
       route_observation: { step_id: refreshed.workflowStep.id },
     });
-    await store.write(journal);
+    await publishJournal(journal, advanced);
+    journal = advanced;
     return {
       execution: {
         ...(await superviseWorkflowStep({ decision: refreshed, mode: "inspect" })),
@@ -441,7 +340,16 @@ export async function supervisePersistedWorkflowEpisode(opts: {
                 adoption: opts.decision.prFlow?.adoption ?? null,
               },
             }
-          : {}),
+          : operation.id === "provider.pr.update_branch" &&
+              operation.params.identity.provider === "gitlab"
+            ? {
+                recovery_context: {
+                  schema_version: 1,
+                  kind: "gitlab_provider_update_branch",
+                  task_id: opts.decision.task.id,
+                },
+              }
+            : {}),
       precondition_fingerprint_digest: currentFingerprint,
       authority_ref: `workflow-operation:${operation.id}`,
       authority_digest: operation.preconditionFingerprint.digest,
@@ -452,15 +360,17 @@ export async function supervisePersistedWorkflowEpisode(opts: {
     });
   let started = start();
   if (started.status === "stopped" && started.stop.reason === "stale_state") {
-    journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+    const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
       journal: started.journal,
       state_fingerprint_digest: currentFingerprint,
     });
-    await store.write(journal);
+    await publishJournal(journal, reopened);
+    journal = reopened;
     started = start();
   }
-  journal = started.journal;
-  await store.write(journal);
+  const admitted = started.journal;
+  await publishJournal(journal, admitted, started.status === "started" ? "dispatch" : "state");
+  journal = admitted;
   if (started.status !== "started") {
     return {
       execution: stoppedExecution({
@@ -482,6 +392,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
     mode: "execute",
     execute: async ({ operation: invoked }) => {
       const operationStartedAt = performance.now();
+      let journalPublicationUncertain = false;
       const timing = (endedAt: number, firstMutation: boolean) => {
         const stage = workflowOperationLifecycleStage({
           operation_id: invoked.id,
@@ -500,7 +411,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
         const result = await opts.execute({ operation: invoked });
         const operationEndedAt = performance.now();
         const observed = observedRunnerUsage({ result });
-        journal = completeSupervisorExecutionEpisode({
+        const nextJournal = completeSupervisorExecutionEpisode({
           journal,
           operation_key: started.operation_key,
           result: {
@@ -514,20 +425,83 @@ export async function supervisePersistedWorkflowEpisode(opts: {
           ...(observed.progress === undefined ? {} : { progress: observed.progress }),
           failed: result.status !== "succeeded",
         });
-        completed = result.status === "succeeded" && journal.status === "running";
-        await store.write(journal);
+        const gitLabUpdated =
+          invoked.id === "provider.pr.update_branch" &&
+          invoked.params.identity.provider === "gitlab" &&
+          result.status === "succeeded" &&
+          result.exit_code === 0 &&
+          result.observed_postconditions.some((item) =>
+            /^provider_update_head:(?:[a-f0-9]{40}|[a-f0-9]{64})$/u.test(item),
+          );
+        if (gitLabJournal) {
+          try {
+            await publishJournal(journal, nextJournal);
+          } catch (error) {
+            journalPublicationUncertain = true;
+            if (
+              gitLabUpdated &&
+              error instanceof GitLabJournalPublicationError &&
+              error.durable_state === "before"
+            ) {
+              const stopped = stopSupervisorExecutionEpisode({
+                journal,
+                reason: "effect_in_doubt",
+              });
+              try {
+                await publishJournal(journal, stopped);
+                journal = stopped;
+              } catch {
+                // Preserve changed or unreadable state; never replay the provider effect.
+              }
+            }
+            throw error;
+          }
+          journal = nextJournal;
+          completed = result.status === "succeeded" && journal.status === "running";
+        } else {
+          try {
+            await publishJournal(journal, nextJournal);
+          } catch (error) {
+            journalPublicationUncertain = true;
+            throw error;
+          }
+          journal = nextJournal;
+          completed = result.status === "succeeded" && journal.status === "running";
+        }
         return result;
       } catch (error) {
+        if (journalPublicationUncertain || error instanceof LegacyJournalOriginConflictError)
+          throw error;
         if (
           invoked.id === "integration.adopted_merge" ||
-          (invoked.id === "provider.pr.update_branch" && opts.decision.prFlow?.adoption)
+          (invoked.id === "provider.pr.update_branch" && opts.decision.prFlow?.adoption) ||
+          (invoked.id === "provider.pr.update_branch" &&
+            invoked.params.identity.provider === "gitlab" &&
+            error instanceof CliError &&
+            error.code === "E_RUNTIME" &&
+            error.context?.reason_code === "provider_update_effect_in_doubt")
         ) {
-          journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
-          await store.write(journal);
+          const stopped = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
+          if (gitLabJournal) {
+            try {
+              await publishJournal(journal, stopped);
+              journal = stopped;
+            } catch {
+              // Retain the original typed uncertainty without replacing durable evidence.
+            }
+          } else {
+            try {
+              await publishJournal(journal, stopped);
+              journal = stopped;
+            } catch (publicationError) {
+              if (!(publicationError instanceof LegacyJournalOriginConflictError))
+                throw publicationError;
+            }
+          }
           throw error;
         }
         const operationEndedAt = performance.now();
-        journal = completeSupervisorExecutionEpisode({
+        const failed = completeSupervisorExecutionEpisode({
           journal,
           operation_key: started.operation_key,
           result: { error: error instanceof Error ? error.name : "unknown_error" },
@@ -537,21 +511,37 @@ export async function supervisePersistedWorkflowEpisode(opts: {
           lifecycle_timing: timing(operationEndedAt, false),
           failed: true,
         });
-        await store.write(journal);
+        if (gitLabJournal) {
+          try {
+            await publishJournal(journal, failed);
+            journal = failed;
+          } catch {
+            // Preserve both the primary failure and uncertain journal state.
+          }
+        } else {
+          try {
+            await publishJournal(journal, failed);
+            journal = failed;
+          } catch (publicationError) {
+            if (!(publicationError instanceof LegacyJournalOriginConflictError))
+              throw publicationError;
+          }
+        }
         throw error;
       }
     },
     refresh: async () => {
       refreshed = await opts.refresh();
       if (completed && journal.status === "running") {
-        journal = advanceSupervisorExecutionEpisodeState({
+        const advanced = advanceSupervisorExecutionEpisodeState({
           journal,
           state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
           route_observation: {
             step_id: refreshed.workflowStep.id,
           },
         });
-        await store.write(journal);
+        await publishJournal(journal, advanced);
+        journal = advanced;
       }
       return refreshed;
     },

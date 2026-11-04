@@ -53,6 +53,58 @@ function mr(overrides: Record<string, unknown> = {}) {
 describe("sync-gitlab", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("uses the authenticated current target tip for need_rebase instead of the diff ancestor", async () => {
+    const current = "2".repeat(40);
+    mocks.runGlabApiJson
+      .mockResolvedValueOnce({ id: 7 })
+      .mockResolvedValueOnce(mr({ detailed_merge_status: "need_rebase" }))
+      .mockResolvedValueOnce({ id: 9, path_with_namespace: identity.targetProject })
+      .mockResolvedValueOnce({ name: "main", commit: { id: current } });
+    await expect(
+      observeExistingGitLabMrByNumber({
+        gitRoot: "/repo",
+        identity,
+        prNumber: 42,
+        branch: "task/T-1/work",
+        baseBranch: "main",
+      }),
+    ).resolves.toMatchObject({ state: "found", pr: { baseSha: current, headSha: "head-sha" } });
+    expect(mocks.runGlabApiJson).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        hostname: identity.hostname,
+        endpoint: "projects/group%2Fsub%2Fproject/repository/branches/main",
+      }),
+    );
+  });
+
+  it.each(["project", "branch", "sha", "unavailable"])(
+    "fails closed on unproven current target %s",
+    async (kind) => {
+      mocks.runGlabApiJson
+        .mockResolvedValueOnce({ id: 7 })
+        .mockResolvedValueOnce(mr({ detailed_merge_status: "need_rebase" }))
+        .mockResolvedValueOnce({
+          id: 9,
+          path_with_namespace: kind === "project" ? "other/project" : identity.targetProject,
+        });
+      if (kind === "unavailable") mocks.runGlabApiJson.mockRejectedValueOnce(new Error("offline"));
+      else if (kind !== "project")
+        mocks.runGlabApiJson.mockResolvedValueOnce({
+          name: kind === "branch" ? "other" : "main",
+          commit: { id: kind === "sha" ? "not-a-commit" : "2".repeat(40) },
+        });
+      await expect(
+        observeExistingGitLabMrByNumber({
+          gitRoot: "/repo",
+          identity,
+          prNumber: 42,
+          branch: "task/T-1/work",
+          baseBranch: "main",
+        }),
+      ).resolves.toMatchObject({ state: "unavailable" });
+    },
+  );
+
   it("looks up nested self-managed fork MRs and refreshes exact mergeability", async () => {
     mocks.runGlabApiJson
       .mockResolvedValueOnce({ id: 7 })

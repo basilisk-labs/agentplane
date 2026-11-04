@@ -10,6 +10,7 @@ import { observeExistingChangeRequestByNumber } from "./internal/change-request-
 import { runGhApiJson } from "./internal/gh-api.js";
 import type { GitHostIdentity } from "./internal/git-host-identity.js";
 import type { AdoptedPrIdentity } from "./adoption-identity.js";
+import { updateGitLabProviderBranch } from "./provider-update-branch-gitlab.js";
 
 const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
 
@@ -28,7 +29,7 @@ export type ProviderUpdateBranchRequest = Readonly<{
 }>;
 
 type ProviderUpdateBranchEvidence = Readonly<{
-  provider: "github";
+  provider: "github" | "gitlab";
   targetProject: string;
   prNumber: number;
   branch: string;
@@ -354,6 +355,7 @@ async function observeAuthorizedPullRequest(
 export async function updateProviderBranch(
   opts: ProviderUpdateBranchRequest,
 ): Promise<ProviderUpdateBranchResult> {
+  if (opts.identity.provider === "gitlab") return updateGitLabProviderBranch(opts);
   const invalid = validateRequest(opts);
   if (invalid) {
     return {
@@ -367,7 +369,7 @@ export async function updateProviderBranch(
     return {
       state: "not_applied",
       reason: "unsupported_provider",
-      detail: `Provider ${opts.identity.provider} does not implement update-branch.`,
+      detail: "The provider does not implement update-branch.",
       observed: null,
     };
   }

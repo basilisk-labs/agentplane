@@ -1,5 +1,10 @@
+import { writeDefaultConfig } from "@agentplane/testkit";
+import { loadCommandContext } from "../shared/task-backend.js";
+import { runDirectTaskVerification } from "../task/direct-task-verification.js";
+import { observationDigest } from "../task/verification-observation.js";
+import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { assertBranchTaskArtifactOwnership } from "./internal/branch-task-artifact-ownership.js";
-import { mkdtemp, writeFile, readFile, readdir, unlink, rename, mkdir } from "node:fs/promises";
+import { mkdtemp, writeFile, readFile, unlink, rename, mkdir } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
@@ -19,6 +24,8 @@ import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
 import {
   retainProviderUpdateVerificationProof,
   inheritedProviderUpdatePaths,
+  providerUpdateVerificationFloor,
+  verificationCoversProviderUpdateFloor,
 } from "./provider-update-verification-proof.js";
 
 const fp = `sha256:${"a".repeat(64)}`;
@@ -28,6 +35,7 @@ async function fixture(
   overlap: boolean | "reverted" | "shared" | "shared-head" = false,
   transient = false,
   localMergeBeforeProof = false,
+  provider: "github" | "gitlab" = "github",
 ) {
   const root = await mkdtemp(path.join(os.tmpdir(), "provider-update-proof-"));
   const git = (...args: string[]) =>
@@ -39,7 +47,10 @@ async function fixture(
   git("init", "-b", "main");
   git("config", "user.name", "Fixture");
   git("config", "user.email", "fixture@example.test");
-  git("remote", "add", "origin", "https://github.com/example/proof.git");
+  const hostname = provider === "gitlab" ? "gitlab.example.test" : "github.com";
+  const project = provider === "gitlab" ? "group/sub/proof" : "example/proof";
+  const url = `https://${hostname}/${project}.git`;
+  git("remote", "add", "origin", url);
   await writeFile(path.join(root, "base.txt"), "base");
   git("add", ".");
   git("commit", "-m", "base");
@@ -100,13 +111,13 @@ async function fixture(
   const params = {
     taskId,
     identity: {
-      provider: "github" as const,
-      hostname: "github.com",
+      provider,
+      hostname,
       remote: "origin",
-      sourceProject: "example/proof",
-      targetProject: "example/proof",
-      sourceUrl: "https://github.com/example/proof.git",
-      targetUrl: "https://github.com/example/proof.git",
+      sourceProject: project,
+      targetProject: project,
+      sourceUrl: url,
+      targetUrl: url,
     },
     prNumber: 1,
     branch: "task/proof",
@@ -135,6 +146,15 @@ async function fixture(
     role: "EXECUTOR",
     kind: "cli_operation",
     operation_identity: { id: "provider.pr.update_branch", params },
+    ...(provider === "gitlab"
+      ? {
+          recovery_context: {
+            schema_version: 1,
+            kind: "gitlab_provider_update_branch",
+            task_id: taskId,
+          },
+        }
+      : {}),
     precondition_fingerprint_digest: fp,
     authority_ref: "workflow-operation:provider.pr.update_branch",
     authority_digest: fp,
@@ -198,7 +218,49 @@ async function fixture(
   };
 }
 
+async function completedFixture(...args: Parameters<typeof fixture>) {
+  const f = await fixture(...args);
+  await f.retain();
+  await f.complete();
+  return f;
+}
+
+const reviewTarget = (
+  f: Awaited<ReturnType<typeof fixture>>,
+  headSha = f.git("rev-parse", "HEAD"),
+  previousEvaluatedSha = f.H,
+) =>
+  resolveQualityReviewTargetSha({
+    gitRoot: f.root,
+    workflowDir: ".agentplane/tasks",
+    taskId,
+    headSha,
+    previousEvaluatedSha,
+    workflowMode: "branch_pr",
+    baseRef: "main",
+  });
+
+const retainedProofPath = (f: Awaited<ReturnType<typeof fixture>>) =>
+  path.join(
+    path.dirname(f.journalPath),
+    `provider-update-${f.started.operation_key.slice(7)}.json`,
+  );
+
 describe("native provider update verification proof", () => {
+  it("admits only completed native GitLab imports while preserving task-owned paths", async () => {
+    const f = await fixture("foreign.txt", false, false, false, "gitlab");
+    await f.retain();
+    expect(await f.inherited()).toEqual([]);
+    expect(await providerUpdateVerificationFloor(f.root, taskId)).toBeNull();
+    await f.complete();
+    expect(await providerUpdateVerificationFloor(f.root, taskId)).toBe(f.merged);
+    expect(await reviewTarget(f, f.merged)).toBe(f.merged);
+    expect(await f.inherited()).toEqual(["foreign.txt"]);
+    await f.retain();
+    expect(await f.inherited()).toEqual(["foreign.txt"]);
+    expect(f.params.expectedHeadSha).toBe(f.H);
+  });
+
   it("does not trust provisional proof until the exact native operation completes", async () => {
     const f = await fixture();
     await f.retain();
@@ -224,25 +286,18 @@ describe("native provider update verification proof", () => {
   it("refuses an occupied proof slot with different contents", async () => {
     const f = await fixture();
     await f.retain();
-    const dir = path.dirname(f.journalPath);
-    const names = await readdir(dir);
-    const name = names.find((value) => value.startsWith("provider-update-"))!;
-    await writeFile(path.join(dir, name), "{}\n");
+    await writeFile(retainedProofPath(f), "{}\n");
     await expect(f.retain()).rejects.toThrow(/slot changed/);
   });
   it("does not mask subsequent foreign source edits", async () => {
-    const f = await fixture();
-    await f.retain();
-    await f.complete();
+    const f = await completedFixture();
     await writeFile(path.join(f.root, "foreign.txt"), "later task edit");
     f.git("add", ".");
     f.git("commit", "-m", "task edit");
     expect(await f.inherited()).toEqual([]);
   });
   it("retains exact canonical imports after owned semantic rework", async () => {
-    const f = await fixture();
-    await f.retain();
-    await f.complete();
+    const f = await completedFixture();
     await writeFile(path.join(f.root, "own.txt"), "approved semantic rework");
     f.git("add", "own.txt");
     f.git("commit", "-m", "owned semantic rework");
@@ -250,13 +305,8 @@ describe("native provider update verification proof", () => {
   });
 
   it("rejects altered identity even when a proof digest is recomputed", async () => {
-    const f = await fixture();
-    await f.retain();
-    await f.complete();
-    const dir = path.dirname(f.journalPath);
-    const names = await readdir(dir);
-    const name = names.find((value) => value.startsWith("provider-update-"))!;
-    const value = JSON.parse(await readFile(path.join(dir, name), "utf8")) as {
+    const f = await completedFixture();
+    const value = JSON.parse(await readFile(retainedProofPath(f), "utf8")) as {
       params: typeof f.params;
       digest: string;
       observed_head_sha: string;
@@ -265,20 +315,15 @@ describe("native provider update verification proof", () => {
     value.params.identity.targetProject = "other/repo";
     const { digest: _old, ...payload } = value;
     value.digest = digestSupervisorEpisodeValue(payload);
-    await writeFile(path.join(dir, name), JSON.stringify(value));
+    await writeFile(retainedProofPath(f), JSON.stringify(value));
     await expect(f.inherited()).rejects.toThrow(/authority/);
   });
   it("binds the observed merge to the exact completed result, not just completed status", async () => {
-    const f = await fixture();
-    await f.retain();
-    await f.complete();
-    const dir = path.dirname(f.journalPath);
-    const names = await readdir(dir);
-    const name = names.find((value) => value.startsWith("provider-update-"))!;
+    const f = await completedFixture();
     // A different merge commit with the same parents is insufficient provider evidence.
     const tree = f.git("rev-parse", `${f.merged}^{tree}`);
     const other = f.git("commit-tree", tree, "-p", f.H, "-p", f.R, "-m", "unobserved merge");
-    const value = JSON.parse(await readFile(path.join(dir, name), "utf8")) as {
+    const value = JSON.parse(await readFile(retainedProofPath(f), "utf8")) as {
       params: typeof f.params;
       digest: string;
       observed_head_sha: string;
@@ -288,16 +333,13 @@ describe("native provider update verification proof", () => {
     value.completion.observed_postconditions = [`provider_update_head:${other}`];
     const { digest: _old, ...payload } = value;
     value.digest = digestSupervisorEpisodeValue(payload);
-    await writeFile(path.join(dir, name), JSON.stringify(value));
+    await writeFile(retainedProofPath(f), JSON.stringify(value));
     await expect(f.inherited()).rejects.toThrow(/completion/);
   });
   it("reuses a provisional commitment during authenticated recovery without overwriting it", async () => {
     const f = await fixture();
     await f.retain();
-    const dir = path.dirname(f.journalPath);
-    const names = await readdir(dir);
-    const name = names.find((value) => value.startsWith("provider-update-"))!;
-    const before = await readFile(path.join(dir, name), "utf8");
+    const before = await readFile(retainedProofPath(f), "utf8");
     const recovered = await retainProviderUpdateVerificationProof({
       command: f.command,
       params: f.params,
@@ -321,7 +363,7 @@ describe("native provider update verification proof", () => {
       }),
     );
     expect(await f.inherited()).toEqual(["foreign.txt"]);
-    expect(await readFile(path.join(dir, name), "utf8")).toBe(before);
+    expect(await readFile(retainedProofPath(f), "utf8")).toBe(before);
   });
   it.each(["original", "observed"])(
     "rejects changed %s recovery base evidence",
@@ -345,70 +387,81 @@ describe("native provider update verification proof", () => {
       expect(await f.inherited()).toEqual([]);
     },
   );
-  it("supports another canonical advance in the same Task after metadata-only descendants", async () => {
-    const f = await fixture();
-    await f.retain();
-    await f.complete();
-    const { mkdir } = await import("node:fs/promises");
-    const metadata = `.agentplane/tasks/${taskId}`;
-    await mkdir(path.join(f.root, metadata), { recursive: true });
-    await writeFile(path.join(f.root, metadata, "README.md"), "native metadata");
-    f.git("add", metadata);
-    f.git("commit", "-m", "native artifacts");
-    const H2 = f.git("rev-parse", "HEAD");
-    f.git("checkout", "main");
-    await writeFile(path.join(f.root, "foreign.txt"), "canonical second revision");
-    f.git("add", "foreign.txt");
-    f.git("commit", "-m", "second canonical advance");
-    const R2 = f.git("rev-parse", "HEAD");
-    f.git("checkout", "task/proof");
-    f.git("merge", "--no-ff", "main", "-m", "second provider update");
-    const merged2 = f.git("rev-parse", "HEAD");
-    const params = { ...f.params, expectedHeadSha: H2, expectedBaseSha: R2 };
-    const journal = (await f.store.read())!;
-    const started = startSupervisorExecutionEpisode({
-      journal,
-      role: "EXECUTOR",
-      kind: "cli_operation",
-      operation_identity: { id: "provider.pr.update_branch", params },
-      precondition_fingerprint_digest: fp,
-      authority_ref: "workflow-operation:provider.pr.update_branch",
-      authority_digest: fp,
-      effect_ref: `provider.pr.update_branch:${taskId}:${fp}:${operationPayloadDigest({ id: "provider.pr.update_branch", type: "provider_update_branch", params })}`,
-    });
-    if (started.status !== "started") throw new Error("second intent did not start");
-    await f.store.write(started.journal);
-    const completion = {
-      status: "succeeded",
-      observed_postconditions: [`provider_update_head:${merged2}`],
-      exit_code: 0,
-    };
-    await retainProviderUpdateVerificationProof({
-      command: f.command,
-      params,
-      authority_digest: fp,
-      observed_head_sha: merged2,
-      completion,
-    });
-    await f.store.write(
-      completeSupervisorExecutionEpisode({
-        journal: started.journal,
-        operation_key: started.operation_key,
-        result: completion,
-      }),
-    );
-    expect(await f.inherited()).toEqual(["foreign.txt"]);
-    expect(f.B).toBe(f.git("merge-base", f.H, f.R));
-  });
+  it.each(["github", "gitlab"] as const)(
+    "supports chained %s updates after metadata-only descendants",
+    async (provider) => {
+      const f = await completedFixture("foreign.txt", false, false, false, provider);
+      const { mkdir } = await import("node:fs/promises");
+      const metadata = `.agentplane/tasks/${taskId}`;
+      await mkdir(path.join(f.root, metadata), { recursive: true });
+      await writeFile(path.join(f.root, metadata, "README.md"), "native metadata");
+      f.git("add", metadata);
+      f.git("commit", "-m", "native artifacts");
+      const H2 = f.git("rev-parse", "HEAD");
+      f.git("checkout", "main");
+      await writeFile(path.join(f.root, "foreign.txt"), "canonical second revision");
+      f.git("add", "foreign.txt");
+      f.git("commit", "-m", "second canonical advance");
+      const R2 = f.git("rev-parse", "HEAD");
+      f.git("checkout", "task/proof");
+      f.git("merge", "--no-ff", "main", "-m", "second provider update");
+      const merged2 = f.git("rev-parse", "HEAD");
+      const params = { ...f.params, expectedHeadSha: H2, expectedBaseSha: R2 };
+      const journal = (await f.store.read())!;
+      const started = startSupervisorExecutionEpisode({
+        journal,
+        role: "EXECUTOR",
+        kind: "cli_operation",
+        operation_identity: { id: "provider.pr.update_branch", params },
+        ...(provider === "gitlab"
+          ? {
+              recovery_context: {
+                schema_version: 1,
+                kind: "gitlab_provider_update_branch",
+                task_id: taskId,
+              },
+            }
+          : {}),
+        precondition_fingerprint_digest: fp,
+        authority_ref: "workflow-operation:provider.pr.update_branch",
+        authority_digest: fp,
+        effect_ref: `provider.pr.update_branch:${taskId}:${fp}:${operationPayloadDigest({ id: "provider.pr.update_branch", type: "provider_update_branch", params })}`,
+      });
+      if (started.status !== "started") throw new Error("second intent did not start");
+      await f.store.write(started.journal);
+      const completion = {
+        status: "succeeded",
+        observed_postconditions: [`provider_update_head:${merged2}`],
+        exit_code: 0,
+      };
+      await retainProviderUpdateVerificationProof({
+        command: f.command,
+        params,
+        authority_digest: fp,
+        observed_head_sha: merged2,
+        completion,
+      });
+      await f.store.write(
+        completeSupervisorExecutionEpisode({
+          journal: started.journal,
+          operation_key: started.operation_key,
+          result: completion,
+        }),
+      );
+      expect(await f.inherited()).toEqual(["foreign.txt"]);
+      expect(f.B).toBe(f.git("merge-base", f.H, f.R));
+      expect(await providerUpdateVerificationFloor(f.root, taskId)).toBe(
+        provider === "gitlab" ? merged2 : null,
+      );
+    },
+  );
 });
 
 describe("canonical import path lineage", () => {
   it.each(["edit-revert", "delete-recreate", "rename-revert"])(
     "does not inherit foreign bytes after %s even if current tree matches R",
     async (mutation) => {
-      const f = await fixture();
-      await f.retain();
-      await f.complete();
+      const f = await completedFixture();
       const file = path.join(f.root, "foreign.txt");
       if (mutation === "edit-revert") await writeFile(file, "unapproved");
       else if (mutation === "delete-recreate") await unlink(file);
@@ -454,9 +507,7 @@ describe("native import proof in foreign Task ownership", () => {
 
   it("preserves pre-update ownership even when the imported tree matches canonical bytes", async () => {
     const foreign = ".agentplane/tasks/FOREIGN/README.md";
-    const f = await fixture(foreign, true);
-    await f.retain();
-    await f.complete();
+    const f = await completedFixture(foreign, true);
     expect(await f.inherited()).toEqual([]);
     await expect(
       assertBranchTaskArtifactOwnership({
@@ -477,9 +528,7 @@ describe("ownership of imports absent from the final frozen-base diff", () => {
     "rejects committed %s of a canonical foreign artifact",
     async (mutation) => {
       const foreign = ".agentplane/tasks/FOREIGN/README.md";
-      const f = await fixture(foreign);
-      await f.retain();
-      await f.complete();
+      const f = await completedFixture(foreign);
       if (mutation === "delete") await unlink(path.join(f.root, foreign));
       else {
         await mkdir(path.join(f.root, `.agentplane/tasks/${taskId}`), { recursive: true });
@@ -507,9 +556,7 @@ describe("ownership of imports absent from the final frozen-base diff", () => {
 });
 
 it("attributes canonical-only transient artifact history without charging it to the Task", async () => {
-  const f = await fixture(".agentplane/tasks/FOREIGN/README.md", false, true);
-  await f.retain();
-  await f.complete();
+  const f = await completedFixture(".agentplane/tasks/FOREIGN/README.md", false, true);
   await writeFile(path.join(f.root, "own.txt"), "own semantic rework");
   f.git("add", "own.txt");
   f.git("commit", "-m", "own semantic rework");
@@ -544,9 +591,7 @@ it("refuses actual foreign ownership when the native update failed", async () =>
 });
 
 it("does not inherit a foreign mode change reverted to the exact canonical tree", async () => {
-  const f = await fixture();
-  await f.retain();
-  await f.complete();
+  const f = await completedFixture();
   f.git("update-index", "--chmod=+x", "foreign.txt");
   f.git("commit", "-m", "foreign mode change");
   f.git("update-index", "--chmod=-x", "foreign.txt");
@@ -660,9 +705,7 @@ it("accepts a clean canonical import through an intermediate Task parent", async
 
 it("rejects canonical deletion and restoration through stale Task parents", async () => {
   const foreign = ".agentplane/tasks/FOREIGN/README.md";
-  const f = await fixture(foreign);
-  await f.retain();
-  await f.complete();
+  const f = await completedFixture(foreign);
   f.git("config", "--local", "log.diffMerges", "off");
   f.git("checkout", "-b", "canonical-side");
   await writeFile(path.join(f.root, "canonical-side.txt"), "own source");
@@ -700,9 +743,7 @@ it("rejects canonical deletion and restoration through stale Task parents", asyn
 
 it("keeps authenticated imports after merging a stale own-only Task side", async () => {
   const foreign = ".agentplane/tasks/FOREIGN/README.md";
-  const f = await fixture(foreign);
-  await f.retain();
-  await f.complete();
+  const f = await completedFixture(foreign);
   f.git("config", "--local", "log.diffMerges", "off");
   f.git("checkout", "-b", "stale-task", f.H);
   await writeFile(path.join(f.root, "stale-own.txt"), "own stale side");
@@ -732,9 +773,7 @@ it.each([false, true, "reverted"] as const)(
   "does not infer pre-update ownership from a later proof after local sync (overlap=%s)",
   async (overlap) => {
     const foreign = ".agentplane/tasks/FOREIGN/README.md";
-    const f = await fixture(foreign, overlap, false, true);
-    await f.retain();
-    await f.complete();
+    const f = await completedFixture(foreign, overlap, false, true);
     f.git("config", "--local", "log.diffMerges", "off");
     // There was no native proof at the earlier local import. The later proof
     // authenticates I2, but cannot retroactively establish pre-update ownership.
@@ -760,9 +799,7 @@ it.each(["shared", "shared-head"] as const)(
   "preserves pre-update Task ownership when canonical shares the Task foreign-write prefix (%s)",
   async (overlap) => {
     const foreign = ".agentplane/tasks/FOREIGN/README.md";
-    const f = await fixture(foreign, overlap);
-    await f.retain();
-    await f.complete();
+    const f = await completedFixture(foreign, overlap);
     if (overlap === "shared") expect(f.git("merge-base", f.H, f.R)).not.toBe(f.H);
     else expect(f.git("merge-base", f.H, f.R)).toBe(f.H);
     expect.soft(await f.inherited()).toEqual([]);
@@ -781,3 +818,163 @@ it.each(["shared", "shared-head"] as const)(
       .rejects.toThrow(/other tasks/);
   },
 );
+
+it.each(["missing", "unreadable", "json", "digest", "identity", "journal"] as const)(
+  "fails closed for completed native GitLab history with %s evidence",
+  async (mode) => {
+    const f = await completedFixture("foreign.txt", false, false, false, "gitlab");
+    const proof = path.join(
+      path.dirname(f.journalPath),
+      `provider-update-${f.started.operation_key.slice(7)}.json`,
+    );
+    switch (mode) {
+      case "missing": {
+        await unlink(proof);
+        break;
+      }
+      case "unreadable": {
+        await unlink(proof);
+        await mkdir(proof);
+
+        break;
+      }
+      case "journal": {
+        await rename(f.journalPath, `${f.journalPath}.saved`);
+        break;
+      }
+      case "json": {
+        await writeFile(proof, "{");
+        break;
+      }
+      default: {
+        const value = JSON.parse(await readFile(proof, "utf8")) as {
+          params: typeof f.params;
+          digest: string;
+        };
+        if (mode === "digest") value.digest = `sha256:${"0".repeat(64)}`;
+        else {
+          value.params.identity.targetProject = "wrong/project";
+          const { digest: _digest, ...payload } = value;
+          value.digest = digestSupervisorEpisodeValue(payload);
+        }
+        await writeFile(proof, JSON.stringify(value));
+      }
+    }
+    await expect(providerUpdateVerificationFloor(f.root, taskId)).rejects.toThrow();
+    await expect(reviewTarget(f, f.merged)).rejects.toThrow();
+  },
+);
+
+it("keeps M through generated tails, rejects a rewrite shortcut and reviews later source", async () => {
+  const f = await completedFixture("foreign.txt", false, false, false, "gitlab");
+  const target = (previous = f.H) => reviewTarget(f, undefined, previous);
+  const artifact = `.agentplane/tasks/${taskId}/quality/tail.json`;
+  await mkdir(path.dirname(path.join(f.root, artifact)), { recursive: true });
+  await writeFile(path.join(f.root, artifact), "{}");
+  f.git("add", artifact);
+  f.git("commit", "-m", "generated tail");
+  expect(await target()).toBe(f.merged);
+  const tail = f.git("rev-parse", "HEAD");
+  const tree = f.git("rev-parse", `${tail}^{tree}`);
+  const rewritten = f.git(
+    "commit-tree",
+    tree,
+    "-p",
+    f.H,
+    "-m",
+    "equivalent tree outside native M lineage",
+  );
+  expect(await target(rewritten)).toBe(f.merged);
+  await writeFile(path.join(f.root, "own.txt"), "new source");
+  f.git("add", "own.txt");
+  f.git("commit", "-m", "new source after native M");
+  expect(await target()).toBe(f.git("rev-parse", "HEAD"));
+  await expect(reviewTarget(f, f.H)).rejects.toThrow(/floor/);
+});
+
+it("authenticates actual execution heads before equivalent-input reuse, including portable paths", async () => {
+  const f = await fixture("foreign.txt", false, false, false, "gitlab");
+  await writeDefaultConfig(f.root);
+  const command = await loadCommandContext({ cwd: f.root, rootOverride: null });
+  const run = () =>
+    runDirectTaskVerification({
+      command,
+      cwd: f.root,
+      task_id: taskId,
+      task: { verify: ["git diff --check"], task_kind: "code", mutation_scope: "code" },
+    });
+  f.git("checkout", "--detach", f.H);
+  const old = await run();
+  expect(old.status).toBe("passed");
+  f.git("checkout", "task/proof");
+  await f.retain();
+  await f.complete();
+  const reference = async (file: string) => ({
+    reference: file,
+    path: file,
+    fragment: null,
+    source: "filesystem" as const,
+    digest: observationDigest(
+      await readFile(path.join(f.root, file), "utf8"),
+    ) as `sha256:${string}`,
+  });
+  const opts = {
+    gitRoot: f.root,
+    taskId,
+    workflowDir: ".agentplane/tasks",
+    headSha: f.merged,
+    implementationSha: f.merged,
+    targetSha: f.merged,
+    commands: ["git diff --check"],
+    references: [await reference(old.artifact_path)],
+  };
+  expect(await verificationCoversProviderUpdateFloor(opts)).toBe(false);
+  const fresh = await run();
+  expect(fresh.status).toBe("passed");
+  expect(fresh.checks[0]!.observation!.manifest_path).not.toBe(
+    old.checks[0]!.observation!.manifest_path,
+  );
+  opts.references = [await reference(fresh.artifact_path)];
+  expect(await verificationCoversProviderUpdateFloor(opts)).toBe(true);
+  expect(
+    await verificationCoversProviderUpdateFloor({
+      ...opts,
+      implementationSha: f.H,
+      targetSha: f.H,
+    }),
+  ).toBe(false);
+  const file = path.join(f.root, fresh.artifact_path);
+  const artifact = JSON.parse(await readFile(file, "utf8")) as {
+    checks: { observation: { manifest_path: string } }[];
+  };
+  const manifest = artifact.checks[0]!.observation.manifest_path;
+  const relative = path.relative(f.root, manifest).replaceAll("\\", "/");
+  artifact.checks[0]!.observation.manifest_path = `C:/imported/${relative}`;
+  await writeFile(file, JSON.stringify(artifact));
+  opts.references = [await reference(fresh.artifact_path)];
+  expect(await verificationCoversProviderUpdateFloor(opts)).toBe(true);
+  const retained = await readFile(manifest, "utf8");
+  await writeFile(manifest, "{}");
+  expect(await verificationCoversProviderUpdateFloor(opts)).toBe(false);
+  await writeFile(manifest, retained);
+});
+
+it("does not walk below the floor carried through the second merge parent", async () => {
+  const f = await completedFixture(
+    ".agentplane/tasks/FOREIGN/quality/import.json",
+    false,
+    false,
+    false,
+    "gitlab",
+  );
+  f.git("checkout", "-b", "stale-first-parent", f.H);
+  await writeFile(path.join(f.root, "own.txt"), "later own source");
+  f.git("add", "own.txt");
+  f.git("commit", "-m", "source before importing M");
+  f.git("merge", "--no-ff", "task/proof", "-m", "M as second parent");
+  const head = f.git("rev-parse", "HEAD");
+  f.git("checkout", "task/proof");
+  f.git("merge", "--ff-only", "stale-first-parent");
+  expect(f.git("rev-parse", `${head}^2`)).toBe(f.merged);
+  expect(await reviewTarget(f, head)).toBe(head);
+});
