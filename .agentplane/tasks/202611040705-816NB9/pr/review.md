@@ -6,7 +6,7 @@ Created: 2026-11-04T10:34:18.958Z
 
 - Task: `202611040705-816NB9`
 - Title: Require fresh verification after native GitLab branch updates
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611040705-816NB9/require-fresh-verification-after-native-gitlab-b`
 - Canonical task record: `.agentplane/tasks/202611040705-816NB9/README.md`
 
