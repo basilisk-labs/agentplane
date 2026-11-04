@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202611040705-816NB9/require-fresh-verification-after-native-gitlab-b",
   "created_at": "2026-11-04T10:34:18.958Z",
-  "diffstat_sha256": "sha256:99cf9eedd9e1920059a2f4b2e02e49a17d59486446d778659fdbf8df2c8b3dbd",
+  "diffstat_sha256": "sha256:29bc31230467aaa7209a0dba28b309610b1a4c3caab49c77bb5b3bd1bf99ce45",
   "last_verified_at": "2026-11-04T16:07:58.122Z",
   "last_verified_diffstat_sha256": "sha256:99cf9eedd9e1920059a2f4b2e02e49a17d59486446d778659fdbf8df2c8b3dbd",
   "pr_number": 6979,
