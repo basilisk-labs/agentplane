@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4 packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
