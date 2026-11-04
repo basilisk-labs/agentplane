@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -66,9 +66,11 @@ quality_review:
     - "Current verification is fresh and bound to corrected source. The v5 record20261104160758122-acd9119aa6d9480f.json binds evaluated SHA ee6d145..., original B4806..., current native identity and declared-checks digest42415a8d738ec75ab5890e37ca37140d31a41ded44ea390f49031b3cc9df3c55. Its runs009/010/011 prove full CI exit0 in1387502ms, focused239 passed in116043ms and journal58 passed in8642ms. Independently authenticated all23 manifests,69 raw streams and418710 retained bytes; every implementation binding names8ad2736... with complete, clean source identity. Required build/runtime/docs-schema/core/CLI groups passed; platform100 tests and significant guard105 tests/17 targets also passed. The four nested exit2/3 failures are the explicit verification-contract.test.ts:188-235 fixtures. Historical run008 remains FAILED with its scope-extend120000ms timeout; neither it nor the old2305 verdict is treated as a current passing receipt."
     - "Residual risk: This is a scoped implementation review. Current provider readbacks, canonical PR/merge/main CI, qualified controller promotion and Factory/sb live acceptance remain operator gates. All branches, worktrees and retained native artifacts must remain preserved."
 token_usage:
-  agent_runs: 0
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:cea09bb0e54c3ef1dfaf201ed44858ad14dc331561c27158ab233c0f1f14911f"
+  journal_digest: "sha256:9c43e45a840b5f8d4c0854017a94fccc4633b1bd963d53d39128f3e03b5977d0"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -77,8 +79,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-11-04T13:46:11.990Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-11-04T16:26:38.723Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -462,8 +464,13 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "04f7390d7e825aa02cf116898302ff07e25868ee"
+  message: "🚧 816NB9 task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -494,8 +501,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-11-04T16:26:38.723Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "04f7390d7e825aa02cf116898302ff07e25868ee"
 doc_version: 3
-doc_updated_at: "2026-11-04T16:25:41.864Z"
+doc_updated_at: "2026-11-04T16:26:38.743Z"
 doc_updated_by: "CODER"
 description: "Prevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion."
 sections:
@@ -819,6 +834,7 @@ extensions:
     work_order_id: "sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
   implementation_commit:
     hash: "ee6d145a4563ad635fa668ddee203916ae603f90"
+    message: "🚧 816NB9 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4806d9ab70604c2beaaf9443cbd2817690962b72"
@@ -1991,12 +2007,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/2` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:cea09bb0e54c3ef1dfaf201ed44858ad14dc331561c27158ab233c0f1f14911f`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-11-04T13:46:11.990Z`
+- Journal digest: `sha256:9c43e45a840b5f8d4c0854017a94fccc4633b1bd963d53d39128f3e03b5977d0`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-11-04T16:26:38.723Z`
