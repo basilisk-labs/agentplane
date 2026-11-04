@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -434,7 +434,7 @@ events:
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-11-04T15:04:31.040Z"
+doc_updated_at: "2026-11-04T15:42:43.205Z"
 doc_updated_by: "CODER"
 description: "Prevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion."
 sections:
@@ -623,6 +623,8 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e"
     work_order_id: "sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
+  implementation_commit:
+    hash: "ee6d145a4563ad635fa668ddee203916ae603f90"
   task_execution_context:
     base_ref: "main"
     base_sha: "4806d9ab70604c2beaaf9443cbd2817690962b72"
