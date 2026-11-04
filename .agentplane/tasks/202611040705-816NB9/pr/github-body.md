@@ -15,14 +15,14 @@ Prevent earlier verification and review from authorizing integration after a nat
 
 ## Verification
 
-- State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-11-04T10:34:18.958Z
+- Updated: 2026-11-04T13:33:23.477Z
 - Branch: task/202611040705-816NB9/require-fresh-verification-after-native-gitlab-b
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

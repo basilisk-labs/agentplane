@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "ok"
-  updated_at: "2026-11-04T13:30:18.264Z"
+  state: "needs_rework"
+  updated_at: "2026-11-04T15:04:22.425Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: canonical Task Kernel final checks passed."
-  attempts: 0
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -53,8 +53,6 @@ quality_review:
     - "Fresh native evidence: native-validation-0d99b9e06457dde06601f7ec5aa032c3b8bbe8e8070e09c7aec356fa9633eba6.json authenticates all three required commands on 2305b70c4db6f6831bae7ba00f5f64328ed56777: focused 239 passed in 192703 ms, full CI exit 0 in 1396912 ms, journal 58 passed in 8402 ms. Independently authenticated 23 manifests, 69 raw streams and 418675 retained bytes. Required build/runtime/docs-schema/core/CLI groups passed; full-only platform checks report 7 files/100 tests and significant guards 8 files/105 tests/17 source targets. The four nested exit-2/3 manifests are the explicit verification-contract.test.ts:188-235 negative fixtures, not failed required groups. Earlier failed native attempts and the pre-run pending statements in reports remain historical evidence; they were not reused as passing receipts."
 token_usage:
   agent_runs: 0
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:cea09bb0e54c3ef1dfaf201ed44858ad14dc331561c27158ab233c0f1f14911f"
   observed_agent_runs: 0
@@ -167,7 +165,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts"
       - "packages/agentplane/src/commands/task/provider-update-effect-recovery.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -200,46 +200,10 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+        result: "fail"
       -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_publish"
@@ -285,6 +249,9 @@ execution_contract:
           - "external_effect:network_read"
           - "external_effect:publish"
           - "hosted_integration"
+          - "repository_effect:ci"
+          - "repository_effect:documentation"
+          - "repository_effect:public_api"
           - "repository_effect:release_metadata"
           - "repository_effect:repository_write"
           - "repository_effect:security_boundary"
@@ -304,7 +271,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:55c7658d34388b87c463a65cf9fac4ce7e034c51baf00f2421ac54c4d89914fc"
+      digest: "sha256:0de2955449110df0189999c054799937d1496836dd1f57e5063318be55f30704"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
@@ -314,6 +281,7 @@ execution_contract:
         - "central_component:packages/agentplane/src/commands/shared/supervisor-execution-journal.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-verification-records.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
+        - "central_path:.github/workflows/publish.yml"
         - "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
         - "central_path:packages/agentplane/src/commands/shared/quality-review-target.ts"
@@ -322,10 +290,19 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-journal.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-verification-records.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
+        - "central_path:packages/core/package.json"
+        - "effect_ci"
+        - "effect_public_api"
         - "effect_release_metadata"
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:packages/agentplane/package.json"
+        - "unknown_path:packages/core/package.json"
+        - "unknown_path:packages/recipes/package.json"
+        - "unknown_path:packages/spec/examples/acr.json"
+        - "unknown_path:packages/testkit/package.json"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -333,8 +310,24 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
+          - ".github"
+          - "docs"
           - "packages/agentplane"
+          - "packages/core"
+          - "packages/recipes"
+          - "packages/spec"
+          - "packages/testkit"
+          - "scripts"
         changed_files:
+          - ".agentplane/WORKFLOW.md"
+          - ".github/workflows/publish.yml"
+          - "docs/reference/generated-reference.mdx"
+          - "docs/releases/v0.7.13-acceptance.md"
+          - "docs/releases/v0.7.13-publish-result.json"
+          - "docs/releases/v0.7.13-scope.md"
+          - "docs/releases/v0.7.13.md"
+          - "packages/agentplane/package.json"
           - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
           - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
           - "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts"
@@ -343,6 +336,7 @@ execution_contract:
           - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
           - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
           - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+          - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
           - "packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts"
           - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
           - "packages/agentplane/src/commands/shared/quality-review-target.ts"
@@ -356,8 +350,18 @@ execution_contract:
           - "packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts"
           - "packages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts"
           - "packages/agentplane/src/commands/task/provider-update-effect-recovery.ts"
+          - "packages/core/package.json"
+          - "packages/recipes/package.json"
+          - "packages/recipes/src/index.ts"
+          - "packages/spec/examples/acr.json"
+          - "packages/testkit/package.json"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
         external_effects: []
         repository_effects:
+          - "ci"
+          - "documentation"
+          - "public_api"
+          - "release_metadata"
           - "repository_write"
           - "source_code"
           - "tests"
@@ -372,6 +376,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "real_e2e"
@@ -391,15 +396,18 @@ execution_contract:
       - "external_effect:network_read"
       - "external_effect:publish"
       - "hosted_integration"
+      - "repository_effect:ci"
+      - "repository_effect:documentation"
+      - "repository_effect:public_api"
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "repository_effect:security_boundary"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "09bbbae97f12a7949aef9c3d70b7291128cddc01"
-  message: "✅ 816NB9 task: persist canonical completion"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -419,8 +427,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "09bbbae97f12a7949aef9c3d70b7291128cddc01"
+  -
+    type: "verify"
+    at: "2026-11-04T15:04:22.425Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-11-04T13:46:11.990Z"
+doc_updated_at: "2026-11-04T15:04:31.040Z"
 doc_updated_by: "CODER"
 description: "Prevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion."
 sections:
@@ -549,6 +563,40 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-11-04T15:04:22.425Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:befb766775f0327301ec47176419d67386948eac2a3721651a9ab465822285f9, input_digest=sha256:675c5ac402d706a74d5a723275f1c75cb51eb36ae160ae7218121b3ecd44b909
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611040705-816NB9 declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016
+    - policy_digest: sha256:987929940f3820e61292591e8ce12a537c18ae14094a524cdad5978e41cebd01
+    - capability_digest: sha256:19fc6d19554860e64bcc95db36f2ffc3884e6f1219ba20182f1f9a65e864b128
+    - checks_digest: sha256:6e12adac147f7ec08cc27ec2c53d8d35bb2e0559a228e69dcf3c8c3767c1f2ac
+    - identity_digest: sha256:29ec00c73a3e2a754942602963f9f8ed695e1f389a217402b0b4cf5d1abf8e19
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -575,9 +623,6 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e"
     work_order_id: "sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
-  implementation_commit:
-    hash: "2305b70c4db6f6831bae7ba00f5f64328ed56777"
-    message: "🚧 816NB9 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4806d9ab70604c2beaaf9443cbd2817690962b72"
@@ -1573,6 +1618,40 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202611040705-816NB9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-11-04T15:04:22.425Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:befb766775f0327301ec47176419d67386948eac2a3721651a9ab465822285f9, input_digest=sha256:675c5ac402d706a74d5a723275f1c75cb51eb36ae160ae7218121b3ecd44b909
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611040705-816NB9 declared verification
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016
+- policy_digest: sha256:987929940f3820e61292591e8ce12a537c18ae14094a524cdad5978e41cebd01
+- capability_digest: sha256:19fc6d19554860e64bcc95db36f2ffc3884e6f1219ba20182f1f9a65e864b128
+- checks_digest: sha256:6e12adac147f7ec08cc27ec2c53d8d35bb2e0559a228e69dcf3c8c3767c1f2ac
+- identity_digest: sha256:29ec00c73a3e2a754942602963f9f8ed695e1f389a217402b0b4cf5d1abf8e19
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
