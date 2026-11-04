@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -67,8 +67,6 @@ quality_review:
     - "Residual risk: This is a scoped implementation review. Current provider readbacks, canonical PR/merge/main CI, qualified controller promotion and Factory/sb live acceptance remain operator gates. All branches, worktrees and retained native artifacts must remain preserved."
 token_usage:
   agent_runs: 2
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:9c43e45a840b5f8d4c0854017a94fccc4633b1bd963d53d39128f3e03b5977d0"
   observed_agent_runs: 0
@@ -510,7 +508,7 @@ events:
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "04f7390d7e825aa02cf116898302ff07e25868ee"
 doc_version: 3
-doc_updated_at: "2026-11-04T16:26:38.743Z"
+doc_updated_at: "2026-11-04T17:50:48.594Z"
 doc_updated_by: "CODER"
 description: "Prevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion."
 sections:
@@ -833,8 +831,7 @@ extensions:
     verification_evidence_digest: "sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e"
     work_order_id: "sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
   implementation_commit:
-    hash: "ee6d145a4563ad635fa668ddee203916ae603f90"
-    message: "🚧 816NB9 task: apply external agent result"
+    hash: "88ebd0412e61fb9133dc4d616a4a39ab25c84cb1"
   task_execution_context:
     base_ref: "main"
     base_sha: "4806d9ab70604c2beaaf9443cbd2817690962b72"
