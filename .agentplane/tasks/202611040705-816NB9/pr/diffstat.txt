@@ -4,19 +4,19 @@
  .../commands/pr/provider-update-branch-gitlab.ts   |  375 +++++++
  .../src/commands/pr/provider-update-branch.test.ts |    9 +-
  .../src/commands/pr/provider-update-branch.ts      |    6 +-
- .../pr/provider-update-verification-proof.test.ts  |  439 +++++---
- .../pr/provider-update-verification-proof.ts       |  207 +++-
+ .../pr/provider-update-verification-proof.test.ts  |  454 +++++---
+ .../pr/provider-update-verification-proof.ts       |  209 +++-
  .../shared/provider-update-branch-route.test.ts    |  114 ++
  .../shared/provider-update-branch-route.ts         |   16 +-
  .../src/commands/shared/quality-review-target.ts   |   63 +-
  .../shared/supervisor-execution-episode.ts         |  414 ++++----
  .../shared/supervisor-execution-journal.test.ts    |  887 ++++++++++++++++
  .../shared/supervisor-execution-journal.ts         |  433 ++++++++
- .../commands/shared/task-verification-records.ts   |   75 +-
+ .../commands/shared/task-verification-records.ts   |   76 +-
  .../workflow-step-provider-update-branch-spec.ts   |    4 +-
  .../task/branch-task-supervisor-operations.test.ts |  302 ++++++
  .../task/branch-task-supervisor-operations.ts      |   56 +-
  .../task/provider-update-effect-recovery.test.ts   | 1098 ++++++++++++++------
  .../provider-update-effect-recovery.testkit.ts     |  599 +++++++++++
  .../task/provider-update-effect-recovery.ts        |  326 ++++--
- 21 files changed, 4983 insertions(+), 869 deletions(-)
+ 21 files changed, 5001 insertions(+), 869 deletions(-)

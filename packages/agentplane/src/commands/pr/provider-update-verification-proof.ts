@@ -362,6 +362,7 @@ export async function verificationCoversProviderUpdateFloor(opts: {
   targetSha?: string;
   references?: readonly VerificationEvidenceReference[];
   commands: readonly string[];
+  approvedNoExecutableChecks?: boolean;
 }): Promise<boolean> {
   const floor = await providerUpdateVerificationFloor(opts.gitRoot, opts.taskId);
   if (!floor) return true;
@@ -375,6 +376,7 @@ export async function verificationCoversProviderUpdateFloor(opts: {
     !(await covers(opts.targetSha))
   )
     return false;
+  if (opts.commands.length === 0) return opts.approvedNoExecutableChecks === true;
   const prefix = `${opts.workflowDir.replaceAll("\\", "/").replace(/\/+$/u, "")}/${opts.taskId}/supervision/`;
   const read = async (relative: string) => {
     if (!relative.startsWith(prefix) || relative.split("/").includes(".."))

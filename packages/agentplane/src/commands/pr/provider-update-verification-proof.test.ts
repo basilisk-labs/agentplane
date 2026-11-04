@@ -929,6 +929,21 @@ it("authenticates actual execution heads before equivalent-input reuse, includin
     references: [await reference(old.artifact_path)],
   };
   expect(await verificationCoversProviderUpdateFloor(opts)).toBe(false);
+  const noChecks = {
+    ...opts,
+    commands: [],
+    references: [],
+    approvedNoExecutableChecks: true,
+  };
+  expect(await verificationCoversProviderUpdateFloor(noChecks)).toBe(true);
+  for (const changed of [
+    { approvedNoExecutableChecks: undefined },
+    { approvedNoExecutableChecks: false },
+    { implementationSha: f.H },
+    { targetSha: f.H },
+    { headSha: f.H },
+  ])
+    expect(await verificationCoversProviderUpdateFloor({ ...noChecks, ...changed })).toBe(false);
   const fresh = await run();
   expect(fresh.status).toBe("passed");
   expect(fresh.checks[0]!.observation!.manifest_path).not.toBe(

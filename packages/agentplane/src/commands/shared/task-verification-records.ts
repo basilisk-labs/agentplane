@@ -302,6 +302,7 @@ async function assessCurrentVerification(
       targetSha: checked?.implementation.target_sha,
       references: checked?.evidence.references,
       commands: parseVerificationCheckDetails(record.details)?.map((check) => check.command) ?? [],
+      approvedNoExecutableChecks: trustedNoCheckDisposition(task, record.details),
     }).catch(() => false))
   )
     return rejectedAssessment("verification_implementation_changed");
