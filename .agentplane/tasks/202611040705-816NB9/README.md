@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -36,35 +36,38 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-11-04T16:25:41.849Z"
+  updated_at: "2026-11-04T18:37:47.275Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "ee6d145a4563ad635fa668ddee203916ae603f90"
-  review_identity_digest: "sha256:dbd6143c4dcf376d45917df1f3e2a2ff4bd23984f632d056e22b18496d0775a4"
+  note: "EVALUATOR returned pass with 10 typed finding(s)."
+  evaluated_sha: "88ebd0412e61fb9133dc4d616a4a39ab25c84cb1"
+  review_identity_digest: "sha256:e126b19dc3bdf55fb76c7d060e4fd5e728f6f5863a9ba209512d3a373a9f8b5d"
   evidence_refs:
-    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-160900328-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-160900328-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/ec8723c87e82aaa61cacbfc93bc78cf66ccbf437bd4716b83e2a01159ee33b8c.md"
-    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-160900328-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-160900328-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-160900328-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-181532261-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-181532261-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/c1b62a5cd32213c45364016d865600218b1b9868b3109c23bb178d844670304b.md"
+    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-181532261-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-181532261-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202611040705-816NB9/quality/20261104-181532261-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202611040705-816NB9/README.md"
-    - ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/e54e5349b7c18326c5e169ba7a102b9b243af9ab0f76b8870bbf97c0f213f75e.patch"
-    - ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/b823e05378a5393450790f87d129364bffc7ba68be9267bc30edf21960470db9.json"
-    - ".agentplane/tasks/202611040705-816NB9/verification/20261104160758122-acd9119aa6d9480f.json"
-    - ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/2f6705517807cfdd26cc0ecd5e961e56dbce144d1cafd471f3594489083b6cb7.json"
+    - ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/50269c6bbda5339b74c8c02a51926bd4a9956297eb6261388157afef8ba09981.patch"
+    - ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/e83a1a6b51ff7222e863daadd1811c2892dac8c11413b642b1d6b45576f1ece8.json"
+    - ".agentplane/tasks/202611040705-816NB9/verification/20261104181444854-2672e7d9ffd3f5c7.json"
+    - ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/722c753c8324c57057a466082cfb6dd9ba644a635a557db39fc421dc174355f5.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Authenticated the NEW legacy external-agent episode rather than reusing the earlier kernel EVALUATOR verdict. The complete WorkOrder, all 22 context blocks and their canonical sizes/digests (17 required), packet 2131 and the new 8493-byte result schema authenticate. Context digest is e9dd9a4834690baac5bd88d3ed5402a0e6d863fc152b9deda898f1bd2abb9efe; canonical WorkOrder digest is 68f8ada5b1b9ed15ef9926f0a5fedf45132b1d2ad608fd762f9385c59c17b274; schema raw SHA is 54c548bf300de467a876c67cc6a5638e89f74c031bf28b8f0ee0bb127c98f615. The frozen evaluator work order, nine frozen evidence entries, five packet objects, packet manifest integrity and verification record/reference digests match. The approved USER Plan1 c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016 and contract1597a37d1edf6a6903149c67c2e9718875f24291424d202c72667ff0d6dd2cd2 were inspected and authenticated. Their substantive criteria were used in addition to the generic scaffold."
-    - "Source binding and scope are coherent. Frozen evaluated SHA ee6d145a4563ad635fa668ddee203916ae603f90, fresh check head 8ad2736152e90ab6b95c7cab27e72b148f56f64f and issued baseline HEAD69f7b6e23439988d13bf735a8ab5b568c44b99f6 have byte-identical approved source. Verified ancestry is canonical R0582344612d4d68bb6e3255637f0e086934ac19c -> provider M55aa18edfe582a984019d6713bfe3daadb1581ef -> evaluated SHA -> check head -> baseline HEAD. Frozen execution B remains4806d9ab70604c2beaaf9443cbd2817690962b72. Both frozen review patch and actual publication diff contain exactly the approved21 source paths. Relative to M, corrective source changes only remove unused exports from persistedJournalDigest and test-fixture identity. Their bodies and uses remain unchanged; the other19 approved files are unchanged. No guard, baseline, threshold, timeout, worker setting or assertion was weakened. Native 600/1000-line budgets hold. Tracked state is clean, with seven issued own-Task quality artifacts untracked and preserved; a fully clean worktree is not claimed."
-    - "The current implementation retains the native GitLab safety boundary. sync-gitlab.ts reads the authenticated exact project and current target branch, not the diff ancestor. provider-update-branch-gitlab.ts proves a natural exact H/R two-parent merge, performs one normal non-force/non-deleting push with hooks, independently reobserves MR/commit/base identity and only fast-forwards a clean authoritative checkout. Conflicts, drift, wrong identity and unproven post-push outcomes refuse or remain effect-in-doubt. Typed proof-retention failures preserve the original intent. The guarded journal publisher validates complete snapshots under the writer lock, grants dispatch only after direct successful intent CAS, acknowledges exact state afterimages after lost acknowledgment and preserves changed/unreadable states. The existing lease covers open through refresh and releases in finally. Legacy GitHub/adoption origin guards and primary-failure handling remain intact."
-    - "The recovery and shared consumers still enforce the approved invariant. Recovery binds original retained GitLab parameters, including reconcileHeadSha, to operator evidence, the original USER grant/effect digest and exact proof retention. It checks stable controls, rereads Task and authority source/state, refreshes stale local tracking without changing original R and observes the route again after durable completion. The common proof reader authenticates each completed operation and exposes the latest non-adopted GitLab M floor; missing, malformed, unreadable or mismatched completed proof blocks reuse. Quality target selection cannot walk or rewrite below M, including second-parent ancestry. Verification acceptance checks recorded targets and digest-bound actual execution heads before equivalent-input, legacy and snapshot shortcuts. Frozen B and full combined-tree checking are preserved. Current private-export removals do not alter this behavior."
-    - "Regression coverage supports the contract beyond the happy path. The real named-main fixtures seed genuinely accepted v5 full records and native EVALUATOR evidence before M, then exercise source-import and empty/equivalent-input bases through normal completion and applied recovery. Old records/reviews fail; newly retained full execution still needs fresh EVALUATOR; only the existing closure/integration authority path becomes eligible afterward. Actual observation bytes, distinct run paths, manifest implementation.head and subprocess HEAD are asserted, while old evidence remains unchanged. Negative cases include corrupt/missing/pending proofs, M2, generated tails, rewrite shortcuts, second-parent ancestry, portable producer paths, stale execution heads, later main, lagging local checkout, reconciliation-only intents, retention and CAS faults, busy leases and no replay. Positive GitHub/adopted reuse remains. Fresh native execution covers these same assertions."
-    - "Current verification is fresh and bound to corrected source. The v5 record20261104160758122-acd9119aa6d9480f.json binds evaluated SHA ee6d145..., original B4806..., current native identity and declared-checks digest42415a8d738ec75ab5890e37ca37140d31a41ded44ea390f49031b3cc9df3c55. Its runs009/010/011 prove full CI exit0 in1387502ms, focused239 passed in116043ms and journal58 passed in8642ms. Independently authenticated all23 manifests,69 raw streams and418710 retained bytes; every implementation binding names8ad2736... with complete, clean source identity. Required build/runtime/docs-schema/core/CLI groups passed; platform100 tests and significant guard105 tests/17 targets also passed. The four nested exit2/3 failures are the explicit verification-contract.test.ts:188-235 fixtures. Historical run008 remains FAILED with its scope-extend120000ms timeout; neither it nor the old2305 verdict is treated as a current passing receipt."
-    - "Residual risk: This is a scoped implementation review. Current provider readbacks, canonical PR/merge/main CI, qualified controller promotion and Factory/sb live acceptance remain operator gates. All branches, worktrees and retained native artifacts must remain preserved."
+    - "Authenticated this new external-agent episode independently: canonical WorkOrder fcd7dd39b8573a0a74f6031e8d681550a2e8ca989ab4c4f2f1ba377b87abdb3a; context 9758aa38a267dab3ed0613d66c3cb1fb8749ef8b563c42b08983480201338a46; all 22 blocks with their sizes, including 17 required blocks; raw result schema 54c548bf300de467a876c67cc6a5638e89f74c031bf28b8f0ee0bb127c98f615. Required Task read 2202 and frozen evaluator WorkOrder 867f2296a1627671eb23c753e17b3115049c825b4a4ff9b1765fb2544dfb6eb6 were authenticated. The original USER-approved Plan c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016 and contract 1597a37d1edf6a6903149c67c2e9718875f24291424d202c72667ff0d6dd2cd2, including all ten substantive criteria, governed this review in addition to the scaffold."
+    - "Scope and source binding hold. The frozen actual-diff object 50269c6bbda5339b74c8c02a51926bd4a9956297eb6261388157afef8ba09981.patch is exactly the 277008-byte Git diff from canonical 0582344612d4d68bb6e3255637f0e086934ac19c to evaluated target 88ebd0412e61fb9133dc4d616a4a39ab25c84cb1. All 21 approved source files are byte-identical at that target, checked source 2ff71e5dd106a42f52d13d64f8797fa7ebcea9d1, and current HEAD 69476f8a1e8c136e30a426cc56b0ad0563d2fc54; ancestry also matches. Other changed paths belong to this Task. Source and new-test budgets remain within the unchanged 600/1000 limits, with the existing oversized-test baseline retained. Six untracked, supervisor-generated quality artifacts exactly match the issued baseline; tracked changes are absent."
+    - "The native GitLab path authenticates current target project/branch separately from diff_refs.base_sha, validates same-project Task ownership and exact H/R inputs, constructs the natural two-parent merge, uses normal non-force push with hooks, and requires hosted identity/commit/ancestry plus local alignment readback. Publication or proof-retention uncertainty retains the original intent. Recovery validates the retained full operation parameters, original USER grant and audit, stable controls across the actual route transition, exact H/R merge, later-base ancestry, refreshed tracking and final authority readback. It does not repeat provider mutation. See actual-diff: pr/internal/sync-gitlab.ts:60, pr/provider-update-branch-gitlab.ts:41, task/branch-task-supervisor-operations.ts:374, task/provider-update-effect-recovery.ts:124."
+    - "Journal ownership and durability are coherent. The Task-wide lease covers guarded open through refresh/finally. Only an acknowledged direct intent CAS grants dispatch. State publication validates complete before/after snapshots and accepts only the exact durable afterimage after acknowledgment loss; changed, malformed or unreadable state is preserved. Typed uncertainty prevents generic failed replacement, and release errors cannot mask a primary failure. Legacy origin guards run under the writer lock before mutation. GitHub and adoption retain their normal legacy path. Real core fault, restart, busy-lease, release and legacy-race cases are present. See actual-diff: shared/supervisor-execution-journal.ts:217, shared/supervisor-execution-episode.ts:164 and shared/supervisor-execution-journal.test.ts."
+    - "The completed non-adopted GitLab proof defines the latest M validation floor. Review-target selection cannot walk or rewrite below it; verification acceptance checks record implementation/checked targets and authenticated execution heads before equivalent-input, legacy or snapshot reuse. Missing, unreadable, altered or mismatched completed proof fails closed. Frozen B and combined-tree verification remain intact. Real named-main fixtures use prior accepted v5 verification and native EVALUATOR, source-import and empty-base cases, normal completion and recovery, fresh full then fresh review, and existing integration authority gates. GitHub/adopted positive reuse and proof-chain/tail/rewrite cases remain covered. See actual-diff: pr/provider-update-verification-proof.ts:263, shared/quality-review-target.ts:392, shared/task-verification-records.ts:294, task/provider-update-effect-recovery.test.ts:126."
+    - "The current P2 correction is appropriately narrow. pr/provider-update-verification-proof.ts:379 accepts an empty command set only after authenticating the floor and proving current head, record implementation and checked target descend from M, and only when approvedNoExecutableChecks is exactly true. shared/task-verification-records.ts:305 supplies the existing strict trustedNoCheckDisposition, which binds Task, approved Plan and canonical final no-check evidence. Earlier contract coverage still rejects this exception for code tasks or selected executable obligations such as full_regression. Nonempty command sets still require digest-bound current native observations. The real completed-M helper regression covers true, absent/false approval and each stale target; existing native no-check durability and trust tests cover the producer and consumer separately."
+    - "Fresh native evidence, rather than earlier verdicts, supports the deterministic gates. Independently authenticated all 23 manifest files and 69 retained raw streams (418697 bytes), including every child digest, stream size/hash and clean implementation binding to 2ff71e5. run-012 full CI passed in 1310.253 seconds; run-013 ten focused files passed 239 tests in 114.809 seconds; run-014 journal suite passed 58 tests in 8.387 seconds. Full output also reports Windows platform-critical 7 files/100 tests and guard 8 files/105 tests with 17 source targets. The verification record 20261104181444854-2672e7d9ffd3f5c7.json, nested v5 input digests, referenced declared-check bytes and frozen review identity were verified."
+    - "Residual risk: GitLab provider I/O is simulated around real Git repositories in the regressions; this episode did not validate a live GitLab deployment."
+    - "Residual risk: Historical failed receipts remain historical, including the earlier scope-extend 120-second timeout. Fresh passing runs do not establish the cause of that old timeout or erase its evidence."
+    - "Residual risk: This pass concerns the reviewed implementation and fresh local native evidence only. Result consumption, current hosted PR/merge checks, canonical main CI, controller promotion and Factory/SB runtime outcomes remain separate operator gates; no publication, runtime or delivery-complete claim is made."
 token_usage:
   agent_runs: 2
   input_tokens: null
@@ -514,7 +517,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-11-04T18:14:51.160Z"
+doc_updated_at: "2026-11-04T18:37:47.286Z"
 doc_updated_by: "CODER"
 description: "Prevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion."
 sections:
@@ -934,13 +937,13 @@ sections:
   Findings: ""
 extensions:
   agentplane.completed_native_review:
-    applied_at: "2026-11-04T16:25:41.849Z"
+    applied_at: "2026-11-04T18:37:47.275Z"
     kernel_digest: "sha256:4b3578a169be11606d29bf448a948ad6920111e8574a50add5e52e80278df9e3"
-    quality_digest: "sha256:ee9423503f60929bcdbc2ab7ac2a86eb64a54950e67ccdfae081ba3f282882f8"
-    result_digest: "sha256:e7619fb33c32f4d5b588b97633f99c2ed6245f183767f0a6840b870ecd234e3d"
+    quality_digest: "sha256:644dd54919418a04df7b6e71391e48f4c9328987d094e19f1d3faa32958a223f"
+    result_digest: "sha256:dfa37cc8308727dfeb725d68769f2b6780b7e628bea456c66de7d96eb2d3d34d"
     schema_version: 1
-    state_fingerprint: "sha256:f4795bbc8c3b3cff26f3ddf6d9d75572bee7f3c657a5e25e24308e1fc37f835b"
-    transition_id: "tr_cb1e0c9f02d7c6db9baacfaeb7d9b2d1"
+    state_fingerprint: "sha256:a96d39fe92f8c274bc985b1e7bc3dfb73f536905108ad51b8eb3e3840058af93"
+    transition_id: "tr_b8fc0755f6992062ff2e77435ece05db"
   agentplane.kernel_operational_projection:
     digest: "sha256:059cbf0a79bf046da0c1886946f67d40ed3fc8f8d906ea05670a6d3c2074f7b8"
     evidence_refs:

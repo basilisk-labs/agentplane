@@ -1,0 +1,123 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202611040705-816NB9-7fd675a9fec2d7b314fb7dac",
+  "prepared_at": "2026-11-04T18:15:32.261Z",
+  "task": {
+    "id": "202611040705-816NB9",
+    "revision": 33,
+    "objective": "Require fresh verification after native GitLab branch updates\n\nPrevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts",
+      "bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts",
+      "- In scope: Prevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion.\n- Out of scope: unrelated refactors not required for \"Require fresh verification after native GitLab branch updates\".",
+      "1. Execute approved WorkItem native-gitlab-fresh-validation-floor.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "88ebd0412e61fb9133dc4d616a4a39ab25c84cb1",
+  "diff_base_sha": "0582344612d4d68bb6e3255637f0e086934ac19c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202611040705-816NB9/quality/20261104-181532261-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:61abeeff86cb7c6ddb7988f6ff53f9282f20b355ab56e0bb28c450602055cee3",
+    "prompt_path": ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/c1b62a5cd32213c45364016d865600218b1b9868b3109c23bb178d844670304b.md",
+    "result_schema_path": ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202611040705-816NB9",
+    "plan_digest": "sha256:c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016",
+    "policy_digest": "sha256:987929940f3820e61292591e8ce12a537c18ae14094a524cdad5978e41cebd01",
+    "capability_digest": "sha256:19fc6d19554860e64bcc95db36f2ffc3884e6f1219ba20182f1f9a65e864b128",
+    "checks_digest": "sha256:f74788b109b5cd5052fe0a5a65ad1a2da4418c6b6d55fece6eef69891f65d34b",
+    "verification_input_digest": "sha256:4f11892dd9ba2b8a7f86155a0e4fbca1809aa6ebbddc426ed9e6c9c7c2ae575d",
+    "acceptance_digest": "sha256:84d09722d04881226df71e6260ed5e06512aa1777e4c0ba4f34605065886d40b",
+    "implementation_sha": "88ebd0412e61fb9133dc4d616a4a39ab25c84cb1",
+    "digest": "sha256:e126b19dc3bdf55fb76c7d060e4fd5e728f6f5863a9ba209512d3a373a9f8b5d"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202611040705-816NB9/README.md",
+      "sha256": "sha256:ec099ebf83c0158cc8cf1161ca7a8e3df6600dc5987eeb74d1015b2e0fff714a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/50269c6bbda5339b74c8c02a51926bd4a9956297eb6261388157afef8ba09981.patch",
+      "sha256": "sha256:50269c6bbda5339b74c8c02a51926bd4a9956297eb6261388157afef8ba09981",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/e83a1a6b51ff7222e863daadd1811c2892dac8c11413b642b1d6b45576f1ece8.json",
+      "sha256": "sha256:e83a1a6b51ff7222e863daadd1811c2892dac8c11413b642b1d6b45576f1ece8",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202611040705-816NB9/verification/20261104181444854-2672e7d9ffd3f5c7.json",
+      "sha256": "sha256:23ceef3ff48bd15ef830042a2712ac9f16d3b56592e7b25d73e4031056b5a039",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202611040705-816NB9/quality/objects/sha256/722c753c8324c57057a466082cfb6dd9ba644a635a557db39fc421dc174355f5.json",
+      "sha256": "sha256:722c753c8324c57057a466082cfb6dd9ba644a635a557db39fc421dc174355f5",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}
