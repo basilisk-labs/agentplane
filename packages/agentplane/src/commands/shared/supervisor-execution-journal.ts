@@ -27,7 +27,7 @@ const JOURNAL_LOCK_STALE_AFTER_MS = 60_000;
 const JOURNAL_LOCK_RETRY_DELAY_MS = 10;
 const JOURNAL_LOCK_WAIT_MS = 5000;
 
-export function persistedJournalDigest(
+function persistedJournalDigest(
   value: unknown,
 ): SupervisorExecutionEpisodeJournal["digest"] | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;

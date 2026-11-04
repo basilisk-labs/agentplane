@@ -59,7 +59,7 @@ export const taskId = "202610251417-RECVR1";
 export const branch = `task/${taskId}/example`;
 export const originalHead = "a".repeat(40);
 export const observedHead = "b".repeat(40);
-export const identity = {
+const identity = {
   provider: "github" as const,
   hostname: "github.com",
   remote: "origin",
