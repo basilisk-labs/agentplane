@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 811dfb941adeaf70fdf5d6e3b799183e75d96b26..ee6d145a4563ad635fa668ddee203916ae603f90",
+      "command": "git diff --check 079553078021f6a815208a33e661f02fabf438cd..88ebd0412e61fb9133dc4d616a4a39ab25c84cb1",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,12 +13,17 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 811dfb941adeaf70fdf5d6e3b799183e75d96b26..ee6d145a4563ad635fa668ddee203916ae603f90",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 079553078021f6a815208a33e661f02fabf438cd..88ebd0412e61fb9133dc4d616a4a39ab25c84cb1",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-journal.ts",
-        "M\tpackages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts"
+        "M\t.agentplane/tasks/202611040705-816NB9/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202611040705-816NB9/pr/github-body.md",
+        "M\t.agentplane/tasks/202611040705-816NB9/pr/meta.json",
+        "M\t.agentplane/tasks/202611040705-816NB9/pr/review.md",
+        "M\tpackages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts",
+        "M\tpackages/agentplane/src/commands/pr/provider-update-verification-proof.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-records.ts"
       ]
     },
     {
@@ -28,8 +33,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "811dfb941adeaf70fdf5d6e3b799183e75d96b26",
-  "implementation_commit": "ee6d145a4563ad635fa668ddee203916ae603f90",
+  "execution_base_commit": "079553078021f6a815208a33e661f02fabf438cd",
+  "implementation_commit": "88ebd0412e61fb9133dc4d616a4a39ab25c84cb1",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
