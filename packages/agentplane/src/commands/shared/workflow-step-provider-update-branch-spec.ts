@@ -14,9 +14,9 @@ export const PROVIDER_UPDATE_BRANCH_OPERATION_SPEC = {
   mustNot: [
     "do not update a different PR, branch, base, provider identity, or head than the exact approved operation",
     "do not repeat an effect-in-doubt update; reconcile fresh provider ancestry before another mutation",
-    "do not merge, rebase, force-push, or edit AgentPlane task state as a substitute for provider update-branch",
+    "do not manually merge, rebase, force-push, or edit AgentPlane task state outside the exact native update operation",
   ],
-  triggersGitHooks: false,
+  triggersGitHooks: true,
   verificationCandidate: "agentplane task next-action <task-id> --remote --explain",
   needsVerificationRecord: false,
 } as const;

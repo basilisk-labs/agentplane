@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202611040705-816NB9/require-fresh-verification-after-native-gitlab-b",
+  "created_at": "2026-11-04T10:34:18.958Z",
+  "diffstat_sha256": "sha256:ea573cc9b3d0bf4a30af5235d343e116a423122a8d5bccc6f13055e847e611db",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202611040705-816NB9",
+  "updated_at": "2026-11-04T10:34:18.958Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

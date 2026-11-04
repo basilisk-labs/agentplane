@@ -16,6 +16,7 @@ import { cmdPrOpen } from "../pr/open.js";
 import { cmdPrUpdate } from "../pr/update.js";
 import { retainProviderUpdateVerificationProof } from "../pr/provider-update-verification-proof.js";
 import { updateProviderBranch } from "../pr/provider-update-branch.js";
+import { throwGitLabUpdateEffectInDoubt } from "../pr/provider-update-branch-gitlab.js";
 import { freshHostedPrReadback } from "./kernel-hosted-readback.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
@@ -373,17 +374,26 @@ export async function executeBranchWorkflowOperation(opts: {
             ...completion.observed_postconditions,
             `provider_update_head:${result.evidence.observedHeadSha}`,
           ];
-          await retainProviderUpdateVerificationProof({
-            command,
-            params: operation.params,
-            authority_digest: operation.preconditionFingerprint.digest,
-            observed_head_sha: result.evidence.observedHeadSha,
-            completion: {
-              status: completion.status,
-              observed_postconditions: completion.observed_postconditions,
-              exit_code: completion.exit_code,
-            },
-          });
+          try {
+            await retainProviderUpdateVerificationProof({
+              command,
+              params: operation.params,
+              authority_digest: operation.preconditionFingerprint.digest,
+              observed_head_sha: result.evidence.observedHeadSha,
+              completion: {
+                status: completion.status,
+                observed_postconditions: completion.observed_postconditions,
+                exit_code: completion.exit_code,
+              },
+            });
+          } catch (error) {
+            if (operation.params.identity.provider !== "gitlab") throw error;
+            throwGitLabUpdateEffectInDoubt(
+              operation.params,
+              result.evidence.observedHeadSha,
+              "GitLab update was observed, but its durable proof was not retained. Preserve the original intent and reconcile it before another update.",
+            );
+          }
         }
         return completion;
       }
@@ -572,22 +582,18 @@ export async function executeBranchWorkflowOperation(opts: {
       return succeeded(operation, `loaded task state for ${operation.params.taskId}`);
     }
     case "batch.reconcile_included": {
-      return {
-        status: "failed",
-        observed_postconditions: [],
-        detail:
-          "Included-batch reconciliation remains an explicit release operation outside the single-task branch supervisor.",
-        exit_code: 2,
-      };
+      return succeeded(
+        operation,
+        "Included-batch reconciliation remains an explicit release operation outside the single-task branch supervisor.",
+        2,
+      );
     }
     case "runner.follow": {
-      return {
-        status: "failed",
-        observed_postconditions: [],
-        detail:
-          "branch_pr semantic episodes use the dedicated EXECUTOR boundary, not runner.follow route substitution",
-        exit_code: 2,
-      };
+      return succeeded(
+        operation,
+        "branch_pr semantic episodes use the dedicated EXECUTOR boundary, not runner.follow route substitution",
+        2,
+      );
     }
   }
 }

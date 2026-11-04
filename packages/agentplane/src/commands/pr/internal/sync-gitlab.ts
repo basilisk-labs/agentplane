@@ -57,6 +57,39 @@ function projectEndpoint(project: string): string {
   return `projects/${encodeURIComponent(project)}`;
 }
 
+/** diff_refs.base_sha is the comparison ancestor, not the current target tip. */
+export async function readGitLabCurrentTargetHead(opts: {
+  gitRoot: string;
+  identity: GitHostIdentity;
+  baseBranch: string;
+}): Promise<string> {
+  const project = await runGlabApiJson<GitLabProjectRecord>({
+    cwd: opts.gitRoot,
+    hostname: opts.identity.hostname,
+    endpoint: projectEndpoint(opts.identity.targetProject),
+  });
+  if (
+    !Number.isInteger(project.id) ||
+    Number(project.id) <= 0 ||
+    project.path_with_namespace !== opts.identity.targetProject
+  )
+    throw new Error("GitLab current target project identity is unproven");
+  const branch = await runGlabApiJson<{
+    name?: string;
+    commit?: { id?: string };
+  }>({
+    cwd: opts.gitRoot,
+    hostname: opts.identity.hostname,
+    endpoint: `${projectEndpoint(opts.identity.targetProject)}/repository/branches/${encodeURIComponent(opts.baseBranch)}`,
+  });
+  if (
+    branch.name !== opts.baseBranch ||
+    !/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u.test(branch.commit?.id ?? "")
+  )
+    throw new Error("GitLab current target branch identity is unproven");
+  return branch.commit!.id!;
+}
+
 function trimmed(value: string | null | undefined): string | null {
   const normalized = value?.trim() ?? "";
   return normalized.length > 0 ? normalized : null;
@@ -197,6 +230,19 @@ async function refreshByNumber(opts: {
         return { state: "unavailable", reason: "GitLab MR lookup omitted source_project_id" };
       }
       if (record.source_project_id !== opts.sourceProjectId) return { state: "not_found" };
+    }
+    if (observed.mergeability?.providerState === "need_rebase" && observed.base) {
+      return {
+        state: "found",
+        pr: {
+          ...observed,
+          baseSha: await readGitLabCurrentTargetHead({
+            gitRoot: opts.gitRoot,
+            identity: opts.identity,
+            baseBranch: observed.base,
+          }),
+        },
+      };
     }
     return { state: "found", pr: observed };
   } catch (error) {

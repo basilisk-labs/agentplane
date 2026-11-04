@@ -1,6 +1,7 @@
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { GitHostIdentity } from "../pr/internal/git-host-identity.js";
 import { hasCoherentGithubPrMergeability } from "../pr/internal/sync-github.js";
+import { hasCoherentGitLabMrMergeability } from "../pr/internal/sync-gitlab.js";
 
 export type ProviderUpdateBranchOperationParams = {
   taskId: string;
@@ -60,7 +61,7 @@ export function providerUpdateBranchParams(
   }
   if (
     prFlow?.pr.state !== "OPEN" ||
-    prFlow.pr.provider !== "github" ||
+    !["github", "gitlab"].includes(prFlow.pr.provider ?? "") ||
     prFlow.pr.source !== "lookup" ||
     prFlow.pr.prNumber === null ||
     !prFlow.branch.name ||
@@ -79,8 +80,10 @@ export function providerUpdateBranchParams(
   const baseSha = observed.baseSha ?? "";
   const mergeability = observed.mergeability;
   if (
-    observed.provider !== "github" ||
-    observed.identity.provider !== "github" ||
+    observed.provider !== prFlow.pr.provider ||
+    observed.identity.provider !== observed.provider ||
+    (observed.provider === "gitlab" &&
+      observed.identity.sourceProject !== observed.identity.targetProject) ||
     observed.status !== "OPEN" ||
     observed.prNumber !== prFlow.pr.prNumber ||
     observed.headRef !== prFlow.branch.name ||
@@ -108,10 +111,13 @@ export function providerUpdateBranchParams(
     prFlow.publication.state !== "aligned" ||
     prFlow.publication.upstreamHeadSha !== localHead ||
     !prFlow.hostedChecks.checked ||
-    !hasCoherentGithubPrMergeability(mergeability) ||
+    !(observed.provider === "gitlab"
+      ? hasCoherentGitLabMrMergeability(mergeability)
+      : hasCoherentGithubPrMergeability(mergeability)) ||
     mergeability?.state !== "not_conflicting" ||
     mergeability.mergeable !== true ||
-    mergeability.providerState?.trim().toLowerCase() !== "behind"
+    mergeability.providerState?.trim().toLowerCase() !==
+      (observed.provider === "gitlab" ? "need_rebase" : "behind")
   )
     return null;
   return {

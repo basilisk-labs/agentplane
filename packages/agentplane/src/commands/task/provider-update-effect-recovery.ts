@@ -15,7 +15,12 @@ import { gitRevParse } from "@agentplaneorg/core/git";
 import { CliError } from "../../shared/errors.js";
 import { observeExistingChangeRequestByNumber } from "../pr/internal/change-request-provider.js";
 import { runGhApiJson } from "../pr/internal/gh-api.js";
-import { validateProviderUpdateLocalState } from "../pr/provider-update-branch-local.js";
+import {
+  reconcileProviderUpdateLocalHead,
+  validateProviderUpdateLocalState,
+} from "../pr/provider-update-branch-local.js";
+import { readGitLabCurrentTargetHead } from "../pr/internal/sync-gitlab.js";
+import { verifyGitLabProviderUpdate } from "../pr/provider-update-branch-gitlab.js";
 import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
 import { loadSideEffectAuthorityState } from "../shared/side-effect-authority-store.js";
 import {
@@ -23,6 +28,10 @@ import {
   resolveSupervisorExecutionEpisodePath,
   tryAcquireSupervisorExecutionLease,
 } from "../shared/supervisor-execution-episode.js";
+import {
+  publishGitLabJournalTransition,
+  withGitLabJournalLease,
+} from "../shared/supervisor-execution-journal.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 
@@ -30,7 +39,7 @@ const digest = z.string().regex(/^sha256:[0-9a-f]{64}$/u);
 const sha = z.string().regex(/^[0-9a-f]{40}$/u);
 const nonempty = z.string().trim().min(1);
 const identitySchema = z.strictObject({
-  provider: z.literal("github"),
+  provider: z.enum(["github", "gitlab"]),
   hostname: nonempty,
   remote: nonempty,
   sourceProject: nonempty,
@@ -125,6 +134,24 @@ function originalOperationDigest(resolution: ProviderUpdateEffectResolution): st
   })}`;
 }
 
+function gitLabRecoveryControls(decision: TaskRouteDecision) {
+  return {
+    task: decision.task,
+    workflowMode: decision.workflowMode ?? null,
+    batchOwnership: decision.batchOwnership ?? null,
+    approvalPolicy: decision.approval?.runtime ?? null,
+    workspace: {
+      root: decision.workspace.root ?? null,
+      branch: decision.workspace.branch ?? null,
+      baseBranch: decision.workspace.baseBranch ?? null,
+      prBranch: decision.workspace.prBranch ?? null,
+      checkoutRole: decision.workspace.checkoutRole ?? null,
+      baseCheckoutPath: decision.workspace.baseCheckoutPath ?? null,
+      taskWorktreePath: decision.workspace.taskWorktreePath ?? null,
+    },
+  };
+}
+
 export async function reconcileProviderUpdateEffect(opts: {
   command: CommandContext;
   task_id: string;
@@ -153,9 +180,7 @@ export async function reconcileProviderUpdateEffect(opts: {
     common_git_dir: commonGitDir,
     task_id: opts.task_id,
   });
-  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
-  if (!lease) reject("another supervisor owns this task.");
-  try {
+  const run = async () => {
     const store = createSupervisorEpisodeStore(journalPath);
     const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
     const operation = journal.operations.at(-1);
@@ -222,6 +247,10 @@ export async function reconcileProviderUpdateEffect(opts: {
     ) {
       reject("the original operation has no matching retained USER authority.");
     }
+    const retainedAuthorityDigest = digestSupervisorEpisodeValue({
+      source: authority.source,
+      state: authority.state,
+    });
     const current = await opts.decide();
     const checkout = current.workspace.taskWorktreePath;
     if (
@@ -244,7 +273,7 @@ export async function reconcileProviderUpdateEffect(opts: {
     if (observed.state !== "found") reject("fresh provider PR evidence is unavailable.");
     const pr = observed.pr;
     if (
-      pr.provider !== "github" ||
+      pr.provider !== resolution.identity.provider ||
       pr.status !== "OPEN" ||
       pr.prNumber !== resolution.pr_number ||
       pr.prUrl !== resolution.pr_url ||
@@ -262,68 +291,180 @@ export async function reconcileProviderUpdateEffect(opts: {
     ) {
       reject("provider PR identity, head, or base changed.");
     }
+    const request = {
+      gitRoot: resolution.repository_root,
+      worktreePath: checkout,
+      identity: resolution.identity,
+      prNumber: resolution.pr_number,
+      branch: resolution.branch,
+      baseBranch: resolution.base_branch,
+      expectedHeadSha: resolution.original_head_sha,
+      expectedBaseSha: resolution.original_base_sha,
+    };
+    const observedBase =
+      pr.provider === "gitlab"
+        ? await readGitLabCurrentTargetHead({
+            gitRoot: resolution.repository_root,
+            identity: pr.identity,
+            baseBranch: resolution.base_branch,
+          })
+        : pr.baseSha!;
     const project = resolution.identity.targetProject;
-    const hostedCommit = await runGhApiJson<GithubCommitResponse>(resolution.repository_root, [
-      `repos/${project}/git/commits/${resolution.observed_head_sha}`,
-    ]);
-    if (
-      hostedCommit.sha !== resolution.observed_head_sha ||
-      hostedCommit.parents?.length !== 2 ||
-      hostedCommit.parents[0]?.sha !== resolution.original_head_sha ||
-      hostedCommit.parents[1]?.sha !== resolution.original_base_sha
-    ) {
-      reject("the published head is not the exact original-head/base merge commit.");
-    }
-    if (
-      !(await provesHostedAncestor(
-        resolution.repository_root,
-        project,
+    if (pr.provider === "gitlab") {
+      const before = await validateProviderUpdateLocalState(request, [
         resolution.original_head_sha,
         resolution.observed_head_sha,
-      )) ||
-      !(await provesHostedAncestor(
-        resolution.repository_root,
-        project,
-        resolution.original_base_sha,
-        resolution.observed_head_sha,
-      )) ||
-      !(await provesHostedAncestor(
-        resolution.repository_root,
-        project,
-        resolution.original_base_sha,
-        pr.baseSha,
-      ))
-    ) {
-      reject("exact hosted head and base ancestry is unproven.");
+      ]);
+      if (before) reject(`local task state changed before recovery: ${before}`);
+      if (
+        !(await verifyGitLabProviderUpdate({
+          request,
+          observedHeadSha: resolution.observed_head_sha,
+          observedBaseSha: observedBase,
+          allowAdvancedBase: true,
+        }))
+      )
+        reject("the exact hosted GitLab H/R merge and current-base ancestry are unproven.");
+    } else {
+      const hostedCommit = await runGhApiJson<GithubCommitResponse>(resolution.repository_root, [
+        `repos/${project}/git/commits/${resolution.observed_head_sha}`,
+      ]);
+      if (
+        hostedCommit.sha !== resolution.observed_head_sha ||
+        hostedCommit.parents?.length !== 2 ||
+        hostedCommit.parents[0]?.sha !== resolution.original_head_sha ||
+        hostedCommit.parents[1]?.sha !== resolution.original_base_sha
+      ) {
+        reject("the published head is not the exact original-head/base merge commit.");
+      }
+      if (
+        !(await provesHostedAncestor(
+          resolution.repository_root,
+          project,
+          resolution.original_head_sha,
+          resolution.observed_head_sha,
+        )) ||
+        !(await provesHostedAncestor(
+          resolution.repository_root,
+          project,
+          resolution.original_base_sha,
+          resolution.observed_head_sha,
+        )) ||
+        !(await provesHostedAncestor(
+          resolution.repository_root,
+          project,
+          resolution.original_base_sha,
+          pr.baseSha,
+        ))
+      ) {
+        reject("exact hosted head and base ancestry is unproven.");
+      }
     }
-    const local = await validateProviderUpdateLocalState(
-      {
-        gitRoot: resolution.repository_root,
-        worktreePath: checkout,
-        identity: resolution.identity,
-        prNumber: resolution.pr_number,
-        branch: resolution.branch,
-        baseBranch: resolution.base_branch,
-        expectedHeadSha: resolution.original_head_sha,
-        expectedBaseSha: resolution.original_base_sha,
-      },
-      [resolution.observed_head_sha],
-    );
+    if (pr.provider === "gitlab") {
+      // HEAD can already be aligned while source/base tracking still needs a
+      // non-force refresh after an interrupted final readback at a later main.
+      const failure = await reconcileProviderUpdateLocalHead(
+        request,
+        resolution.observed_head_sha,
+        observedBase,
+      );
+      if (failure) reject(`local GitLab recovery alignment is incomplete: ${failure}`);
+    }
+    const local = await validateProviderUpdateLocalState(request, [resolution.observed_head_sha]);
     if (local) reject(`local task head is not safely aligned: ${local}`);
     if (
       (await gitRevParse(checkout, [
         `refs/remotes/${resolution.identity.remote}/${resolution.base_branch}`,
-      ])) !== pr.baseSha
+      ])) !== observedBase
     ) {
       reject("local base tracking head differs from provider base.");
     }
     const refreshed = await opts.decide();
+    const beforeComponents = current.workflowStep.preconditionFingerprint.components;
+    const afterComponents = refreshed.workflowStep.preconditionFingerprint.components;
+    // The proven local update changes blockers and the next step in authority.
+    // Bind its stable controls separately. This completion grants no authority
+    // to execute that new step; the next operation requires its own fresh gate.
+    const controlUnchanged =
+      pr.provider !== "gitlab" ||
+      (beforeComponents.authority.state === "present" &&
+        afterComponents.authority.state === "present" &&
+        Object.entries(beforeComponents).every(
+          ([key, value]) =>
+            key === "git" ||
+            key === "provider" ||
+            key === "authority" ||
+            digestSupervisorEpisodeValue(afterComponents[key as keyof typeof afterComponents]) ===
+              digestSupervisorEpisodeValue(value),
+        ) &&
+        digestSupervisorEpisodeValue(gitLabRecoveryControls(current)) ===
+          digestSupervisorEpisodeValue(gitLabRecoveryControls(refreshed)));
     if (
-      refreshed.workflowStep.preconditionFingerprint.digest !==
-        resolution.current_state_fingerprint ||
+      (pr.provider === "gitlab"
+        ? !controlUnchanged
+        : refreshed.workflowStep.preconditionFingerprint.digest !==
+          resolution.current_state_fingerprint) ||
       refreshed.task.id !== opts.task_id
     ) {
       reject("the route changed during provider proof.");
+    }
+    if (
+      pr.provider === "gitlab" &&
+      (path.resolve(refreshed.workspace.taskWorktreePath ?? "") !== path.resolve(checkout) ||
+        refreshed.workspace.prBranch !== resolution.branch)
+    )
+      reject("the authoritative GitLab task checkout changed during recovery.");
+    if (pr.provider === "gitlab") {
+      const after = await observeExistingChangeRequestByNumber({
+        gitRoot: resolution.repository_root,
+        identity: pr.identity,
+        prNumber: resolution.pr_number,
+        branch: resolution.branch,
+        baseBranch: resolution.base_branch,
+      });
+      if (
+        after.state !== "found" ||
+        after.pr.provider !== "gitlab" ||
+        after.pr.status !== "OPEN" ||
+        after.pr.prNumber !== resolution.pr_number ||
+        after.pr.headSha !== resolution.observed_head_sha ||
+        after.pr.prUrl !== resolution.pr_url ||
+        after.pr.headRef !== resolution.branch ||
+        after.pr.base !== resolution.base_branch ||
+        !(
+          [
+            "provider",
+            "hostname",
+            "remote",
+            "sourceProject",
+            "targetProject",
+            "sourceUrl",
+            "targetUrl",
+          ] as const
+        ).every((key) => after.pr.identity[key] === pr.identity[key]) ||
+        (await readGitLabCurrentTargetHead({
+          gitRoot: resolution.repository_root,
+          identity: pr.identity,
+          baseBranch: resolution.base_branch,
+        })) !== observedBase
+      )
+        reject("GitLab hosted identity or target changed during local recovery.");
+      const freshTask = await opts.command.taskBackend.getTask(opts.task_id);
+      if (freshTask?.id !== opts.task_id)
+        reject("the task record changed before final GitLab authority readback.");
+      const retainedAuthority = await loadSideEffectAuthorityState({
+        gitRoot: opts.command.resolvedProject.gitRoot,
+        commonGitDir,
+        taskId: opts.task_id,
+        task: freshTask,
+      });
+      if (
+        digestSupervisorEpisodeValue({
+          source: retainedAuthority.source,
+          state: retainedAuthority.state,
+        }) !== retainedAuthorityDigest
+      )
+        reject("the retained USER authority changed during GitLab recovery.");
     }
     const completion = {
       kind: "provider_update_branch_effect_resolution",
@@ -334,7 +475,7 @@ export async function reconcileProviderUpdateEffect(opts: {
       grant_state_scope_digest: grant.stateScopeDigest,
       observed_head_sha: resolution.observed_head_sha,
       original_base_sha: resolution.original_base_sha,
-      observed_base_sha: pr.baseSha,
+      observed_base_sha: observedBase,
       operator: resolution.operator,
       evidence: resolution.evidence,
     };
@@ -364,19 +505,33 @@ export async function reconcileProviderUpdateEffect(opts: {
     });
     const advanced = advanceSupervisorExecutionEpisodeState({
       journal: completed,
-      state_fingerprint_digest: resolution.current_state_fingerprint,
+      state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
       route_observation: { step_id: refreshed.workflowStep.id },
     });
-    if (!(await store.compareAndSwap(journal.digest, advanced))) {
+    if (resolution.identity.provider === "gitlab")
+      await publishGitLabJournalTransition({
+        store,
+        before: journal,
+        next: advanced,
+        phase: "state",
+      });
+    else if (!(await store.compareAndSwap(journal.digest, advanced)))
       reject("the supervisor journal changed during recovery.");
-    }
+    const postCompletionRoute = await opts.decide();
     return {
       task_id: opts.task_id,
       operation_key: resolution.operation_key,
-      verdict: "applied",
+      verdict: "applied" as const,
       observed_head_sha: resolution.observed_head_sha,
-      next_step: refreshed.workflowStep.id,
+      next_step: postCompletionRoute.workflowStep.id,
     };
+  };
+  if (resolution.identity.provider === "gitlab")
+    return withGitLabJournalLease({ journal_path: journalPath, run, failed: () => false });
+  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
+  if (!lease) reject("another supervisor owns this task.");
+  try {
+    return await run();
   } finally {
     await lease.release();
   }

@@ -277,7 +277,14 @@ describe("provider update-branch effect", () => {
 
     await expect(
       updateProviderBranch(
-        request({ identity: { ...identity, provider: "gitlab", hostname: "gitlab.com" } }),
+        request({
+          identity: {
+            ...identity,
+            provider: "gitlab",
+            hostname: "gitlab.com",
+            sourceProject: "fork/repo",
+          },
+        }),
       ),
     ).resolves.toMatchObject({ state: "not_applied", reason: "unsupported_provider" });
   });

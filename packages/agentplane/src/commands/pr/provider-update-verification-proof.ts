@@ -1,7 +1,13 @@
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { readdir } from "node:fs/promises";
 import { z } from "zod";
-import { gitProofEnv, gitProofIsAncestor, gitMergeBase } from "@agentplaneorg/core/git";
+import {
+  gitProofEnv,
+  gitProofIsAncestor,
+  gitMergeBase,
+  gitShowFile,
+} from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   digestSupervisorEpisodeValue,
@@ -13,11 +19,14 @@ import {
   assertContainedPathChainIdentityUnchanged,
 } from "../../shared/contained-stable-file.js";
 import { publishNewStableRegularFileNoFollow } from "../../shared/stable-file.js";
-import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
-import { resolveSupervisorExecutionEpisodePath } from "../shared/supervisor-execution-episode.js";
+import type { CommandContext } from "../shared/task-backend.js";
+import { resolveCommonGitDirectory } from "../../shared/env.js";
+import { resolveSupervisorExecutionEpisodePath } from "../shared/supervisor-execution-journal.js";
+import type { VerificationEvidenceReference } from "../shared/task-verification-input-types.js";
 import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
 import type { ProviderUpdateBranchOperationParams } from "../shared/provider-update-branch-route.js";
 
+const hash = (value: string) => `sha256:${createHash("sha256").update(value).digest("hex")}`;
 const oid = z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u);
 const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
 const text = z.string().min(1);
@@ -52,10 +61,10 @@ const proofSchema = z.strictObject({
 type Proof = z.infer<typeof proofSchema>;
 type Journal = ReturnType<typeof validateSupervisorExecutionEpisodeJournal>;
 
-async function control(command: CommandContext, taskId: string) {
-  const root = await resolveCommandGitCommonDir(command);
+async function control(gitRoot: string, taskId: string) {
+  const root = await resolveCommonGitDirectory(gitRoot);
   const journalPath = await resolveSupervisorExecutionEpisodePath({
-    git_root: command.resolvedProject.gitRoot,
+    git_root: gitRoot,
     common_git_dir: root,
     task_id: taskId,
   });
@@ -153,7 +162,7 @@ export async function retainProviderUpdateVerificationProof(opts: {
   completion: Record<string, unknown>;
 }): Promise<Record<string, unknown>> {
   const p = paramsSchema.parse(opts.params);
-  const c = await control(opts.command, p.taskId);
+  const c = await control(opts.command.resolvedProject.gitRoot, p.taskId);
   const journal = validateSupervisorExecutionEpisodeJournal(
     JSON.parse(await c.read(c.journalPath)),
   );
@@ -250,28 +259,27 @@ export async function taskOriginHistoryPaths(
   return [...paths];
 }
 
-/** Return only canonical imports backed by a completed native update and exact Git tree entries. */
-export async function inheritedProviderUpdatePaths(opts: {
-  command: CommandContext;
-  task_id: string;
-  frozen_base: string;
-  evaluated_sha: string;
-  changed_paths: readonly string[];
-  workflow_dir: string;
-  tasks_path: string;
-}): Promise<string[]> {
-  const c = await control(opts.command, opts.task_id);
+/** Authenticate retained proofs once for ownership and validation-floor consumers. */
+async function completedProofs(root: string, taskId: string, frozenBase?: string) {
+  const c = await control(root, taskId);
   let journal: Journal;
   try {
     journal = validateSupervisorExecutionEpisodeJournal(JSON.parse(await c.read(c.journalPath)));
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
-    throw error;
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    const files = await readdir(path.dirname(c.journalPath)).catch(
+      (readError: NodeJS.ErrnoException) => {
+        if (readError.code === "ENOENT") return [];
+        throw readError;
+      },
+    );
+    if (files.some((name) => /^provider-update-[a-f0-9]{64}\.json$/u.test(name)))
+      throw new Error("Retained provider update proof has no native journal");
+    return [];
   }
   const files = await readdir(path.dirname(c.journalPath));
   const names = files.filter((name) => /^provider-update-[a-f0-9]{64}\.json$/u.test(name));
-  const proofs: { proof: Proof; sequence: number }[] = [];
-  const root = opts.command.resolvedProject.gitRoot;
+  const proofs: { proof: Proof; sequence: number; nativeGitLab?: boolean }[] = [];
   for (const name of names) {
     const parsed = proofSchema.parse(
       JSON.parse(await c.read(path.join(path.dirname(c.journalPath), name))),
@@ -298,13 +306,161 @@ export async function inheritedProviderUpdatePaths(opts: {
       throw new Error("Provider update proof publication identity changed");
     await proveMerge(root, parsed);
     if (
-      !(await gitProofIsAncestor(root, opts.frozen_base, p.expectedHeadSha)) ||
-      !(await gitProofIsAncestor(root, opts.frozen_base, p.expectedBaseSha))
+      frozenBase &&
+      (!(await gitProofIsAncestor(root, frozenBase, p.expectedHeadSha)) ||
+        !(await gitProofIsAncestor(root, frozenBase, p.expectedBaseSha)))
     )
       throw new Error("Provider update proof is outside frozen execution ancestry");
     proofs.push({ proof: parsed, sequence: entry.sequence });
   }
-  proofs.sort((a, b) => a.sequence - b.sequence);
+  for (const entry of journal.operations) {
+    if (entry.status !== "completed") continue;
+    const operation = entry.recovery?.operation_identity as
+      { id?: unknown; params?: { identity?: { provider?: unknown } } } | undefined;
+    const context = entry.recovery?.context as { kind?: unknown; task_id?: unknown } | undefined;
+    if (context?.kind === "adopted_provider_effect") continue;
+    if (
+      operation?.params?.identity?.provider !== "gitlab" &&
+      context?.kind !== "gitlab_provider_update_branch"
+    )
+      continue;
+    if (operation?.id !== "provider.pr.update_branch")
+      throw new Error("Completed GitLab update identity is unproven");
+    const params = paramsSchema.parse(operation.params);
+    const retained = proofs.find(({ proof }) => proof.operation_key === entry.operation_key);
+    if (
+      !retained ||
+      digestSupervisorEpisodeValue(retained.proof.params) !== digestSupervisorEpisodeValue(params)
+    )
+      throw new Error("Completed GitLab update verification proof is missing or mismatched");
+    retained.nativeGitLab = true;
+  }
+  return proofs.toSorted((a, b) => a.sequence - b.sequence);
+}
+
+/** A native GitLab update requires new validation even when its checked bytes are equivalent. */
+export async function providerUpdateVerificationFloor(gitRoot: string, taskId: string) {
+  let floor: string | null = null;
+  for (const { proof, nativeGitLab } of await completedProofs(gitRoot, taskId)) {
+    if (!nativeGitLab) continue;
+    if (floor && !(await gitProofIsAncestor(gitRoot, floor, proof.params.expectedHeadSha)))
+      throw new Error("Native GitLab validation floor lineage changed");
+    floor = proof.observed_head_sha;
+  }
+  return floor;
+}
+
+/** Check both recorded targets and digest-bound native process observations, before input reuse. */
+export async function verificationCoversProviderUpdateFloor(opts: {
+  gitRoot: string;
+  taskId: string;
+  workflowDir: string;
+  headSha?: string | null;
+  evidenceRef?: string | null;
+  implementationSha: unknown;
+  targetSha?: string;
+  references?: readonly VerificationEvidenceReference[];
+  commands: readonly string[];
+}): Promise<boolean> {
+  const floor = await providerUpdateVerificationFloor(opts.gitRoot, opts.taskId);
+  if (!floor) return true;
+  const covers = async (value: unknown) =>
+    oid.safeParse(value).success &&
+    (await gitProofIsAncestor(opts.gitRoot, floor, value as string));
+  const head = opts.headSha ?? (await git(opts.gitRoot, ["rev-parse", "HEAD"]));
+  if (
+    !(await covers(head.trim())) ||
+    !(await covers(opts.implementationSha)) ||
+    !(await covers(opts.targetSha))
+  )
+    return false;
+  const prefix = `${opts.workflowDir.replaceAll("\\", "/").replace(/\/+$/u, "")}/${opts.taskId}/supervision/`;
+  const read = async (relative: string) => {
+    if (!relative.startsWith(prefix) || relative.split("/").includes(".."))
+      throw new Error("Native verification evidence is outside the task");
+    try {
+      return await readContainedStableTextNoFollow({
+        repository_root: opts.gitRoot,
+        file_path: path.join(opts.gitRoot, relative),
+        label: "native verification floor evidence",
+        max_bytes: 16 * 1024 * 1024,
+      });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      return gitShowFile(opts.gitRoot, opts.evidenceRef ?? opts.targetSha!, relative);
+    }
+  };
+  const observed = new Set<string>();
+  for (const reference of opts.references ?? []) {
+    if (!reference.path.startsWith(prefix)) continue;
+    const bytes = await read(reference.path);
+    if (hash(bytes) !== reference.digest) return false;
+    const artifact = z
+      .object({
+        kind: z.literal("direct_task_declared_checks"),
+        task_id: z.literal(opts.taskId),
+        status: z.literal("passed"),
+        checks: z
+          .array(
+            z.object({
+              command: text,
+              exit_code: z.literal(0),
+              observation: z.object({
+                status: z.literal("retained"),
+                manifest_path: text,
+                digest,
+              }),
+            }),
+          )
+          .min(1),
+      })
+      .safeParse(JSON.parse(bytes));
+    if (!artifact.success) continue;
+    for (const check of artifact.data.checks) {
+      // Absolute producer paths are projected into this checkout for snapshot consumers.
+      const marker = `/${prefix}`;
+      const name = check.observation.manifest_path.replaceAll("\\", "/");
+      const absolute = path.posix.isAbsolute(name) || path.win32.isAbsolute(name);
+      if (absolute && !name.includes(marker)) return false;
+      const relative = absolute ? name.slice(name.lastIndexOf(marker) + 1) : name;
+      if (!relative.startsWith(`${prefix}verification-runs/`)) return false;
+      const manifestBytes = await read(relative);
+      if (hash(manifestBytes) !== check.observation.digest) return false;
+      const manifest = z
+        .object({
+          state: z.literal("passed"),
+          result: z.object({ exit_code: z.literal(0) }),
+          binding: z.object({
+            kind: z.literal("declared_check"),
+            command: text,
+            command_text_truncated: z.literal(false),
+            implementation: z.object({ head: oid }),
+          }),
+        })
+        .parse(JSON.parse(manifestBytes));
+      if (
+        manifest.binding.command !== check.command ||
+        !(await covers(manifest.binding.implementation.head))
+      )
+        return false;
+      observed.add(check.command);
+    }
+  }
+  return opts.commands.length > 0 && opts.commands.every((command) => observed.has(command));
+}
+
+/** Return only canonical imports backed by a completed native update and exact Git tree entries. */
+export async function inheritedProviderUpdatePaths(opts: {
+  command: CommandContext;
+  task_id: string;
+  frozen_base: string;
+  evaluated_sha: string;
+  changed_paths: readonly string[];
+  workflow_dir: string;
+  tasks_path: string;
+}): Promise<string[]> {
+  const root = opts.command.resolvedProject.gitRoot;
+  const proofs = await completedProofs(root, opts.task_id, opts.frozen_base);
   let previous: Proof | undefined;
   let inherited = new Set<string>();
   // Cache whole observations per immutable commit/range. Large canonical imports
