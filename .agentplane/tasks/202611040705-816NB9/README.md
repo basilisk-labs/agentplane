@@ -4,7 +4,7 @@ title: "Require fresh verification after native GitLab branch updates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -23,15 +23,33 @@ verify:
   - "bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-11-04T08:11:41.097Z"
+  updated_at: "2026-11-04T13:04:00.265Z"
   updated_by: "USER"
-  note: "Record the explicit user approval of the prepared816NB9 Plan with exactly21 source/test paths, including the three existing shared proof/target/verification consumers. Preserve QKNKFW and FK0WXM histories, all data, credentials, branches, runtime guards, unchanged full CI, independent EVALUATOR and canonical PR merge requirements."
+  note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-11-04T13:30:18.264Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-11-04T13:04:00.265Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical EVALUATOR review passed."
+  evaluated_sha: "2305b70c4db6f6831bae7ba00f5f64328ed56777"
+  review_identity_digest: "sha256:d65551e38775df6ef049d5be3b484042c4dd67c458614f9ba442e4ef3a5548fd"
+  evidence_refs:
+    - "../../../.git/agentplane/kernel/exchanges/202611040705-816NB9/e6ced7df11ad720cb21b5387cda323f721b4ae2e475e67195cf906f1c247de66/quality-report.json"
+  findings:
+    - "Criteria 1, 6 and 9: Independently read the complete issued WorkOrder and context manifest, authenticated all 14 required block digests and canonical sizes, all five required inputs and the raw result schema. Manifest 76b7a9e71946844b719b5bdd3a5d91d37141b6965f302d774f6ef8c55aec3a06 and source WorkOrder c26496e9a4e9640f17e325f988517c82ec046e63cfbcab64fd781c791e37d7da match. Repository-evidence uses its specified self-digest domain; native validation and received result use canonical whole JSON; report inputs use raw bytes. The reviewed HEAD/evaluator target is 2305b70c4db6f6831bae7ba00f5f64328ed56777, tree 3cec1a94934867ed88c748af8dc9f0df57f2cfbe. All 21 source files match report 2046 and Git objects byte-for-byte, including sizes and native line counts. Relative to frozen 4806d9ab70604c2beaaf9443cbd2817690962b72, only those 21 source paths and 114 own Task artifact paths are committed; all 119 current status entries are own Task artifacts. No old QKNKFW/FK0WXM artifacts, policy, dependency, schema, hook, baseline, worker-count or timeout files changed. All 600/1000-line budgets remain satisfied."
+    - "Criteria 2 and 3: commands/pr/internal/sync-gitlab.ts:60 independently authenticates the exact target project and named branch tip instead of substituting diff_refs.base_sha. commands/pr/provider-update-branch-gitlab.ts verifies same-project task ownership, exact MR/host/source/head/base identity, natural H/R merge tree, exact two-parent ancestry and hosted/local readback. It publishes a single non-force, non-deleting push with normal hooks and only fast-forwards a clean authoritative checkout. Real-Git fixtures cover successful publication, conflicts, source/base races, wrong host/project, unavailable readback, hook rejection, altered trees and unsupported forks."
+    - "Criteria 4, 7 and 8: commands/shared/supervisor-execution-journal.ts:248 authenticates complete supported before/after snapshots under the writer lock. Only a directly acknowledged intent CAS permits dispatch; a matching afterimage permits state acknowledgment only. Changed, malformed, tampered or unreadable evidence is preserved. The existing execution lease covers open through dispatch, completion, both cursor advances and refresh, with release in finally. Typed retention/publication uncertainty preserves the original intent; cleanup cannot replace a primary failure or downgrade a completed effect. Legacy origin checks run before mutation and preserve normal GitHub/adoption behavior. The native journal suite covers the associated faults, races, restart classification, migration, busy ownership, release errors and real core/lease handoff."
+    - "Criterion 4 and the latest rework: commands/task/provider-update-effect-recovery.ts:124 strictly reads the original GitLab parameters from validated retained operation identity, compares all base fields with operator evidence and binds optional reconcileHeadSha to the observed M. The same full parameters drive effect/grant digest and proof retention. GitHub reconstruction remains unchanged. Fresh Task and authority source/state are reread before publication; stable Task/policy/plan/capability/batch/checkout controls stay bound across a proven route transition. The eight real-Git recovery cases cover later main, lagging local checkout and reconciliation-only intents, retention interruption, stale-fingerprint and wrong-M refusal, exact proof parameters and duplicate-recovery refusal without provider mutation replay. Post-completion route observation at line 535 sees the newly durable floor."
+    - "Criteria 5 and 10: commands/pr/provider-update-verification-proof.ts:343 derives the latest completed non-adopted GitLab M from the same authenticated journal/proof reader used by ownership checks. Completed operations with missing, unreadable, altered or mismatched proof cannot clear the floor. commands/shared/quality-review-target.ts:393 enforces floor ancestry through review reuse, artifact tails, rewrite shortcuts and first-parent traversal, including M carried through a second merge parent. commands/shared/task-verification-records.ts:293 checks recorded implementation/target ancestry and digest-bound actual execution manifest heads before equivalent-input, legacy or snapshot acceptance. The shared consumers used by route, EVALUATOR and integration therefore cannot use pre-M accepted records. Frozen B and combined-tree coverage are retained; the existing fresh native verification producer is unchanged."
+    - "Criteria 5, 6 and 10 regression evidence: provider-update-effect-recovery.test.ts:125 uses real named main at R, frozen execution context, genuinely accepted native v5 full records and native EVALUATOR results before M. Both source-import and empty/equivalent-input bases are exercised for normal completion and applied recovery. Old full/review evidence is refused through local and Git-snapshot record paths; a newly retained full execution still requires a new EVALUATOR; fresh full plus review exposes only the existing closure/integration authority route. The producer assertions compare actual manifest byte digests, unique new observation paths, implementation.head and subprocess stdout HEAD, while retaining old observation bytes. Proof tests also cover chained M2 floors, pending/missing/corrupt proofs, generated tails, rewrites, second-parent ancestry, portable producer paths and declared-M/actual-H refusal. Positive GitHub/adopted reuse is retained."
+    - "Fresh native evidence: native-validation-0d99b9e06457dde06601f7ec5aa032c3b8bbe8e8070e09c7aec356fa9633eba6.json authenticates all three required commands on 2305b70c4db6f6831bae7ba00f5f64328ed56777: focused 239 passed in 192703 ms, full CI exit 0 in 1396912 ms, journal 58 passed in 8402 ms. Independently authenticated 23 manifests, 69 raw streams and 418675 retained bytes. Required build/runtime/docs-schema/core/CLI groups passed; full-only platform checks report 7 files/100 tests and significant guards 8 files/105 tests/17 source targets. The four nested exit-2/3 manifests are the explicit verification-contract.test.ts:188-235 negative fixtures, not failed required groups. Earlier failed native attempts and the pre-run pending statements in reports remain historical evidence; they were not reused as passing receipts."
 execution_route:
   frozen: true
   reason_codes:
@@ -133,11 +151,78 @@ execution_contract:
       - "packages/agentplane/src/commands/task/provider-update-effect-recovery.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+      - "packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts"
+      - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+      - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-journal.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-records.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+      - "packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts"
+      - "packages/agentplane/src/commands/task/provider-update-effect-recovery.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_publish"
@@ -202,7 +287,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:cf5304fc0eb592d4726985de460695517fd6ec453488f695e2d72b5a657c284b"
+      digest: "sha256:55c7658d34388b87c463a65cf9fac4ce7e034c51baf00f2421ac54c4d89914fc"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
@@ -212,6 +297,14 @@ execution_contract:
         - "central_component:packages/agentplane/src/commands/shared/supervisor-execution-journal.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-verification-records.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
+        - "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+        - "central_path:packages/agentplane/src/commands/shared/quality-review-target.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-journal.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-records.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
         - "effect_release_metadata"
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
@@ -222,10 +315,35 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+          - "packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts"
+          - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+          - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-journal.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-records.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+          - "packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts"
+          - "packages/agentplane/src/commands/task/provider-update-effect-recovery.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -262,12 +380,20 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "2305b70c4db6f6831bae7ba00f5f64328ed56777"
+  message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-11-04T13:30:18.264Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-11-04T07:05:06.090Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-11-04T13:30:19.136Z"
+doc_updated_by: "SUPERVISOR"
 description: "Prevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion."
 sections:
   Summary: |-
@@ -288,12 +414,139 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-11-04T13:30:18.264Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:befb766775f0327301ec47176419d67386948eac2a3721651a9ab465822285f9, input_digest=sha256:cac9de53fa1bf2fe7b9b61461896e89c0684b63d3dab62d6e9b22a708a686cd9
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check real_e2e (1/3)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check real_e2e (2/3)
+
+    Check: real_e2e
+    Command: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check real_e2e (3/3)
+
+    Check: task_outcome
+    Command: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202611040705-816NB9 Verification Contract check task_outcome (3/3)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016
+    - policy_digest: sha256:987929940f3820e61292591e8ce12a537c18ae14094a524cdad5978e41cebd01
+    - capability_digest: sha256:19fc6d19554860e64bcc95db36f2ffc3884e6f1219ba20182f1f9a65e864b128
+    - checks_digest: sha256:0b6d7c66143ba48c0b26857d8ecc1d40f20191c28bdc081f32225acc9d22bdc3
+    - identity_digest: sha256:ef3252e5e5f6d46b3ca75bc94312e3e0deb4a1101e2560d254205c3a145b169f
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202611040705-816NB9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.kernel_operational_projection:
+    digest: "sha256:c3c2972f6b70d1dc95ba380667069656e008120a6453e11e305ebb9d5cbd5eb5"
+    evidence_refs:
+      - "../../../.git/agentplane/kernel/exchanges/202611040705-816NB9/e6ced7df11ad720cb21b5387cda323f721b4ae2e475e67195cf906f1c247de66/quality-report.json"
+    findings:
+      - "Criteria 1, 6 and 9: Independently read the complete issued WorkOrder and context manifest, authenticated all 14 required block digests and canonical sizes, all five required inputs and the raw result schema. Manifest 76b7a9e71946844b719b5bdd3a5d91d37141b6965f302d774f6ef8c55aec3a06 and source WorkOrder c26496e9a4e9640f17e325f988517c82ec046e63cfbcab64fd781c791e37d7da match. Repository-evidence uses its specified self-digest domain; native validation and received result use canonical whole JSON; report inputs use raw bytes. The reviewed HEAD/evaluator target is 2305b70c4db6f6831bae7ba00f5f64328ed56777, tree 3cec1a94934867ed88c748af8dc9f0df57f2cfbe. All 21 source files match report 2046 and Git objects byte-for-byte, including sizes and native line counts. Relative to frozen 4806d9ab70604c2beaaf9443cbd2817690962b72, only those 21 source paths and 114 own Task artifact paths are committed; all 119 current status entries are own Task artifacts. No old QKNKFW/FK0WXM artifacts, policy, dependency, schema, hook, baseline, worker-count or timeout files changed. All 600/1000-line budgets remain satisfied."
+      - "Criteria 2 and 3: commands/pr/internal/sync-gitlab.ts:60 independently authenticates the exact target project and named branch tip instead of substituting diff_refs.base_sha. commands/pr/provider-update-branch-gitlab.ts verifies same-project task ownership, exact MR/host/source/head/base identity, natural H/R merge tree, exact two-parent ancestry and hosted/local readback. It publishes a single non-force, non-deleting push with normal hooks and only fast-forwards a clean authoritative checkout. Real-Git fixtures cover successful publication, conflicts, source/base races, wrong host/project, unavailable readback, hook rejection, altered trees and unsupported forks."
+      - "Criteria 4, 7 and 8: commands/shared/supervisor-execution-journal.ts:248 authenticates complete supported before/after snapshots under the writer lock. Only a directly acknowledged intent CAS permits dispatch; a matching afterimage permits state acknowledgment only. Changed, malformed, tampered or unreadable evidence is preserved. The existing execution lease covers open through dispatch, completion, both cursor advances and refresh, with release in finally. Typed retention/publication uncertainty preserves the original intent; cleanup cannot replace a primary failure or downgrade a completed effect. Legacy origin checks run before mutation and preserve normal GitHub/adoption behavior. The native journal suite covers the associated faults, races, restart classification, migration, busy ownership, release errors and real core/lease handoff."
+      - "Criterion 4 and the latest rework: commands/task/provider-update-effect-recovery.ts:124 strictly reads the original GitLab parameters from validated retained operation identity, compares all base fields with operator evidence and binds optional reconcileHeadSha to the observed M. The same full parameters drive effect/grant digest and proof retention. GitHub reconstruction remains unchanged. Fresh Task and authority source/state are reread before publication; stable Task/policy/plan/capability/batch/checkout controls stay bound across a proven route transition. The eight real-Git recovery cases cover later main, lagging local checkout and reconciliation-only intents, retention interruption, stale-fingerprint and wrong-M refusal, exact proof parameters and duplicate-recovery refusal without provider mutation replay. Post-completion route observation at line 535 sees the newly durable floor."
+      - "Criteria 5 and 10: commands/pr/provider-update-verification-proof.ts:343 derives the latest completed non-adopted GitLab M from the same authenticated journal/proof reader used by ownership checks. Completed operations with missing, unreadable, altered or mismatched proof cannot clear the floor. commands/shared/quality-review-target.ts:393 enforces floor ancestry through review reuse, artifact tails, rewrite shortcuts and first-parent traversal, including M carried through a second merge parent. commands/shared/task-verification-records.ts:293 checks recorded implementation/target ancestry and digest-bound actual execution manifest heads before equivalent-input, legacy or snapshot acceptance. The shared consumers used by route, EVALUATOR and integration therefore cannot use pre-M accepted records. Frozen B and combined-tree coverage are retained; the existing fresh native verification producer is unchanged."
+      - "Criteria 5, 6 and 10 regression evidence: provider-update-effect-recovery.test.ts:125 uses real named main at R, frozen execution context, genuinely accepted native v5 full records and native EVALUATOR results before M. Both source-import and empty/equivalent-input bases are exercised for normal completion and applied recovery. Old full/review evidence is refused through local and Git-snapshot record paths; a newly retained full execution still requires a new EVALUATOR; fresh full plus review exposes only the existing closure/integration authority route. The producer assertions compare actual manifest byte digests, unique new observation paths, implementation.head and subprocess stdout HEAD, while retaining old observation bytes. Proof tests also cover chained M2 floors, pending/missing/corrupt proofs, generated tails, rewrites, second-parent ancestry, portable producer paths and declared-M/actual-H refusal. Positive GitHub/adopted reuse is retained."
+      - "Fresh native evidence: native-validation-0d99b9e06457dde06601f7ec5aa032c3b8bbe8e8070e09c7aec356fa9633eba6.json authenticates all three required commands on 2305b70c4db6f6831bae7ba00f5f64328ed56777: focused 239 passed in 192703 ms, full CI exit 0 in 1396912 ms, journal 58 passed in 8402 ms. Independently authenticated 23 manifests, 69 raw streams and 418675 retained bytes. Required build/runtime/docs-schema/core/CLI groups passed; full-only platform checks report 7 files/100 tests and significant guards 8 files/105 tests/17 source targets. The four nested exit-2/3 manifests are the explicit verification-contract.test.ts:188-235 negative fixtures, not failed required groups. Earlier failed native attempts and the pre-run pending statements in reports remain historical evidence; they were not reused as passing receipts."
+    implementation_commit: "2305b70c4db6f6831bae7ba00f5f64328ed56777"
+    implementation_tree: "3cec1a94934867ed88c748af8dc9f0df57f2cfbe"
+    projected_at: "2026-11-04T13:04:00.265Z"
+    review_identity_digest: "sha256:d65551e38775df6ef049d5be3b484042c4dd67c458614f9ba442e4ef3a5548fd"
+    schema_version: 1
+    source: "task_kernel"
+    verification_evidence_digest: "sha256:f028809e6165a59f64d18d8d46894c3bc016c275942bd58ece1c3187308499b0"
+    work_order_id: "sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
   task_execution_context:
     base_ref: "main"
     base_sha: "4806d9ab70604c2beaaf9443cbd2817690962b72"
@@ -530,6 +783,80 @@ extensions:
             evidence_digest: "sha256:d34422a6560da31096974c8560f9b981e89e2f0734ab80b5b2e06f7324f66545"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:086f18e9b63915e05d41d3e3b40b3445f36843991c13d3ef9d285bffb00b51ea"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:e0410c4c6dd744647893d28c6538cfe9bbe364362b32ac34b0b66ef01297e2e9"
+            expires_at: null
+            external_effects:
+              - "network_read"
+            plan_digest: "sha256:c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:2a68602cdb59ee5df1a3d8f65ab3d471069771c5f9aeb2b4959645f747783f0b"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:79788feb4c6dcddb2b426cfb7e2333a5718472719f579cc01ad5f9b837bcf545"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:b2ae87b95b0632fe5e99a762944e554cae159573eb5bba10372cb532f7e7316d"
+            repository_effects:
+              - "release_metadata"
+              - "repository_write"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+              - "packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts"
+              - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+              - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+              - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+              - "packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+              - "packages/agentplane/src/commands/shared/supervisor-execution-journal.ts"
+              - "packages/agentplane/src/commands/shared/task-verification-records.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
+              - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+              - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+              - "packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts"
+              - "packages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts"
+              - "packages/agentplane/src/commands/task/provider-update-effect-recovery.ts"
+            task_id: "202611040705-816NB9"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+              - "packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts"
+              - "packages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts"
+              - "packages/agentplane/src/commands/task/provider-update-effect-recovery.ts"
+            evidence_digest: "sha256:c89df5b44f49ee810d3ae9e664f16a79dc58dc975aac59bd0e9881efab24820d"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:34144b15b022bda7a446c8c8ce24d43b209e535d5dfceffcc6c6f4790b1dd842"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -580,7 +907,17 @@ extensions:
             optional: false
             required_inputs: []
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e"
+        identity:
+          check_id: "canonical-final-contracts-v2"
+          command_digest: "sha256:fc7e8f5fcaf34b3512dd390724e0e130ad1f402d8aafd146b13bdfc8b22be7fe"
+          environment_digest: "sha256:2d5b52ce84038aee98d7d50594e7cdba38955afe1c40052165f38b39aae0d18f"
+          implementation_identity: "sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2"
+          toolchain_digest: "sha256:a2111a86abc0a3e9336165253e083b9e2a4d294128ea971b0324685885df2cdd"
+        observed_at: "2026-11-04T13:04:05.724Z"
+        status: "PASSED"
       id: "202611040705-816NB9"
       intent_digest: "sha256:ab9c8e361b48aa7917a8981a0adc696e8d5c0964278e7a235a8ff53996e36a25"
       migration_receipts: []
@@ -594,6 +931,15 @@ extensions:
           event_digests:
             - "sha256:030bb60a5815db21440776f25eca2662afe7e113d14e016b6583c87a03161876"
           mutation_id: "capture:202611040705-816NB9"
+        final-validation:sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e:19:
+          after_revision: 20
+          aggregate_digest: "sha256:6fe745be78577395ec0149ab29510e90927f18d1839aecf0ac55ed0dd24ecb11"
+          before_revision: 19
+          command_digest: "sha256:b2bd7084c26f913c0e128035c19f5c7fae6e8a8b20c3e3bf96b61549c3dbddca"
+          effect_ids: []
+          event_digests:
+            - "sha256:b762bfa2e2232ed8edc2830601ce3ad0aa76ea5d8088e70e46f5f3de88347ae6"
+          mutation_id: "final-validation:sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e:19"
         kernel_work_item_claim_required:sha256:0f4be0925b4efbc2cb08f1cd0ef97d69e415a925b8754b77f240450586ab58c2:sha256:4f4af0bd0d69c5a4533d132577feac113faf763b4a22d8f27567ffc8b920ae55:
           after_revision: 5
           aggregate_digest: "sha256:1e540dc6e7d376b54cab6b78b9f33c1eac7b4deb783cdd954ec6e9fcdc651302"
@@ -621,6 +967,15 @@ extensions:
           event_digests:
             - "sha256:b16b614565e916ea334529d686987d6b96bd879f5f6f4ab468e272ff0b41efea"
           mutation_id: "kernel_work_item_execution_required:sha256:a6c3ce1ba8f86221d022ddae873fa1d680f04cf006aa3a8b7f5409442bd2767b:sha256:34144b15b022bda7a446c8c8ce24d43b209e535d5dfceffcc6c6f4790b1dd842"
+        kernel_work_item_inspection_required:sha256:9d0a019a7a3c1e65209ebcd3ac749c73d6a2b430db0430e1e40bb835f3715333:sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2:
+          after_revision: 17
+          aggregate_digest: "sha256:5b27fbc319cd6c4bc81b6fa1e288ab70802e46338aa8333dddc63b0c598561aa"
+          before_revision: 16
+          command_digest: "sha256:4c0e87871a06e60976168a62b25e0fb01bb6a949626255c0b384fa64ba102bf0"
+          effect_ids: []
+          event_digests:
+            - "sha256:220a0c241c570f6ba7cb4ee80cab661f5764ea5bbbc3f6777aff9f1b40efaf90"
+          mutation_id: "kernel_work_item_inspection_required:sha256:9d0a019a7a3c1e65209ebcd3ac749c73d6a2b430db0430e1e40bb835f3715333:sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2"
         kernel_work_item_inspection_required:sha256:b48b484209d7941c79d6ee5a8dc4201f20d7f4c0122a47749586bc6194f00c74:sha256:34144b15b022bda7a446c8c8ce24d43b209e535d5dfceffcc6c6f4790b1dd842:
           after_revision: 10
           aggregate_digest: "sha256:37d489e18d8b3c3d95eb0550dc02f7e40b97008259f1627647060c2b43d52c42"
@@ -657,6 +1012,15 @@ extensions:
           event_digests:
             - "sha256:af14d0a4623e769bd512dea846c8a4bf7c074e6a22dc05710f1be1ac9ecd00c6"
           mutation_id: "plan:sha256:c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016"
+        result:sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063:
+          after_revision: 16
+          aggregate_digest: "sha256:d9c60088f54598da520e912db77fd50dca84a7d56594a517a755f4907f5fbc7a"
+          before_revision: 15
+          command_digest: "sha256:074e3e15f5eeecd819c014505f9fa5ea66c2c01a9a158c9f029b132a72447151"
+          effect_ids: []
+          event_digests:
+            - "sha256:779801f20950b41eb6c12d7d33c98c414647178592e2b733f6a3908a967afad4"
+          mutation_id: "result:sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
         result:sha256:9fb7cbeeb22fb3a73f48de38b3e606ff329752286ba5933c7c2c22122b54c577:
           after_revision: 9
           aggregate_digest: "sha256:84c7f2b52cba126c91cb7d52db39631dc31452221dc5dd1f3eb11270319cf269"
@@ -684,6 +1048,15 @@ extensions:
           event_digests:
             - "sha256:7147c8f7a41d59818a31bf86ce92fddcc7875497774eed92ad30dc6308329d67"
           mutation_id: "sha256:9f9411b669ae4e797aa92c0c900a6a73e3cd9b97133826c648fa3547b8099792"
+        sha256:b1b571074527eccd3d392e79a362cf0794a25001f31b960385e28edcd53b9e5b:
+          after_revision: 15
+          aggregate_digest: "sha256:3a9f68a5d09990522d258084801d7abf6a944a18ba3d75bab047ff8fa79da853"
+          before_revision: 14
+          command_digest: "sha256:58e4e7206ccc184e4566efa6e27bd3e13bc0938a75b5231f33053d7367fe2d87"
+          effect_ids: []
+          event_digests:
+            - "sha256:ba0ba793c83ee4450e7e69b4b4f6211422926c34bb2fd88483d63c500a0478c8"
+          mutation_id: "sha256:b1b571074527eccd3d392e79a362cf0794a25001f31b960385e28edcd53b9e5b"
         sha256:c4348b3498872175190151d9403ccc573a04943d14a22052e4bebe43f4bde54d:
           after_revision: 6
           aggregate_digest: "sha256:c6cc514246c907f2eaae46dea29b56d9db3035e14381992fc57b38fbe950128f"
@@ -693,6 +1066,15 @@ extensions:
           event_digests:
             - "sha256:ff13965001e36e2ef17ce0940e7a05def447f96498cec4fd8f475156e9de0806"
           mutation_id: "sha256:c4348b3498872175190151d9403ccc573a04943d14a22052e4bebe43f4bde54d"
+        validation-resolution:sha256:b199649ba8334d08e08b1c816c2720424efcab6c02b36ecbb5e33253d56f3e9d:
+          after_revision: 19
+          aggregate_digest: "sha256:916b38c05b3e51f5f9da8d89f34af5385fac4e9fc39b24540ee54a816cb6a337"
+          before_revision: 18
+          command_digest: "sha256:cfe44a64f68155db6389e4c7ffd04644d95dd045db58b6b18e863374da9752f9"
+          effect_ids: []
+          event_digests:
+            - "sha256:714644c5f5d120735a1b84c628e381683e294902b0bf76abc2016011148d336a"
+          mutation_id: "validation-resolution:sha256:b199649ba8334d08e08b1c816c2720424efcab6c02b36ecbb5e33253d56f3e9d"
         validation-resolution:sha256:fc3fdf857f82dade166ef17e1d89cabf4ff104eb703b4e8876c99a3b729e5297:
           after_revision: 12
           aggregate_digest: "sha256:37e18dc2b832b908d2ea75800194ceb7d6b862566b7e48850b04560de053efab"
@@ -711,10 +1093,19 @@ extensions:
           event_digests:
             - "sha256:b222d8f613753f98f7daf849c3586fa1884542199cf2fbf3472a45cc12698caf"
           mutation_id: "validation:sha256:9fb7cbeeb22fb3a73f48de38b3e606ff329752286ba5933c7c2c22122b54c577"
+        validation:sha256:e6ced7df11ad720cb21b5387cda323f721b4ae2e475e67195cf906f1c247de66:
+          after_revision: 18
+          aggregate_digest: "sha256:1e0dc0ea2f44d68808c3cf4abcad87e9ff0fa54cc7433d8fdf6f7e10cf89d8ee"
+          before_revision: 17
+          command_digest: "sha256:258dbd09a8bc68a12bed013a348f05a25652b7193660165a378100ca5ff3ce32"
+          effect_ids: []
+          event_digests:
+            - "sha256:9f370c0ac64609cc50663af535fb33afa69970193a4ae2d59e9b4db7157442a4"
+          mutation_id: "validation:sha256:e6ced7df11ad720cb21b5387cda323f721b4ae2e475e67195cf906f1c247de66"
       plan_history: []
-      revision: 14
+      revision: 20
       schema_version: 1
-      state: "ACTIVE"
+      state: "FINAL_VALIDATION"
       work_items:
         native-gitlab-fresh-validation-floor:
           attempt: 2
@@ -760,12 +1151,41 @@ extensions:
             id: "native-gitlab-fresh-validation-floor"
             optional: false
             required_inputs: []
-          output_manifests: []
-          result_digest: null
-          revision: 9
-          state: "EXECUTING"
-          validation: null
-    digest: "sha256:526871c3a8e9df130929cbc9d71b55edf329403b3df09b088d43830066667873"
+          output_manifests:
+            -
+              attempt: 2
+              digest: "sha256:913c9879f436dc7bdf2ecd444e64664fa851a1ad4e9005dc8974e23afc8ff2c2"
+              id: "native-gitlab-update-source"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2"
+              task_id: "202611040705-816NB9"
+              work_item_id: "native-gitlab-fresh-validation-floor"
+            -
+              attempt: 2
+              digest: "sha256:d746189be7b2e66223c80b862a63826f97f10e2e9a5178cdbc0541b2c34ca3f2"
+              id: "fresh-gitlab-validation-floor-regressions"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2"
+              task_id: "202611040705-816NB9"
+              work_item_id: "native-gitlab-fresh-validation-floor"
+          result_digest: "sha256:ed2ba7741c8ea0b644d27feaf4701760eb0cc2a0dc5c21d55ffac2330722a2e3"
+          revision: 13
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:121acd2fcdd43cacd6aacd92ff1931c5c7c229be208ebbff8f035c1f42e70dbc"
+              - "sha256:d65551e38775df6ef049d5be3b484042c4dd67c458614f9ba442e4ef3a5548fd"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:fc7e8f5fcaf34b3512dd390724e0e130ad1f402d8aafd146b13bdfc8b22be7fe"
+              environment_digest: "sha256:3e112930688c71695859cf117fe7ad61585e58070d2a0bc24ff5dd57aa1b51c8"
+              implementation_identity: "sha256:ed2ba7741c8ea0b644d27feaf4701760eb0cc2a0dc5c21d55ffac2330722a2e3"
+              toolchain_digest: "sha256:5db20d6766bb286ecbe4e7c34e2fcd8caa38ce2a5553e8ac2f92a2a2f889b754"
+            observed_at: "2026-11-04T13:04:00.265Z"
+            status: "PASSED"
+    digest: "sha256:417537eaaeb7b0750581c020432b0eaf90cc6925e104cea818e72652ba6af8f2"
     documents:
       contracts:
         sha256:1597a37d1edf6a6903149c67c2e9718875f24291424d202c72667ff0d6dd2cd2:
@@ -916,6 +1336,60 @@ extensions:
         payload_digest: "sha256:c6c94273b3414df5414172a3bf750380ac9df34b0ddf6a52920cd4c6bf1dafbd"
         task_id: "202611040705-816NB9"
         task_revision: 14
+      -
+        command_digest: "sha256:58e4e7206ccc184e4566efa6e27bd3e13bc0938a75b5231f33053d7367fe2d87"
+        id: "sha256:b1b571074527eccd3d392e79a362cf0794a25001f31b960385e28edcd53b9e5b:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:b1b571074527eccd3d392e79a362cf0794a25001f31b960385e28edcd53b9e5b"
+        occurred_at: "2026-11-04T12:13:39.072Z"
+        payload_digest: "sha256:0dee17456bb2c2db11e3bbdf36423b089c9680a33f0bc1f46dbca0515ff60d9b"
+        task_id: "202611040705-816NB9"
+        task_revision: 15
+      -
+        command_digest: "sha256:074e3e15f5eeecd819c014505f9fa5ea66c2c01a9a158c9f029b132a72447151"
+        id: "result:sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
+        occurred_at: "2026-11-04T12:13:43.674Z"
+        payload_digest: "sha256:65ed57f35d56cd4d5fe4a04e740d17ef559994be45d975af0038865264a2e057"
+        task_id: "202611040705-816NB9"
+        task_revision: 16
+      -
+        command_digest: "sha256:4c0e87871a06e60976168a62b25e0fb01bb6a949626255c0b384fa64ba102bf0"
+        id: "kernel_work_item_inspection_required:sha256:9d0a019a7a3c1e65209ebcd3ac749c73d6a2b430db0430e1e40bb835f3715333:sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:9d0a019a7a3c1e65209ebcd3ac749c73d6a2b430db0430e1e40bb835f3715333:sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2"
+        occurred_at: "2026-11-04T12:13:47.192Z"
+        payload_digest: "sha256:18c24b895f9b723740f79d3ce53d2f40555e25f522d28ca92fde718a85ea00f0"
+        task_id: "202611040705-816NB9"
+        task_revision: 17
+      -
+        command_digest: "sha256:258dbd09a8bc68a12bed013a348f05a25652b7193660165a378100ca5ff3ce32"
+        id: "validation:sha256:e6ced7df11ad720cb21b5387cda323f721b4ae2e475e67195cf906f1c247de66:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:e6ced7df11ad720cb21b5387cda323f721b4ae2e475e67195cf906f1c247de66"
+        occurred_at: "2026-11-04T13:04:02.301Z"
+        payload_digest: "sha256:34fb2c7df7c3ffe366b6efd5f6512645a1724b637b6d1619a9bdf5f199c6773d"
+        task_id: "202611040705-816NB9"
+        task_revision: 18
+      -
+        command_digest: "sha256:cfe44a64f68155db6389e4c7ffd04644d95dd045db58b6b18e863374da9752f9"
+        id: "validation-resolution:sha256:b199649ba8334d08e08b1c816c2720424efcab6c02b36ecbb5e33253d56f3e9d:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:b199649ba8334d08e08b1c816c2720424efcab6c02b36ecbb5e33253d56f3e9d"
+        occurred_at: "2026-11-04T13:04:03.612Z"
+        payload_digest: "sha256:2744e3ace0764949033fe57df4d310c43e416a288951c6d482a1900ea2202109"
+        task_id: "202611040705-816NB9"
+        task_revision: 19
+      -
+        command_digest: "sha256:b2bd7084c26f913c0e128035c19f5c7fae6e8a8b20c3e3bf96b61549c3dbddca"
+        id: "final-validation:sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e:19:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e:19"
+        occurred_at: "2026-11-04T13:30:17.320Z"
+        payload_digest: "sha256:c70458916fe937f2d46d61147f98cd6d9c9423e9601ab09a233c4b1b64d13409"
+        task_id: "202611040705-816NB9"
+        task_revision: 20
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -949,6 +1423,113 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-11-04T13:30:18.264Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:befb766775f0327301ec47176419d67386948eac2a3721651a9ab465822285f9, input_digest=sha256:cac9de53fa1bf2fe7b9b61461896e89c0684b63d3dab62d6e9b22a708a686cd9
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check real_e2e (1/3)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check real_e2e (2/3)
+
+Check: real_e2e
+Command: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check real_e2e (3/3)
+
+Check: task_outcome
+Command: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202611040705-816NB9 Verification Contract check task_outcome (3/3)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016
+- policy_digest: sha256:987929940f3820e61292591e8ce12a537c18ae14094a524cdad5978e41cebd01
+- capability_digest: sha256:19fc6d19554860e64bcc95db36f2ffc3884e6f1219ba20182f1f9a65e864b128
+- checks_digest: sha256:0b6d7c66143ba48c0b26857d8ecc1d40f20191c28bdc081f32225acc9d22bdc3
+- identity_digest: sha256:ef3252e5e5f6d46b3ca75bc94312e3e0deb4a1101e2560d254205c3a145b169f
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202611040705-816NB9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
