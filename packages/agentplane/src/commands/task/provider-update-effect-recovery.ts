@@ -1,4 +1,7 @@
-import { retainProviderUpdateVerificationProof } from "../pr/provider-update-verification-proof.js";
+import {
+  providerUpdateBranchParamsSchema,
+  retainProviderUpdateVerificationProof,
+} from "../pr/provider-update-verification-proof.js";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
@@ -118,19 +121,38 @@ async function provesHostedAncestor(
   );
 }
 
-function originalOperationDigest(resolution: ProviderUpdateEffectResolution): string {
+function originalOperationParams(resolution: ProviderUpdateEffectResolution, identity: unknown) {
+  const expected = {
+    taskId: resolution.task_id,
+    identity: resolution.identity,
+    prNumber: resolution.pr_number,
+    branch: resolution.branch,
+    baseBranch: resolution.base_branch,
+    expectedHeadSha: resolution.original_head_sha,
+    expectedBaseSha: resolution.original_base_sha,
+  };
+  if (resolution.identity.provider !== "gitlab") return expected;
+  const retained = z
+    .object({
+      id: z.literal("provider.pr.update_branch"),
+      type: z.literal("provider_update_branch"),
+      params: providerUpdateBranchParamsSchema,
+    })
+    .safeParse(identity);
+  if (!retained.success) reject("the retained original operation parameters are unproven.");
+  const { reconcileHeadSha, ...baseParams } = retained.data.params;
+  if (digestSupervisorEpisodeValue(baseParams) !== digestSupervisorEpisodeValue(expected))
+    reject("the retained original operation parameters differ from operator input.");
+  if (reconcileHeadSha && reconcileHeadSha !== resolution.observed_head_sha)
+    reject("the retained reconciliation head differs from the observed head.");
+  return retained.data.params;
+}
+
+function originalOperationDigest(params: z.infer<typeof providerUpdateBranchParamsSchema>): string {
   return `sha256:${operationPayloadDigest({
     id: "provider.pr.update_branch",
     type: "provider_update_branch",
-    params: {
-      taskId: resolution.task_id,
-      identity: resolution.identity,
-      prNumber: resolution.pr_number,
-      branch: resolution.branch,
-      baseBranch: resolution.base_branch,
-      expectedHeadSha: resolution.original_head_sha,
-      expectedBaseSha: resolution.original_base_sha,
-    },
+    params,
   })}`;
 }
 
@@ -200,7 +222,8 @@ export async function reconcileProviderUpdateEffect(opts: {
     ) {
       reject("the exact stopped provider operation is absent or changed.");
     }
-    const operationDigest = originalOperationDigest(resolution);
+    const params = originalOperationParams(resolution, operation.recovery?.operation_identity);
+    const operationDigest = originalOperationDigest(params);
     const observedAt = Date.parse(resolution.operator.observed_at);
     if (observedAt < Date.parse(operation.started_at) || observedAt > Date.now())
       reject("operator evidence predates the intent or is future-dated.");
@@ -481,15 +504,7 @@ export async function reconcileProviderUpdateEffect(opts: {
     };
     const retainedCompletion = await retainProviderUpdateVerificationProof({
       command: opts.command,
-      params: {
-        taskId: opts.task_id,
-        identity: resolution.identity,
-        prNumber: resolution.pr_number,
-        branch: resolution.branch,
-        baseBranch: resolution.base_branch,
-        expectedHeadSha: resolution.original_head_sha,
-        expectedBaseSha: resolution.original_base_sha,
-      },
+      params,
       authority_digest: resolution.precondition_fingerprint_digest,
       observed_head_sha: resolution.observed_head_sha,
       completion,

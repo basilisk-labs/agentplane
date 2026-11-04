@@ -36,7 +36,7 @@ Created: 2026-11-04T10:34:18.958Z
  .../src/commands/pr/provider-update-branch.test.ts |    9 +-
  .../src/commands/pr/provider-update-branch.ts      |    6 +-
  .../pr/provider-update-verification-proof.test.ts  |  439 +++++---
- .../pr/provider-update-verification-proof.ts       |  206 +++-
+ .../pr/provider-update-verification-proof.ts       |  207 +++-
  .../shared/provider-update-branch-route.test.ts    |  114 ++
  .../shared/provider-update-branch-route.ts         |   16 +-
  .../src/commands/shared/quality-review-target.ts   |   63 +-
@@ -48,9 +48,9 @@ Created: 2026-11-04T10:34:18.958Z
  .../task/branch-task-supervisor-operations.test.ts |  302 ++++++
  .../task/branch-task-supervisor-operations.ts      |   56 +-
  .../task/provider-update-effect-recovery.test.ts   | 1098 ++++++++++++++------
- .../provider-update-effect-recovery.testkit.ts     |  598 +++++++++++
- .../task/provider-update-effect-recovery.ts        |  269 ++++-
- 21 files changed, 4945 insertions(+), 848 deletions(-)
+ .../provider-update-effect-recovery.testkit.ts     |  599 +++++++++++
+ .../task/provider-update-effect-recovery.ts        |  326 ++++--
+ 21 files changed, 4983 insertions(+), 869 deletions(-)
 ```
 
 </details>

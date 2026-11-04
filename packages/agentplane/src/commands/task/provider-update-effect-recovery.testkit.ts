@@ -79,7 +79,6 @@ export const budget = {
   max_diff_lines: null,
   max_no_progress_episodes: null,
 } as const;
-
 export async function providerUpdateRecoveryFixture(
   dependencies: RecoveryFixtureDependencies,
   authorityRef = "workflow-operation:provider.pr.update_branch",
@@ -93,6 +92,7 @@ export async function providerUpdateRecoveryFixture(
     full?: boolean;
     normal?: boolean;
     adopted?: boolean;
+    reconcile?: boolean;
     beforeUpdate?: (root: string, command: CommandContext) => Promise<void>;
   },
 ) {
@@ -207,6 +207,7 @@ export async function providerUpdateRecoveryFixture(
     baseBranch: "main",
     expectedHeadSha: fixtureOriginalHead,
     expectedBaseSha: base,
+    ...(validation?.reconcile ? { reconcileHeadSha: fixtureObservedHead } : {}),
   };
   const payloadDigest = `sha256:${operationPayloadDigest({
     id: "provider.pr.update_branch",

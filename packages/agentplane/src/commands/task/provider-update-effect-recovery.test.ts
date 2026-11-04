@@ -398,25 +398,40 @@ describe("interrupted provider update recovery", () => {
   });
 
   it.each([
-    [false, false],
-    [false, true],
-    [true, false],
-    [true, true],
+    [false, false, false],
+    [false, true, false],
+    [true, false, false],
+    [true, true, false],
+    [false, false, true],
+    [false, true, true],
+    [true, false, true],
+    [true, true, true],
   ])(
-    "recovers real GitLab proof without replay, later main=%s, local head behind=%s",
-    async (advanced, unaligned) => {
-      const f = await fixture(updateRef, true, advanced, "gitlab", unaligned);
+    "recovers real GitLab proof without replay, later main=%s, local behind=%s, reconcile=%s",
+    async (advanced, unaligned, reconcile) => {
+      const f = await fixture(updateRef, true, advanced, "gitlab", unaligned, false, { reconcile });
       const actual = await vi.importActual<typeof UpdateProof>(
         "../pr/provider-update-verification-proof.js",
       );
       mocks.retainProof.mockImplementation(actual.retainProviderUpdateVerificationProof);
+      if (reconcile) {
+        const before = await readFile(f.journalPath, "utf8");
+        mocks.retainProof.mockRejectedValueOnce(new Error("proof retention interrupted"));
+        await expect(f.invoke()).rejects.toThrow("proof retention interrupted");
+        expect(await readFile(f.journalPath, "utf8")).toBe(before);
+        if (unaligned) await expect(f.invoke()).rejects.toThrow("authoritative task route");
+        const fresh = await f.decide();
+        f.input.current_state_fingerprint = fresh.workflowStep.preconditionFingerprint.digest;
+        await expect(f.invoke({ observed_head_sha: "f".repeat(40) })).rejects.toThrow(
+          "retained reconciliation head",
+        );
+        expect(await readFile(f.journalPath, "utf8")).toBe(before);
+      }
       await expect(f.invoke()).resolves.toMatchObject({
         verdict: "applied",
         observed_head_sha: f.input.observed_head_sha,
       });
-      expect(
-        execFileSync("git", ["rev-parse", "HEAD"], { cwd: f.root, encoding: "utf8" }).trim(),
-      ).toBe(f.input.observed_head_sha);
+      expect(git(f.root, "rev-parse", "HEAD")).toBe(f.input.observed_head_sha);
       expect(await createSupervisorEpisodeStore(f.journalPath).read()).toMatchObject({
         status: "running",
         cursor: { phase: "ready" },
@@ -425,17 +440,14 @@ describe("interrupted provider update recovery", () => {
       const inherited = await actual.inheritedProviderUpdatePaths({
         command: f.command,
         task_id: taskId,
-        frozen_base: execFileSync(
-          "git",
-          ["merge-base", f.params.expectedHeadSha, f.params.expectedBaseSha],
-          { cwd: f.root, encoding: "utf8" },
-        ).trim(),
+        frozen_base: git(f.root, "merge-base", f.params.expectedHeadSha, f.params.expectedBaseSha),
         evaluated_sha: f.input.observed_head_sha,
         changed_paths: ["foreign.ts", "next-canonical.ts"],
         workflow_dir: ".agentplane/tasks",
         tasks_path: ".agentplane/tasks.json",
       });
       expect(inherited).toEqual(["foreign.ts"]);
+      expect(mocks.retainProof.mock.calls.at(-1)?.[0].params).toEqual(f.params);
       expect(mocks.compare).not.toHaveBeenCalled();
       expect(mocks.glab.mock.calls.every(([call]) => !call.method || call.method === "GET")).toBe(
         true,
@@ -467,9 +479,7 @@ describe("interrupted provider update recovery", () => {
         status: "stopped",
         operations: [{ status: "intent" }],
       });
-      expect(
-        execFileSync("git", ["rev-parse", "HEAD"], { cwd: f.root, encoding: "utf8" }).trim(),
-      ).toBe(f.input.original_head_sha);
+      expect(git(f.root, "rev-parse", "HEAD")).toBe(f.input.original_head_sha);
     }
   });
 
@@ -533,10 +543,7 @@ describe("interrupted provider update recovery", () => {
       const flow = mocks.flow.getMockImplementation()!;
       let injected = false;
       mocks.flow.mockImplementation(async () => {
-        const head = execFileSync("git", ["rev-parse", "HEAD"], {
-          cwd: f.root,
-          encoding: "utf8",
-        }).trim();
+        const head = git(f.root, "rev-parse", "HEAD");
         if (!injected && head === f.input.observed_head_sha) {
           injected = true;
           if (control === "policy")
@@ -565,16 +572,9 @@ describe("interrupted provider update recovery", () => {
 
   it("refreshes stale base tracking when GitLab HEAD is already aligned", async () => {
     const f = await fixture(updateRef, true, true, "gitlab", false);
-    execFileSync("git", ["update-ref", "refs/remotes/origin/main", f.input.original_base_sha], {
-      cwd: f.root,
-    });
+    git(f.root, "update-ref", "refs/remotes/origin/main", f.input.original_base_sha);
     await expect(f.invoke()).resolves.toMatchObject({ verdict: "applied" });
-    expect(
-      execFileSync("git", ["rev-parse", "origin/main"], {
-        cwd: f.root,
-        encoding: "utf8",
-      }).trim(),
-    ).toBe(f.currentBase);
+    expect(git(f.root, "rev-parse", "origin/main")).toBe(f.currentBase);
     expect(await createSupervisorEpisodeStore(f.journalPath).read()).toMatchObject({
       operations: [{ status: "completed" }],
     });
