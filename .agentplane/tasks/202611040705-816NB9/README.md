@@ -1,10 +1,10 @@
 ---
 id: "202611040705-816NB9"
 title: "Require fresh verification after native GitLab branch updates"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -528,7 +528,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:c3c2972f6b70d1dc95ba380667069656e008120a6453e11e305ebb9d5cbd5eb5"
+    digest: "sha256:059cbf0a79bf046da0c1886946f67d40ed3fc8f8d906ea05670a6d3c2074f7b8"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202611040705-816NB9/e6ced7df11ad720cb21b5387cda323f721b4ae2e475e67195cf906f1c247de66/quality-report.json"
     findings:
@@ -545,7 +545,7 @@ extensions:
     review_identity_digest: "sha256:d65551e38775df6ef049d5be3b484042c4dd67c458614f9ba442e4ef3a5548fd"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:f028809e6165a59f64d18d8d46894c3bc016c275942bd58ece1c3187308499b0"
+    verification_evidence_digest: "sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e"
     work_order_id: "sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
   task_execution_context:
     base_ref: "main"
@@ -940,6 +940,15 @@ extensions:
           event_digests:
             - "sha256:b762bfa2e2232ed8edc2830601ce3ad0aa76ea5d8088e70e46f5f3de88347ae6"
           mutation_id: "final-validation:sha256:514f42a40c7f91ab9587d2603a167fed3466d67965333b3bc3cb02aef2e7e65e:19"
+        kernel_task_completion_required:sha256:417537eaaeb7b0750581c020432b0eaf90cc6925e104cea818e72652ba6af8f2:sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2:
+          after_revision: 21
+          aggregate_digest: "sha256:df63d61ffe394949cb488a4e130fb5dd42ce02a32e72982318e6a2d136013e42"
+          before_revision: 20
+          command_digest: "sha256:76057e097408302c6fc55a56e7e9d0210dde9dd3bc2576c1ba898d22bc382939"
+          effect_ids: []
+          event_digests:
+            - "sha256:5d4ac0f8ead8cd5343c9eb70f64dc6827076e8825726b9ff78945ec95eaa241c"
+          mutation_id: "kernel_task_completion_required:sha256:417537eaaeb7b0750581c020432b0eaf90cc6925e104cea818e72652ba6af8f2:sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2"
         kernel_work_item_claim_required:sha256:0f4be0925b4efbc2cb08f1cd0ef97d69e415a925b8754b77f240450586ab58c2:sha256:4f4af0bd0d69c5a4533d132577feac113faf763b4a22d8f27567ffc8b920ae55:
           after_revision: 5
           aggregate_digest: "sha256:1e540dc6e7d376b54cab6b78b9f33c1eac7b4deb783cdd954ec6e9fcdc651302"
@@ -1103,9 +1112,9 @@ extensions:
             - "sha256:9f370c0ac64609cc50663af535fb33afa69970193a4ae2d59e9b4db7157442a4"
           mutation_id: "validation:sha256:e6ced7df11ad720cb21b5387cda323f721b4ae2e475e67195cf906f1c247de66"
       plan_history: []
-      revision: 20
+      revision: 21
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         native-gitlab-fresh-validation-floor:
           attempt: 2
@@ -1185,7 +1194,7 @@ extensions:
               toolchain_digest: "sha256:5db20d6766bb286ecbe4e7c34e2fcd8caa38ce2a5553e8ac2f92a2a2f889b754"
             observed_at: "2026-11-04T13:04:00.265Z"
             status: "PASSED"
-    digest: "sha256:417537eaaeb7b0750581c020432b0eaf90cc6925e104cea818e72652ba6af8f2"
+    digest: "sha256:d193913fe510c896f77065d79aa79a603b70d374a8e5c60f0a3981c346d9a0fb"
     documents:
       contracts:
         sha256:1597a37d1edf6a6903149c67c2e9718875f24291424d202c72667ff0d6dd2cd2:
@@ -1390,6 +1399,15 @@ extensions:
         payload_digest: "sha256:c70458916fe937f2d46d61147f98cd6d9c9423e9601ab09a233c4b1b64d13409"
         task_id: "202611040705-816NB9"
         task_revision: 20
+      -
+        command_digest: "sha256:76057e097408302c6fc55a56e7e9d0210dde9dd3bc2576c1ba898d22bc382939"
+        id: "kernel_task_completion_required:sha256:417537eaaeb7b0750581c020432b0eaf90cc6925e104cea818e72652ba6af8f2:sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:417537eaaeb7b0750581c020432b0eaf90cc6925e104cea818e72652ba6af8f2:sha256:24d88225429b9d1f74758f7bae1841dc263334d61e12acc79bd391ecf90d3cb2"
+        occurred_at: "2026-11-04T13:41:59.782Z"
+        payload_digest: "sha256:7efc783cd186340e94fd33fa4c5f4dead1cb4f9f5b06d46bca7e021f30d27544"
+        task_id: "202611040705-816NB9"
+        task_revision: 21
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
