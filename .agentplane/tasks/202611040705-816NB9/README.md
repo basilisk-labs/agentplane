@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -69,9 +69,11 @@ quality_review:
     - "Residual risk: Historical failed receipts remain historical, including the earlier scope-extend 120-second timeout. Fresh passing runs do not establish the cause of that old timeout or erase its evidence."
     - "Residual risk: This pass concerns the reviewed implementation and fresh local native evidence only. Result consumption, current hosted PR/merge checks, canonical main CI, controller promotion and Factory/SB runtime outcomes remain separate operator gates; no publication, runtime or delivery-complete claim is made."
 token_usage:
-  agent_runs: 2
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:9c43e45a840b5f8d4c0854017a94fccc4633b1bd963d53d39128f3e03b5977d0"
+  journal_digest: "sha256:1a6592cace30e2932954e973c2c547ad4644092cdc03320868719deb3a5fb814"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -81,7 +83,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-11-04T16:26:38.723Z"
+  updated_at: "2026-11-04T18:38:18.791Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -466,9 +468,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "04f7390d7e825aa02cf116898302ff07e25868ee"
+  hash: "57152ac36dfcd7d87071b07041f5c9e980b60692"
   message: "🚧 816NB9 task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -516,8 +521,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-11-04T18:38:18.791Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "57152ac36dfcd7d87071b07041f5c9e980b60692"
 doc_version: 3
-doc_updated_at: "2026-11-04T18:37:47.286Z"
+doc_updated_at: "2026-11-04T18:38:18.802Z"
 doc_updated_by: "CODER"
 description: "Prevent earlier verification and review from authorizing integration after a native task-owned GitLab current-base update or uncertain-effect recovery. Bind both gates to the authenticated merged head and actual fresh execution while retaining the immutable execution base and full combined-tree checks. Preserve existing GitHub and adopted-PR behavior, all branches and worktrees, data, credentials, runtime guards and required checks. Deliver through native independent evaluation, canonical PR/merge/main CI and qualified controller promotion."
 sections:
@@ -966,6 +979,7 @@ extensions:
     work_order_id: "sha256:3fac89e5a4f568b912c3b4352218b0bf955e47d35cb1c4020f225b4301238063"
   implementation_commit:
     hash: "88ebd0412e61fb9133dc4d616a4a39ab25c84cb1"
+    message: "🚧 816NB9 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4806d9ab70604c2beaaf9443cbd2817690962b72"
@@ -2263,12 +2277,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/2` agent runs
+- Completeness: `0/4` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:9c43e45a840b5f8d4c0854017a94fccc4633b1bd963d53d39128f3e03b5977d0`
+- Journal digest: `sha256:1a6592cace30e2932954e973c2c547ad4644092cdc03320868719deb3a5fb814`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-11-04T16:26:38.723Z`
+- Updated at: `2026-11-04T18:38:18.791Z`

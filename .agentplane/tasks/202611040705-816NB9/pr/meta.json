@@ -8,10 +8,10 @@
   "pr_number": 6979,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6979",
   "pre_merge_closure": {
-    "basis_commit": "04f7390d7e825aa02cf116898302ff07e25868ee",
+    "basis_commit": "57152ac36dfcd7d87071b07041f5c9e980b60692",
     "branch": "task/202611040705-816NB9/require-fresh-verification-after-native-gitlab-b",
     "pr_number": 6979,
-    "recorded_at": "2026-11-04T16:26:38.835Z",
+    "recorded_at": "2026-11-04T18:38:18.865Z",
     "state": "closed_before_merge"
   },
   "provider": {
