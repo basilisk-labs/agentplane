@@ -1,0 +1,260 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run ci:local:full",
+    "bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts",
+    "bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "release_metadata",
+        "repository_write",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "network_read",
+        "publish"
+      ],
+      "components": [
+        "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts",
+        "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch.ts",
+        "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts",
+        "packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts",
+        "packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+        "packages/agentplane/src/commands/shared/quality-review-target.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-journal.ts",
+        "packages/agentplane/src/commands/shared/task-verification-records.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts",
+        "packages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts",
+        "packages/agentplane/src/commands/task/provider-update-effect-recovery.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "external_effect:network_read",
+        "external_effect:publish",
+        "hosted_integration",
+        "repository_effect:ci",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:release_metadata",
+        "repository_effect:repository_write",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "ci",
+        "documentation",
+        "public_api",
+        "release_metadata",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".agentplane",
+        ".github",
+        "docs",
+        "packages/agentplane",
+        "packages/core",
+        "packages/recipes",
+        "packages/spec",
+        "packages/testkit",
+        "scripts"
+      ],
+      "changed_files": [
+        ".agentplane/WORKFLOW.md",
+        ".github/workflows/publish.yml",
+        "docs/reference/generated-reference.mdx",
+        "docs/releases/v0.7.13-acceptance.md",
+        "docs/releases/v0.7.13-publish-result.json",
+        "docs/releases/v0.7.13-scope.md",
+        "docs/releases/v0.7.13.md",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts",
+        "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch-gitlab.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch.ts",
+        "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts",
+        "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts",
+        "packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts",
+        "packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+        "packages/agentplane/src/commands/shared/quality-review-target.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-journal.ts",
+        "packages/agentplane/src/commands/shared/task-verification-records.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts",
+        "packages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts",
+        "packages/agentplane/src/commands/task/provider-update-effect-recovery.ts",
+        "packages/core/package.json",
+        "packages/recipes/package.json",
+        "packages/recipes/src/index.ts",
+        "packages/spec/examples/acr.json",
+        "packages/testkit/package.json",
+        "scripts/baselines/v0.7-compatibility-candidate.json"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+      "central_component:packages/agentplane/src/commands/shared/quality-review-target.ts",
+      "central_component:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      "central_component:packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/supervisor-execution-journal.ts",
+      "central_component:packages/agentplane/src/commands/shared/task-verification-records.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts",
+      "central_path:.github/workflows/publish.yml",
+      "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+      "central_path:packages/agentplane/src/commands/shared/quality-review-target.ts",
+      "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      "central_path:packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/supervisor-execution-journal.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-verification-records.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts",
+      "central_path:packages/core/package.json",
+      "effect_ci",
+      "effect_public_api",
+      "effect_release_metadata",
+      "effect_security_boundary",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required",
+      "unknown_path:packages/agentplane/package.json",
+      "unknown_path:packages/core/package.json",
+      "unknown_path:packages/recipes/package.json",
+      "unknown_path:packages/spec/examples/acr.json",
+      "unknown_path:packages/testkit/package.json",
+      "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:0de2955449110df0189999c054799937d1496836dd1f57e5063318be55f30704"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-11-04T16:07:58.122Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202611040705-816NB9/verification/20261104160758122-acd9119aa6d9480f.json",
+      "sha256": "sha256:66f74cab437940e90eb8fc8305eef8d21320f863583e38920a8a6c016ded6675"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 811dfb941adeaf70fdf5d6e3b799183e75d96b26..ee6d145a4563ad635fa668ddee203916ae603f90",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 811dfb941adeaf70fdf5d6e3b799183e75d96b26..ee6d145a4563ad635fa668ddee203916ae603f90",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\tpackages/agentplane/src/commands/shared/supervisor-execution-journal.ts",
+          "M\tpackages/agentplane/src/commands/task/provider-update-effect-recovery.testkit.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "811dfb941adeaf70fdf5d6e3b799183e75d96b26",
+    "implementation_commit": "ee6d145a4563ad635fa668ddee203916ae603f90",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202611040705-816NB9",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202611040705-816NB9/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
