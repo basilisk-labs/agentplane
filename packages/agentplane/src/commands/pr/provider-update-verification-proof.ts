@@ -48,6 +48,7 @@ const paramsSchema = z.strictObject({
   expectedBaseSha: oid,
   reconcileHeadSha: oid.optional(),
 });
+export { paramsSchema as providerUpdateBranchParamsSchema };
 const proofSchema = z.strictObject({
   schema_version: z.literal(1),
   kind: z.literal("provider_update_verification_proof"),
