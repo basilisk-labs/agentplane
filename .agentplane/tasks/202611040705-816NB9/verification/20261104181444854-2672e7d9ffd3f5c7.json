@@ -1,0 +1,241 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611040705-816NB9 Verification Contract check affected_unit_integration (1/3)\n\nCheck: affected_unit_integration\nCommand: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2\nScope: branch_pr task 202611040705-816NB9 Verification Contract check affected_unit_integration (2/3)\n\nCheck: affected_unit_integration\nCommand: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3\nScope: branch_pr task 202611040705-816NB9 Verification Contract check affected_unit_integration (3/3)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611040705-816NB9 Verification Contract check critical_paths (1/3)\n\nCheck: critical_paths\nCommand: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2\nScope: branch_pr task 202611040705-816NB9 Verification Contract check critical_paths (2/3)\n\nCheck: critical_paths\nCommand: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3\nScope: branch_pr task 202611040705-816NB9 Verification Contract check critical_paths (3/3)\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611040705-816NB9 Verification Contract check docs_contract (1/3)\n\nCheck: docs_contract\nCommand: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2\nScope: branch_pr task 202611040705-816NB9 Verification Contract check docs_contract (2/3)\n\nCheck: docs_contract\nCommand: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3\nScope: branch_pr task 202611040705-816NB9 Verification Contract check docs_contract (3/3)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611040705-816NB9 Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611040705-816NB9 Verification Contract check real_e2e (1/3)\n\nCheck: real_e2e\nCommand: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2\nScope: branch_pr task 202611040705-816NB9 Verification Contract check real_e2e (2/3)\n\nCheck: real_e2e\nCommand: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3\nScope: branch_pr task 202611040705-816NB9 Verification Contract check real_e2e (3/3)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1\nScope: branch_pr task 202611040705-816NB9 Verification Contract check task_outcome (1/3)\n\nCheck: task_outcome\nCommand: bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2\nScope: branch_pr task 202611040705-816NB9 Verification Contract check task_outcome (2/3)\n\nCheck: task_outcome\nCommand: bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3\nScope: branch_pr task 202611040705-816NB9 Verification Contract check task_outcome (3/3)",
+  "digest": "sha256:2672e7d9ffd3f5c775c3837ef23a10587b4fcb12b33b9336ee93f6718208bd1b",
+  "implementation_sha": "88ebd0412e61fb9133dc4d616a4a39ab25c84cb1",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:ca53139591da1662387dee1c413ebd030a90f861cd2a35eecfc8eb1a1833edd3",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:05f3573640d95af034c87a202dae18c585f656f28d649fa080bd120a2f2d2a0c",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:b2801a2f7f5e04640ad5693081520c66c18f5f1d1bbba710b9f53a8c91742f1b",
+      "environment": {
+        "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+        "runtime": {
+          "architecture": "arm64",
+          "bun_major": null,
+          "node_major": "26",
+          "platform": "darwin"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:c3404075c286518a3b009be46fedf93d0aa2478011158ca099841bd718e9e7c7",
+        "digest": "sha256:ee3e02a2c459e8b15a74f7433194eb5aa301a1741e07e24b3f50cb5a4b70a49a",
+        "references": [
+          {
+            "digest": "sha256:c208d81c6350c691956b499bf13ec00606d168f7dd4230a6f46b6486441d7a54",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:c208d81c6350c691956b499bf13ec00606d168f7dd4230a6f46b6486441d7a54",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:c208d81c6350c691956b499bf13ec00606d168f7dd4230a6f46b6486441d7a54",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202611040705-816NB9/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "4806d9ab70604c2beaaf9443cbd2817690962b72",
+        "digest": "sha256:6e1bad0ee1f6f0bdcbe9fab4a79f1389bb90c99bc22d28a731ce305612b4b7d5",
+        "strategy": "branch_diff",
+        "target_sha": "88ebd0412e61fb9133dc4d616a4a39ab25c84cb1"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:3a414470930f296187f773f7e374a711e6023d5f9a179e38d37368ef1ea73e81",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "4806d9ab70604c2beaaf9443cbd2817690962b72",
+        "digest": "sha256:001524611d75289fd0089140a9d49022c780e2077500c95554b2df15fe007c9e",
+        "primary_task_id": "202611040705-816NB9",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_publish",
+          "effect_release_metadata",
+          "effect_security_boundary",
+          "repository_branch_pr_floor",
+          "reversibility_recovery_required"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202611040705-816NB9"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:19fc6d19554860e64bcc95db36f2ffc3884e6f1219ba20182f1f9a65e864b128"
+        },
+        "checks": {
+          "digest": "sha256:f74788b109b5cd5052fe0a5a65ad1a2da4418c6b6d55fece6eef69891f65d34b",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "docs_contract",
+            "full_regression",
+            "real_e2e",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:0de2955449110df0189999c054799937d1496836dd1f57e5063318be55f30704"
+        },
+        "digest": "sha256:9c52e3c88433dd8c441abacf7c1fd4a908e3bccf53ab3578a965004edb0483dd",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016",
+          "digest": "sha256:c128127fc60339435a35b367add32c5da56f89b06ec16eb158d51d42e46f3016",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:987929940f3820e61292591e8ce12a537c18ae14094a524cdad5978e41cebd01"
+        },
+        "schema_version": 1,
+        "task_id": "202611040705-816NB9"
+      }
+    },
+    "digest": "sha256:4f11892dd9ba2b8a7f86155a0e4fbca1809aa6ebbddc426ed9e6c9c7c2ae575d",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:d83e0672b45fec7ad80baff3003da1326a5783a099a49e9e06f0f0b49ac60054",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:0de2955449110df0189999c054799937d1496836dd1f57e5063318be55f30704",
+      "verify_steps_digest": "sha256:befb766775f0327301ec47176419d67386948eac2a3721651a9ab465822285f9"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-11-04T18:14:44.854Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run test:fast packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-gitlab.test.ts packages/agentplane/src/commands/shared/provider-update-branch-route.test.ts packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run test:fast packages/agentplane/src/commands/shared/supervisor-execution-journal.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:befb766775f0327301ec47176419d67386948eac2a3721651a9ab465822285f9",
+  "task_id": "202611040705-816NB9",
+  "verification_command": "agentplane verify 202611040705-816NB9 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
