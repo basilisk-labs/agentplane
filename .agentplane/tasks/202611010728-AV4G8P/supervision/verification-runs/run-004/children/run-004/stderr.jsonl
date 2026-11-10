@@ -1,0 +1,2 @@
+"$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000"
+"$ node scripts/checks/run-vitest-suite.mjs critical-cli"

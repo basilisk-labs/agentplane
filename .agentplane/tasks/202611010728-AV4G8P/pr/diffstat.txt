@@ -1,0 +1,10 @@
+ ...run-cli.core.stale-admission-retirement.test.ts | 625 +++++++++++++++++++++
+ .../src/cli/run-cli/command-catalog/task.ts        |   7 +
+ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
+ .../task/stale-admission-retirement-evidence.ts    | 212 +++++++
+ .../stale-admission-retirement-recovery.test.ts    | 161 ++++++
+ .../task/stale-admission-retirement-validation.ts  | 431 ++++++++++++++
+ .../task/stale-admission-retirement.command.ts     | 134 +++++
+ .../task/stale-admission-retirement.test.ts        | 102 ++++
+ .../commands/task/stale-admission-retirement.ts    | 158 ++++++
+ 9 files changed, 1834 insertions(+)
