@@ -189,7 +189,7 @@
     "knip": "^6.42.1",
     "lefthook": "^2.2.2",
     "prettier": "3.9.10",
-    "tsup": "^8.5.1",
+    "tsup": "^9.0.0",
     "turbo": "^2.11.9",
     "@typescript/native": "npm:typescript@7.0.2",
     "typescript": "6.0.3",
