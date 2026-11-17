@@ -1,0 +1,22 @@
+{
+  "base": "main",
+  "branch": "task/202610271221-Y385P8/use-configured-workflow-mode-for-canonical-final",
+  "created_at": "2026-10-27T13:08:48.098Z",
+  "diffstat_sha256": "sha256:eea0e8f95f6cf3fe813c5a8492af0ff2c4d247a23b06b3080d1046a937087d25",
+  "last_verified_at": "2026-10-28T02:45:50.968Z",
+  "last_verified_diffstat_sha256": "sha256:eea0e8f95f6cf3fe813c5a8492af0ff2c4d247a23b06b3080d1046a937087d25",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610271221-Y385P8",
+  "updated_at": "2026-10-27T13:08:48.098Z",
+  "verify": {
+    "status": "pass"
+  }
+}

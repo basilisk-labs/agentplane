@@ -1,0 +1,4 @@
+ .../commands/shared/quality-review-target.test.ts  | 45 +++++++++-------
+ .../commands/task/kernel-final-validation.test.ts  | 62 ++++++++++++++++++++--
+ .../src/commands/task/kernel-final-validation.ts   | 12 +----
+ 3 files changed, 85 insertions(+), 34 deletions(-)
