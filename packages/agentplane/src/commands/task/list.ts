@@ -19,6 +19,8 @@ import {
   formatTaskExecutionListExtra,
 } from "./execution-summary.js";
 import { annotateBranchPrTaskListState, taskListStatusKey } from "./shared/branch-pr-list-state.js";
+import { asCliError } from "../../shared/errors.js";
+import { listCompletedScopeDiagnosticProjection } from "../shared/task-backend-branch-snapshot.js";
 
 const DEFAULT_ACTIVE_TASK_LIST_STATUSES = [
   "TODO",
@@ -81,6 +83,45 @@ export async function warnIfLocalTaskStateBehindUpstream(ctx: CommandContext): P
   }
 }
 
+function isUnprovenCompletedScope(error: unknown): boolean {
+  const cli = asCliError(error);
+  return cli?.context?.reason_code === "completed_scope_admission_unproven";
+}
+
+/**
+ * Listing is read-only. A completed-scope admission is proven with local private
+ * evidence under the Git common directory, which a fresh or cloud clone never has.
+ * Instead of failing the whole listing, fall back to the same diagnostic projection
+ * that `task active` uses: unproven Tasks stay visible without authentication
+ * permits, so every write path still fails closed. `--strict-read` keeps the error.
+ */
+export async function listTaskSummariesForDisplay(
+  ctx: CommandContext,
+  opts: { projectionStatus: string[] | undefined; strictRead: boolean },
+) {
+  try {
+    return await listTaskSummariesMemo(ctx, {
+      projectionStatus: opts.projectionStatus,
+      fallbackToCanonicalOnEmpty: opts.projectionStatus !== undefined,
+    });
+  } catch (error) {
+    if (opts.strictRead || !isUnprovenCompletedScope(error)) throw error;
+    const diagnostics = await listCompletedScopeDiagnosticProjection(ctx);
+    if (!diagnostics) throw error;
+    if (diagnostics.failures.size > 0) {
+      const ids = [...diagnostics.failures.keys()].toSorted();
+      const shown = ids.slice(0, 5).join(", ");
+      const more = ids.length > 5 ? ` (+${ids.length - 5} more)` : "";
+      process.stderr.write(
+        `${warnMessage(
+          `completed-scope admission is unproven in this checkout for ${ids.length} task(s): ${shown}${more}; local evidence under the Git common directory is missing (fresh clone?). Listed read-only; use --strict-read to fail instead.`,
+        )}\n`,
+      );
+    }
+    return diagnostics.tasks;
+  }
+}
+
 export async function cmdTaskListWithFilters(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -95,9 +136,9 @@ export async function cmdTaskListWithFilters(opts: {
     const projectionStatus = resolveProjectionStatusesForList(opts.filters);
     const tasks = await annotateBranchPrTaskListState({
       ctx,
-      tasks: await listTaskSummariesMemo(ctx, {
+      tasks: await listTaskSummariesForDisplay(ctx, {
         projectionStatus,
-        fallbackToCanonicalOnEmpty: projectionStatus !== undefined,
+        strictRead: opts.filters.strictRead === true,
       }),
     });
     await staleStateWarning;
