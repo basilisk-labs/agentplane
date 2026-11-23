@@ -32,7 +32,6 @@ import {
   resolveDirectImplementationCommit,
   runDirectTaskFinalizationOperation,
 } from "./direct-task-finalization.js";
-import { applyDirectImplementationOperation } from "./direct-task-supervisor-operation.js";
 
 const TASK_ID = "202609210324-CC13V3";
 const command = {
@@ -79,73 +78,6 @@ describe("direct coordinator parity", () => {
       paths: ["README.md"],
       reason: "The EXECUTOR committed paths outside its approved scope: README.md.",
     });
-  });
-
-  it("delegates direct implementation observation with the exact work-order authority", async () => {
-    const task = { id: TASK_ID, events: [], execution_contract: null };
-    const reconciled = { ...task, execution_contract: { observed: { authority_violations: [] } } };
-    const execution = { task_ids: [TASK_ID] };
-    mocks.loadTask.mockResolvedValue(task);
-    mocks.resolveExecutionContext.mockResolvedValue(execution);
-    mocks.prepareImplementation.mockResolvedValue({
-      status: "ready",
-      evidence: {
-        artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/implementation-evidence.json`,
-        implementation_commit: "implementation",
-        changed_paths: ["packages/agentplane/src/commands/task/example.ts"],
-      },
-    });
-    mocks.recordExecutionContract.mockResolvedValue({
-      task: reconciled,
-      escalated: false,
-      episodeAuthorityViolations: [],
-    });
-    const lifecycle = {
-      phase: "executed",
-      lifecycle: {
-        work_order_authority: {
-          writable_roots: ["packages/agentplane/src/commands/task"],
-        },
-      },
-      result: {
-        evidence: {
-          provenance: "supervisor_observed",
-          changed_paths: ["packages/agentplane/src/commands/task/example.ts"],
-        },
-      },
-    } as never;
-
-    await expect(
-      applyDirectImplementationOperation({
-        command,
-        cwd: "/repo",
-        task_id: TASK_ID,
-        lifecycle,
-        execution_base_commit: "base",
-        execution_baseline_status: {
-          command: "git status --short --untracked-files=all",
-          lines: [],
-        },
-        executor_events_before: 0,
-      }),
-    ).resolves.toMatchObject({
-      status: "ready",
-      task: reconciled,
-      evidence: { implementation_commit: "implementation" },
-      executor_lifecycle_event_delta: 0,
-    });
-    expect(mocks.prepareImplementation).toHaveBeenCalledWith(
-      expect.objectContaining({
-        allowed_paths: ["packages/agentplane/src/commands/task"],
-        observed_changed_paths: ["packages/agentplane/src/commands/task/example.ts"],
-      }),
-    );
-    expect(mocks.recordExecutionContract).toHaveBeenCalledWith(
-      expect.objectContaining({
-        execution,
-        preserved_commit: "implementation",
-      }),
-    );
   });
 
   it("keeps the frozen implementation identity and cannot finish twice after replay", async () => {

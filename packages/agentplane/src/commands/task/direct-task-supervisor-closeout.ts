@@ -5,10 +5,7 @@ import type { CommandCtx } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import {
-  runDirectTaskFinalizationOperation,
-  type DirectImplementationEvidence,
-} from "./direct-task-finalization.js";
+import { type DirectImplementationEvidence } from "./direct-task-finalization.js";
 import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
 import {
   renderDirectTaskVerificationDetails,
@@ -53,14 +50,6 @@ type DirectTaskCloseoutStopped = JournalRef & {
 export type DirectTaskVerificationOutcome =
   | (JournalRef & {
       status: "verified";
-      decision: TaskRouteDecision;
-      declared_checks: number;
-    })
-  | DirectTaskCloseoutStopped;
-
-export type DirectTaskCloseoutOutcome =
-  | (JournalRef & {
-      status: "finalized";
       decision: TaskRouteDecision;
       declared_checks: number;
     })
@@ -300,107 +289,4 @@ export async function verifyDirectTask(opts: {
     decision: verified.decision,
     declared_checks: declaredChecks,
   };
-}
-
-/** Finishes a direct task only after its verified evidence has passed EVALUATOR review. */
-async function finalizeDirectTask(opts: {
-  ctx: CommandCtx;
-  command: CommandContext;
-  task_id: string;
-  decision: () => Promise<TaskRouteDecision>;
-  implementation_commit: string;
-  on_lifecycle_operation?: () => void;
-  journal: JournalRef;
-  declared_checks: number;
-}): Promise<DirectTaskCloseoutOutcome> {
-  const current = await opts.decision();
-  if (!directCompletionEligibleRoute(current)) {
-    return {
-      ...opts.journal,
-      status: "stopped",
-      decision: current,
-      declared_checks: opts.declared_checks,
-      stop: staleRouteStop({
-        decision: current,
-        reason:
-          "The route changed after the EVALUATOR result; the supervisor will not finish from a stale completion state.",
-      }),
-    };
-  }
-  let finalized: Awaited<ReturnType<typeof recordDirectTaskFormalOperation>>;
-  try {
-    finalized = await runDirectTaskFinalizationOperation({
-      ctx: opts.ctx,
-      command: opts.command,
-      task_id: opts.task_id,
-      decision: opts.decision,
-      implementation_commit: opts.implementation_commit,
-    });
-  } catch {
-    return {
-      ...opts.journal,
-      status: "stopped",
-      decision: current,
-      declared_checks: opts.declared_checks,
-      stop: {
-        code: "finish_failed",
-        reason: "The formal task finish operation did not complete successfully.",
-        route_step_id: current.workflowStep.id,
-        operation_id: null,
-      },
-    };
-  }
-  opts.on_lifecycle_operation?.();
-  if (String(finalized.decision.task.status).toUpperCase() !== "DONE") {
-    return {
-      journal: finalized.journal,
-      journal_path: finalized.journal_path,
-      status: "stopped",
-      decision: finalized.decision,
-      declared_checks: opts.declared_checks,
-      stop: {
-        code: "finish_failed",
-        reason: "The finish operation returned without a DONE task route.",
-        route_step_id: finalized.decision.workflowStep.id,
-        operation_id: null,
-      },
-    };
-  }
-  return {
-    journal: finalized.journal,
-    journal_path: finalized.journal_path,
-    status: "finalized",
-    decision: finalized.decision,
-    declared_checks: opts.declared_checks,
-  };
-}
-
-/**
- * Compatibility composition for callers that already hold an EVALUATOR pass.
- * Direct supervision uses the two phases separately so the evaluator can see
- * CLI-owned verification evidence instead of requiring the executor to create it.
- */
-export async function closeDirectTask(opts: {
-  ctx: CommandCtx;
-  command: CommandContext;
-  task_id: string;
-  task: Pick<TaskData, "verify" | "execution_contract">;
-  evaluator: DirectTaskCloseoutEvaluatorEvidence;
-  decision: () => Promise<TaskRouteDecision>;
-  implementation_commit: string;
-  on_lifecycle_operation?: () => void;
-  journal: JournalRef;
-}): Promise<DirectTaskCloseoutOutcome> {
-  const verified = await verifyDirectTask(opts);
-  if (verified.status === "stopped") return verified;
-  return await finalizeDirectTask({
-    ctx: opts.ctx,
-    command: opts.command,
-    task_id: opts.task_id,
-    decision: opts.decision,
-    implementation_commit: opts.implementation_commit,
-    on_lifecycle_operation: opts.on_lifecycle_operation,
-    journal: { journal: verified.journal, journal_path: verified.journal_path },
-    declared_checks: verified.declared_checks,
-  });
 }

@@ -2,15 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type * as DirectTaskVerificationModule from "./direct-task-verification.js";
 
 const mocks = vi.hoisted(() => ({
-  finalizeOperation: vi.fn(),
   formalOperation: vi.fn(),
   runChecks: vi.fn(),
   verify: vi.fn(),
 }));
 
-vi.mock("./direct-task-finalization.js", () => ({
-  runDirectTaskFinalizationOperation: mocks.finalizeOperation,
-}));
 vi.mock("./direct-task-supervisor-formal-operation.js", () => ({
   recordDirectTaskFormalOperation: mocks.formalOperation,
 }));
@@ -20,7 +16,7 @@ vi.mock("./direct-task-verification.js", async (importOriginal) => {
 });
 vi.mock("./verify-record.js", () => ({ cmdVerifyParsed: mocks.verify }));
 
-import { closeDirectTask, verifyDirectTask } from "./direct-task-supervisor-closeout.js";
+import { verifyDirectTask } from "./direct-task-supervisor-closeout.js";
 
 const TASK_ID = "202607290000-RF10A1";
 const journal = {
@@ -203,50 +199,5 @@ describe("direct task supervisor closeout", () => {
     expect(mocks.verify).toHaveBeenCalledOnce();
     const verifyArgs = mocks.verify.mock.calls[0]?.[0] as { details?: unknown };
     expect(verifyArgs.details).toEqual(expect.stringContaining("Command: bun run test:critical"));
-  });
-
-  it("finishes with the implementation identity frozen before verification", async () => {
-    mocks.runChecks.mockResolvedValue({
-      status: "passed",
-      checks: [{ command: "bun run test:critical", exit_code: 0 }],
-      artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/declared-checks.json`,
-    });
-    mocks.formalOperation.mockResolvedValue({
-      journal,
-      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
-      decision: completion,
-    });
-    mocks.finalizeOperation.mockResolvedValue({
-      journal,
-      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
-      decision: {
-        task: { status: "DONE" },
-        workflowStep: { id: "task.done" },
-      },
-    });
-
-    const result = await closeDirectTask({
-      ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: {
-        config: { paths: { workflow_dir: ".agentplane/tasks" } },
-        resolvedProject: { gitRoot: "/repo" },
-      } as never,
-      task_id: TASK_ID,
-      task: { verify: ["bun run test:critical"] },
-      evaluator: {
-        evaluator_id: "recovery-context",
-        result_path: `.agentplane/tasks/${TASK_ID}/quality/result.json`,
-        report_path: `.agentplane/tasks/${TASK_ID}/quality/report.json`,
-        receipt_path: `.agentplane/tasks/${TASK_ID}/quality/receipt.json`,
-      },
-      decision: vi.fn().mockResolvedValueOnce(verificationRoute).mockResolvedValue(completion),
-      implementation_commit: "def456",
-      journal: { journal, journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json" },
-    });
-
-    expect(result).toMatchObject({ status: "finalized" });
-    expect(mocks.finalizeOperation).toHaveBeenCalledWith(
-      expect.objectContaining({ implementation_commit: "def456" }),
-    );
   });
 });
