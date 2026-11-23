@@ -18,12 +18,15 @@ describe("evaluator evidence compaction", () => {
     await commitPath(root, "README.md", "base\n", "chore: establish base");
     await addTask(root, taskId);
     await freezeTaskExecutionBase(root, taskId);
-    await commitPath(
-      root,
-      "src/large-review-target.ts",
-      `export const reviewTarget = ${JSON.stringify("x".repeat(200_000))};\n`,
-      "feat: large evaluator target",
-    );
+    // Three file diffs below the actual-diff per-file limit keep the full hunks embedded.
+    for (const part of ["a", "b", "c"]) {
+      await commitPath(
+        root,
+        `src/large-review-target-${part}.ts`,
+        `export const reviewTarget = ${JSON.stringify(part.repeat(60_000))};\n`,
+        `feat: large evaluator target ${part}`,
+      );
+    }
 
     const firstReview = await prepareTypedReview(root, taskId, {
       at: "2026-08-03T00:00:00.000Z",

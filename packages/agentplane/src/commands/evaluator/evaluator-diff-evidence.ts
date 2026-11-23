@@ -64,6 +64,64 @@ export async function resolveEvaluatorDiffBase(opts: {
   }
 }
 
+const ACTUAL_DIFF_MAX_BUFFER_BYTES = 512 * 1024 * 1024;
+/** One file diff above this size is summarized instead of embedded. */
+export const ACTUAL_DIFF_FILE_LIMIT_BYTES = 64 * 1024;
+/** Embedded hunks stop after this total; later file diffs are summarized. */
+export const ACTUAL_DIFF_TOTAL_LIMIT_BYTES = 1024 * 1024;
+
+function diffSectionPath(header: string): string {
+  const match = /^diff --git a\/(.+?) b\//u.exec(header);
+  return match?.[1] ?? header.slice("diff --git ".length);
+}
+
+/**
+ * Evaluator diff format v2. Generated corpora, snapshots, and other Task
+ * records can make one implementation diff many megabytes. An evaluator cannot
+ * review such hunks, and every copy is committed as Task evidence. File diffs
+ * above the per-file limit, or after the total limit, keep their Git header
+ * (including full blob IDs from `--full-index`) and are replaced by one summary
+ * line, so the exact content stays recoverable from Git objects.
+ */
+export function compactActualDiff(diff: string, opts: { reproduce: string }): string {
+  const sections = diff.split(/^(?=diff --git )/mu);
+  let embedded = 0;
+  let summarized = 0;
+  const output: string[] = [];
+  for (const section of sections) {
+    if (!section.startsWith("diff --git ")) {
+      output.push(section);
+      continue;
+    }
+    const bytes = Buffer.byteLength(section, "utf8");
+    const reason =
+      bytes > ACTUAL_DIFF_FILE_LIMIT_BYTES
+        ? "file diff exceeds the per-file limit"
+        : embedded + bytes > ACTUAL_DIFF_TOTAL_LIMIT_BYTES
+          ? "total diff limit reached"
+          : null;
+    if (!reason) {
+      embedded += bytes;
+      output.push(section);
+      continue;
+    }
+    summarized += 1;
+    const lines = section.split("\n");
+    const headerEnd = lines.findIndex(
+      (line, index) =>
+        index > 0 &&
+        (line.startsWith("--- ") || line.startsWith("@@") || line.startsWith("Binary files ")),
+    );
+    const header = lines.slice(0, headerEnd === -1 ? lines.length : headerEnd).filter(Boolean);
+    const filePath = diffSectionPath(lines[0] ?? "");
+    output.push(
+      `${header.join("\n")}\n# agentplane: hunks omitted (${bytes} bytes, ${lines.length - 1} lines; ${reason}); reproduce with: ${opts.reproduce} -- ${JSON.stringify(filePath)}\n`,
+    );
+  }
+  if (summarized === 0) return diff;
+  return `# agentplane actual-diff v2: ${summarized} file diff(s) summarized; full diff: ${opts.reproduce}\n${output.join("")}`;
+}
+
 export async function renderActualDiff(
   gitRoot: string,
   evaluatedSha: string | null,
@@ -82,13 +140,18 @@ export async function renderActualDiff(
       "git",
       [
         ...(diffBaseSha
-          ? ["diff", "--no-ext-diff", "--find-renames", diffBaseSha, evaluatedSha]
-          : ["show", "--format=", "--root", "--find-renames", evaluatedSha]),
+          ? ["diff", "--no-ext-diff", "--full-index", "--find-renames", diffBaseSha, evaluatedSha]
+          : ["show", "--format=", "--root", "--full-index", "--find-renames", evaluatedSha]),
         ...taskArtifactExclude,
       ],
-      { cwd: gitRoot, maxBuffer: 16 * 1024 * 1024 },
+      { cwd: gitRoot, maxBuffer: ACTUAL_DIFF_MAX_BUFFER_BYTES },
     );
-    return stdout || "No file diff was recorded for the evaluated commit.\n";
+    if (!stdout) return "No file diff was recorded for the evaluated commit.\n";
+    return compactActualDiff(String(stdout), {
+      reproduce: diffBaseSha
+        ? `git diff --full-index --find-renames ${diffBaseSha} ${evaluatedSha}`
+        : `git show --format= --root --full-index --find-renames ${evaluatedSha}`,
+    });
   } catch (error) {
     throw new CliError({
       code: "E_VALIDATION",
