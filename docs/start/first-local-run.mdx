@@ -1,28 +1,44 @@
 ---
 title: "First local run"
-description: "Run a local Agentplane workflow and inspect the first trace and artifacts."
+description: "Create a first Agentplane task, preview its route, and find the artifacts it writes."
 ---
 
 # First local run
 
 ## What is the first success path?
 
-The first success path is a local workflow that produces visible artifacts: a run record, trace,
-verification evidence, and an exportable result.
+The first success path creates one task, previews its route without invoking a model provider, and
+shows the task record that Agentplane keeps in the repository. Run it from a repository where
+`agentplane init` has already completed (see [Quickstart](quickstart)).
 
 ```bash
-agentplane run ./agentplane.yaml
-agentplane trace list
-agentplane trace open <run-id>
+agentplane task create "Inspect Agentplane artifacts and summarize what was created" --json
+agentplane task active
+agentplane task run <task-id> --dry-run --json
+agentplane task show <task-id>
 ```
 
-Expected artifact shape:
+- `task create` prints the new `task_id`.
+- `task active` lists ready and in-progress tasks with their next route step.
+- `task run --dry-run --json` returns `execution_preview`: route, bounded context, approvals,
+  checks, and budgets. It does not start a runner.
+- `task show` prints the task record.
+
+To hand the task to an external coding agent, request one bounded action:
+
+```bash
+agentplane task advance <task-id> --agent-json
+```
+
+## Where are the artifacts?
 
 ```text
-.agentplane/runs/<run-id>/
-.agentplane/traces/<run-id>.json
-.agentplane/exports/<run-id>.otel.json
+.agentplane/tasks/<task-id>/README.md   # task record: intent, plan, verification, findings
+.agentplane/tasks/<task-id>/            # supervision, quality, and PR evidence as the task advances
+.agentplane/WORKFLOW.md                 # workflow contract used to route the task
 ```
+
+See [What files does Agentplane write?](files-written) for the full map.
 
 If a command is not available in your installed version, run `agentplane quickstart` and
 `agentplane help` to inspect the supported route for that installation.
