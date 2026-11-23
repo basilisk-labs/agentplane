@@ -123,6 +123,54 @@ describe("logical repository authority identity", () => {
     }
   });
 
+  it("names a shallow clone as the cause when the execution base commit is absent", async () => {
+    const parent = await mkdtemp(path.join(os.tmpdir(), "agentplane-repository-shallow-"));
+    const origin = path.join(parent, "origin");
+    const clone = path.join(parent, "clone");
+    try {
+      await mkdir(origin, { recursive: true });
+      await execFileAsync("git", ["init", "-b", "main"], { cwd: origin });
+      await execFileAsync("git", ["config", "user.name", "AgentPlane Test"], { cwd: origin });
+      await execFileAsync("git", ["config", "user.email", "test@agentplane.local"], {
+        cwd: origin,
+      });
+      for (const body of ["first\n", "second\n"]) {
+        await writeFile(path.join(origin, "README.md"), body, "utf8");
+        await execFileAsync("git", ["add", "README.md"], { cwd: origin });
+        await execFileAsync("git", ["commit", "-m", body.trim()], { cwd: origin });
+      }
+      const { stdout: baseSha } = await execFileAsync("git", ["rev-parse", "HEAD~1"], {
+        cwd: origin,
+      });
+      const identity = await resolveLogicalRepositoryIdentity({ git_root: origin, task: {} });
+      await execFileAsync("git", ["clone", "--depth", "1", `file://${origin}`, clone]);
+      const task = {
+        extensions: {
+          task_execution_context: createTaskExecutionBaseIdentity({
+            base_ref: "main",
+            base_sha: baseSha.trim(),
+            repository_identity: identity,
+            source: "explicit",
+          }),
+        },
+      };
+
+      await expect(resolveLogicalRepositoryIdentity({ git_root: clone, task })).rejects.toThrow(
+        /shallow clone.*git fetch --unshallow/u,
+      );
+      await execFileAsync("git", ["fetch", "--unshallow"], { cwd: clone });
+      await expect(resolveLogicalRepositoryIdentity({ git_root: clone, task })).resolves.toBe(
+        identity,
+      );
+      // A repeated lookup reuses the memoized root-commit walk and stays identical.
+      await expect(resolveLogicalRepositoryIdentity({ git_root: clone, task })).resolves.toBe(
+        identity,
+      );
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
   it("rejects a persisted task identity whose base is outside the current repository", async () => {
     const parent = await mkdtemp(path.join(os.tmpdir(), "agentplane-repository-cross-use-"));
     const first = path.join(parent, "first");

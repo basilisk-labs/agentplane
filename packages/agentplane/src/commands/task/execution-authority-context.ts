@@ -10,10 +10,33 @@ import type { TaskData } from "../../backends/task-backend.js";
 
 const REPOSITORY_IDENTITY_PATTERN = /^sha256:[0-9a-f]{64}$/u;
 
+/**
+ * Root commits reachable from a full commit SHA are immutable Git facts.
+ * A full history walk costs tens of milliseconds, and read commands such as
+ * `task active` resolve the identity once per Task. Only successful lookups for
+ * full object names are memoized, so a missing object is re-checked every time.
+ */
+const ROOT_COMMIT_CACHE_LIMIT = 256;
+const rootCommitCache = new Map<string, Promise<string | null>>();
+const FULL_SHA_PATTERN = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/u;
+
 async function repositoryIdentityFromAnchor(
   gitRoot: string,
   anchor: string,
 ): Promise<string | null> {
+  if (!FULL_SHA_PATTERN.test(anchor)) return await deriveRepositoryIdentity(gitRoot, anchor);
+  const key = `${gitRoot}\0${anchor}`;
+  const cached = rootCommitCache.get(key);
+  if (cached) return await cached;
+  const pending = deriveRepositoryIdentity(gitRoot, anchor);
+  if (rootCommitCache.size >= ROOT_COMMIT_CACHE_LIMIT) rootCommitCache.clear();
+  rootCommitCache.set(key, pending);
+  const derived = await pending;
+  if (derived === null) rootCommitCache.delete(key);
+  return derived;
+}
+
+async function deriveRepositoryIdentity(gitRoot: string, anchor: string): Promise<string | null> {
   const stdout = await execFileAsync("git", ["rev-list", "--max-parents=0", anchor], {
     cwd: gitRoot,
     env: gitEnv(),
@@ -32,6 +55,18 @@ async function repositoryIdentityFromAnchor(
     kind: "agentplane.logical_repository_identity",
     root_commits,
   });
+}
+
+const MISSING_EXECUTION_BASE = "Task execution base does not belong to the current Git repository.";
+
+/**
+ * A shallow clone omits the commits that Task execution bases reference.
+ * Name the cause and the repair instead of reporting a foreign repository.
+ */
+async function missingExecutionBaseMessage(gitRoot: string): Promise<string> {
+  const shallow = await gitRevParse(gitRoot, ["--is-shallow-repository"]).catch(() => null);
+  if (shallow?.trim() !== "true") return MISSING_EXECUTION_BASE;
+  return `${MISSING_EXECUTION_BASE} The checkout is a shallow clone and may omit the base commit; run \`git fetch --unshallow\` and retry.`;
 }
 
 /**
@@ -62,7 +97,7 @@ export async function resolveLogicalRepositoryIdentity(opts: {
         () => null,
       );
       if (!baseExists) {
-        throw new Error("Task execution base does not belong to the current Git repository.");
+        throw new Error(await missingExecutionBaseMessage(opts.git_root));
       }
       if (base.repository_identity && base.repository_identity !== persisted.repository_identity) {
         throw new Error(
@@ -83,7 +118,7 @@ export async function resolveLogicalRepositoryIdentity(opts: {
     return derived;
   }
   if (base) {
-    throw new Error("Task execution base does not belong to the current Git repository.");
+    throw new Error(await missingExecutionBaseMessage(opts.git_root));
   }
 
   if (opts.create_if_missing === false) {
