@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
 export type TaskProjectionCacheKey =
@@ -184,24 +184,40 @@ export function buildFingerprintCacheKey(
   };
 }
 
+/**
+ * Rebuild the README fingerprint exactly as `listLocalTasks` records it when it writes the
+ * projection: sorted directory names, `lstat` (no symlink following), bigint mtime folded to
+ * fractional milliseconds, and no entry for a task directory without a README. A mismatch in
+ * any of these made the SQLite projection permanently stale; a single README-less task
+ * directory (for example an orphan quality object store) disabled it entirely.
+ */
 export function buildReadmeFingerprintEntriesFromTasksDir(
   tasksDir: string,
 ): { path: string; mtimeMs: number; size: number }[] | null {
   try {
-    const entries = readdirSync(tasksDir, { withFileTypes: true });
+    const names = readdirSync(tasksDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && entry.name !== ".cache")
+      .map((entry) => entry.name)
+      .toSorted();
     const readmes: { path: string; mtimeMs: number; size: number }[] = [];
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      const readmePath = path.join(tasksDir, entry.name, "README.md");
-      const stats = statSync(readmePath);
+    for (const name of names) {
+      const readmePath = path.join(tasksDir, name, "README.md");
+      let stats;
+      try {
+        stats = lstatSync(readmePath, { bigint: true });
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+        return null;
+      }
+      // The writer never records a symlinked or non-file README as fresh.
       if (!stats.isFile()) return null;
       readmes.push({
         path: readmePath,
-        mtimeMs: stats.mtimeMs,
-        size: stats.size,
+        mtimeMs: Number(stats.mtimeMs) + Number(stats.mtimeNs % 1_000_000n) / 1_000_000,
+        size: Number(stats.size),
       });
     }
-    return readmes.toSorted((a, b) => a.path.localeCompare(b.path));
+    return readmes;
   } catch {
     return null;
   }

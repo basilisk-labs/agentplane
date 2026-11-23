@@ -259,6 +259,38 @@ describe("LocalBackend", () => {
     );
   });
 
+  it("serves a fresh SQLite projection when a task directory has no README", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300015-ABCE",
+      title: "SQLite projection with orphan directory",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: [],
+      verify: [],
+      comments: [],
+      doc: "## Summary\n\nbody",
+    };
+    await backend.writeTask(task);
+    // An empty task directory is an ignorable orphan for listing; it must not disable the cache.
+    await mkdir(path.join(tempDir, "202601300016-ORPHAN"));
+
+    const projection = await backend.listProjectionTasks();
+    const cached = await readFreshSqliteTaskProjection({ tasksDir: tempDir });
+
+    expect(projection.map((entry) => entry.id)).toEqual([task.id]);
+    expect(cached?.map((entry) => entry.id)).toEqual([task.id]);
+
+    await writeFile(
+      path.join(tempDir, task.id, "README.md"),
+      `${await readFile(path.join(tempDir, task.id, "README.md"), "utf8")}\nchanged\n`,
+    );
+    expect(await readFreshSqliteTaskProjection({ tasksDir: tempDir })).toBeNull();
+  });
+
   it("stores repository task projections in the shared context SQLite file", async () => {
     const tasksDir = path.join(tempDir, ".agentplane", "tasks");
     await mkdir(path.join(tempDir, ".git"), { recursive: true });
