@@ -44,11 +44,19 @@ test("durable logs retain early failures beyond 4KB and redact split secrets bef
   assert.ok(!failures.includes("sensitive"));
   assert.equal(manifest.structured_failures.status, "complete");
   assert.equal(manifest.binding.command_digest, observationDigest(binding.command));
-  for (const file of manifest.files)
-    assert.equal(
-      observationDigest(await readFile(path.join(observation.directory, file.path))),
-      file.digest,
-    );
+  for (const file of manifest.files) {
+    // Empty journals are recorded with bytes 0 and the empty digest but not retained.
+    const data = await readFile(path.join(observation.directory, file.path)).catch((error) => {
+      if (error.code === "ENOENT" && file.bytes === 0) return Buffer.alloc(0);
+      throw error;
+    });
+    assert.equal(observationDigest(data), file.digest);
+  }
+  const stdout = manifest.files.find((file) => file.path === "stdout.jsonl");
+  assert.equal(stdout.bytes, 0);
+  await assert.rejects(readFile(path.join(observation.directory, "stdout.jsonl")), {
+    code: "ENOENT",
+  });
 });
 
 test("caps logs, oversized lines and structured records with explicit omission counts", async (t) => {

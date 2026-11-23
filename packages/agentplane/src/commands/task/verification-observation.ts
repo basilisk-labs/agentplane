@@ -6,6 +6,7 @@ import {
   readFileSync,
   readdirSync,
   renameSync,
+  unlinkSync,
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
@@ -309,9 +310,14 @@ export function createVerificationObservation(options: {
         pendingWrites[name] = "";
       }
       snapshot(state);
+      // An empty journal is recorded in the manifest (bytes 0 and the empty digest)
+      // but not retained on disk: absence of a journal with `bytes: 0` means empty.
+      // This keeps thousands of zero-byte files out of committed Task evidence.
       const files = ["stdout.jsonl", "stderr.jsonl", "failures.jsonl"].map((name) => {
         try {
-          const data = readFileSync(path.join(directory, name));
+          const file = path.join(directory, name);
+          const data = readFileSync(file);
+          if (data.length === 0) unlinkSync(file);
           return { path: name, bytes: data.length, digest: observationDigest(data) };
         } catch {
           ioError = true;
