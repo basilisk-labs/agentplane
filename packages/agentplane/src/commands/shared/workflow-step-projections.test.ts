@@ -14,7 +14,7 @@ import {
   withSideEffectAuthorityState,
 } from "./side-effect-authority.js";
 import { cliOperationStep } from "./workflow-step-factory.js";
-import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision.js";
+import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 import {
   WORKFLOW_OPERATION_EFFECTS,
   WORKFLOW_OPERATION_REGISTRY,

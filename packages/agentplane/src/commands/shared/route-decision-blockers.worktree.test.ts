@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  addTaskWorktreeCleanlinessBlocker,
-  addVerificationRequiredBlocker,
-} from "./route-decision-blockers.js";
+import { addTaskWorktreeCleanlinessBlocker } from "./route-decision-blockers.js";
+import { addVerificationRequiredBlocker } from "./route-decision-verification-blocker.js";
 import type { RouteBlocker } from "./route-oracle.js";
 
 function collect(opts: { changedPaths: string[]; requireAllChanges: boolean }): RouteBlocker[] {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildRouteSourceConfidence } from "./route-decision.js";
+import { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
 
 describe("route decision source confidence", () => {
   it("surfaces remote fallback and local probe diagnostics", () => {

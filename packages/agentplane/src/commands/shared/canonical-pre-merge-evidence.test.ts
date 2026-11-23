@@ -4,7 +4,7 @@ import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { WorkflowRouteState } from "./workflow-step.js";
-import { hasCanonicalPreMergeEvidence } from "./route-decision-blockers.js";
+import { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
 import { reduceRouteState } from "./workflow-step-reducer.js";
 
 function canonicalTask(): TaskData {

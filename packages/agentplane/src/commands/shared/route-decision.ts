@@ -11,11 +11,8 @@ import {
 import { resolvePrHeadPublicationStatus } from "../pr/head-publication.js";
 import { buildTaskResumeContext } from "../task/handoff.shared.js";
 import { resolveBatchOwnership } from "./route-batch-ownership.js";
-import {
-  addTaskWorktreeCleanlinessBlocker,
-  deriveBlockers,
-  routeGatePriority,
-} from "./route-decision-blockers.js";
+import { addTaskWorktreeCleanlinessBlocker, deriveBlockers } from "./route-decision-blockers.js";
+import { routeGatePriority } from "./route-gate-priority.js";
 import type { WorkflowStep } from "./workflow-step.js";
 import {
   projectWorkflowStepExecutionPacket,
@@ -49,7 +46,6 @@ import {
   traceRemoteProviderState,
 } from "./route-decision-preparation-trace.js";
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
-export { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
 import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
 import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
 import { inspectTaskWorktreeRouteState } from "./task-worktree-foreign-artifact-route.js";
@@ -58,7 +54,6 @@ import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerpr
 import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import { observeBranchBaseSync } from "./branch-base-sync-route.js";
-export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 
 const routeGitSnapshots = new WeakMap<TaskRouteDecision, GitSnapshot>();
 

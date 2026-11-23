@@ -22,7 +22,6 @@ import {
 } from "./task-worktree-cleanliness.js";
 
 import { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
-export { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
 import {
   qualityReviewHasRetiredExchange,
   qualityReviewIsFreshForHead,
@@ -42,9 +41,6 @@ import {
   isTaskArtifactPath,
 } from "./route-decision-worktree-cleanliness.js";
 import { providerUpdateBranchParams } from "./provider-update-branch-route.js";
-
-export { addVerificationRequiredBlocker } from "./route-decision-verification-blocker.js";
-export { routeGatePriority } from "./route-gate-priority.js";
 
 function addBlocker(blockers: RouteBlocker[], code: RouteBlockerCode, summary: string): void {
   if (blockers.some((blocker) => blocker.code === code)) return;
