@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { lstat, readdir } from "node:fs/promises";
 import path from "node:path";
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
-import { parseTaskReadme, taskReadmePath } from "@agentplaneorg/core/tasks";
+import { taskReadmePath } from "@agentplaneorg/core/tasks";
 import {
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
@@ -34,6 +34,7 @@ import {
   type TaskSummary,
 } from "./shared.js";
 import { type LocalBackendContext } from "./local-backend-state.js";
+import { parseTaskReadmeCached } from "./parsed-readme-cache.js";
 
 const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
 
@@ -84,7 +85,7 @@ function taskDataFromParsedReadme(opts: {
 async function readRequiredTask(context: LocalBackendContext, taskId: string): Promise<TaskData> {
   const readmePath = taskReadmePath(context.root, taskId);
   const text = await readLocalTaskReadme(context, readmePath, `task README ${taskId}`);
-  const parsed = parseTaskReadme(text);
+  const parsed = await parseTaskReadmeCached({ tasksDir: context.root, readmePath, text });
   return taskDataFromParsedReadme({
     taskId,
     readmePath,
@@ -352,7 +353,7 @@ export async function listLocalTasks(
 
     let parsed;
     try {
-      parsed = parseTaskReadme(text);
+      parsed = await parseTaskReadmeCached({ tasksDir: context.root, readmePath, text });
     } catch {
       warnings.push(`skip:${dirName}: invalid_readme_frontmatter`);
       return null;
@@ -454,7 +455,7 @@ export async function getLocalTask(
     if (code === "ENOENT") return null;
     throw err;
   }
-  const parsed = parseTaskReadme(text);
+  const parsed = await parseTaskReadmeCached({ tasksDir: context.root, readmePath, text });
   return taskDataFromParsedReadme({
     taskId,
     readmePath,
