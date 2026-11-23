@@ -16,6 +16,7 @@ import { stripVTControlCharacters } from "node:util";
 const OUTPUT_BYTES = 256 * 1024;
 const FAILURE_BYTES = 256 * 1024;
 const LINE_BYTES = 16 * 1024;
+const PASSED_TAIL_BYTES = 16 * 1024;
 const MAX_RECORDS = 1024;
 const MAX_RUNS = 128;
 export const observationDigest = (value: string | Buffer): string =>
@@ -310,6 +311,37 @@ export function createVerificationObservation(options: {
         pendingWrites[name] = "";
       }
       snapshot(state);
+      // Retention v2: a passed run keeps only the tail of each output journal.
+      // Passing logs are rarely reviewed but made up most committed evidence bytes.
+      // Whole JSON records are kept, and the truncation counters below stay exact.
+      const tailRetained = new Set<string>();
+      if (state === "passed") {
+        for (const name of ["stdout", "stderr"] as const) {
+          const file = path.join(directory, `${name}.jsonl`);
+          try {
+            const data = readFileSync(file);
+            if (data.length <= PASSED_TAIL_BYTES) continue;
+            let start = data.length;
+            while (start > 0) {
+              const previous = data.lastIndexOf(10, start - 2);
+              const candidate = previous === -1 ? 0 : previous + 1;
+              if (data.length - candidate > PASSED_TAIL_BYTES) break;
+              start = candidate;
+            }
+            // Always keep the final record, even when it alone exceeds the tail budget.
+            if (start === data.length) start = data.lastIndexOf(10, data.length - 2) + 1;
+            const kept = data.subarray(start);
+            const temporary = path.join(directory, `.${name}.tail.tmp`);
+            writeFileSync(temporary, kept, { mode: 0o600, flag: "wx" });
+            renameSync(temporary, file);
+            streams[name].omitted_bytes += data.length - kept.length;
+            streams[name].retained_bytes = kept.length;
+            tailRetained.add(name);
+          } catch {
+            ioError = true;
+          }
+        }
+      }
       // An empty journal is recorded in the manifest (bytes 0 and the empty digest)
       // but not retained on disk: absence of a journal with `bytes: 0` means empty.
       // This keeps thousands of zero-byte files out of committed Task evidence.
@@ -350,6 +382,7 @@ export function createVerificationObservation(options: {
             omitted_bytes: stream.omitted_bytes,
             oversized_lines: stream.oversized_lines,
             truncated: stream.omitted_bytes > 0 || stream.oversized_lines > 0,
+            ...(tailRetained.has(name) ? { retention: "passed_tail" } : {}),
           },
         ]),
       );

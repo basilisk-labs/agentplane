@@ -194,3 +194,39 @@ test("missing child manifests never imply complete structured evidence", async (
   assert.equal(manifest.structured_failures.status, "incomplete");
   assert.equal(manifest.children.at(0).incomplete, true);
 });
+
+test("a passed run keeps only the tail of large output journals", async (t) => {
+  const root = await fixture(t);
+  const observation = createVerificationObservation({ directory: root, binding });
+  for (let i = 0; i < 2000; i++) observation.write("stdout", `line ${i} ${"x".repeat(40)}\n`);
+  observation.write("stdout", "final summary: all checks passed\n");
+  observation.structured("complete");
+  const reference = observation.finish("passed");
+  assert.equal(reference.status, "retained");
+  const manifest = JSON.parse(await readFile(reference.manifest_path, "utf8"));
+  const stdout = await readFile(path.join(observation.directory, "stdout.jsonl"));
+  assert.ok(stdout.length <= 16 * 1024);
+  assert.ok(
+    stdout.toString("utf8").endsWith(`${JSON.stringify("final summary: all checks passed")}\n`),
+  );
+  assert.ok(!stdout.toString("utf8").includes('"line 0 '));
+  for (const record of stdout.toString("utf8").trimEnd().split("\n")) JSON.parse(record);
+  const entry = manifest.files.find((file) => file.path === "stdout.jsonl");
+  assert.equal(entry.bytes, stdout.length);
+  assert.equal(entry.digest, observationDigest(stdout));
+  assert.equal(manifest.truncation.stdout.retention, "passed_tail");
+  assert.equal(manifest.truncation.stdout.retained_bytes, stdout.length);
+  assert.ok(manifest.truncation.stdout.omitted_bytes > 0);
+  assert.equal(manifest.truncation.stdout.truncated, true);
+});
+
+test("a failed run keeps the full retained output journal", async (t) => {
+  const root = await fixture(t);
+  const observation = createVerificationObservation({ directory: root, binding });
+  for (let i = 0; i < 2000; i++) observation.write("stdout", `line ${i} ${"x".repeat(40)}\n`);
+  const reference = observation.finish("failed");
+  const manifest = JSON.parse(await readFile(reference.manifest_path, "utf8"));
+  const stdout = await readFile(path.join(observation.directory, "stdout.jsonl"), "utf8");
+  assert.ok(stdout.includes('"line 0 '));
+  assert.equal(manifest.truncation.stdout.retention, undefined);
+});
