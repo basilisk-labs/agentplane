@@ -57,6 +57,23 @@ async function deriveRepositoryIdentity(gitRoot: string, anchor: string): Promis
   });
 }
 
+/** The common Git directory of a checkout path does not change during one CLI process. */
+const commonDirCache = new Map<string, Promise<string>>();
+
+async function resolveCommonDir(gitRoot: string): Promise<string> {
+  const cached = commonDirCache.get(gitRoot);
+  if (cached) return await cached;
+  const pending = gitRevParse(gitRoot, ["--path-format=absolute", "--git-common-dir"]);
+  if (commonDirCache.size >= ROOT_COMMIT_CACHE_LIMIT) commonDirCache.clear();
+  commonDirCache.set(gitRoot, pending);
+  try {
+    return await pending;
+  } catch (error) {
+    commonDirCache.delete(gitRoot);
+    throw error;
+  }
+}
+
 const MISSING_EXECUTION_BASE = "Task execution base does not belong to the current Git repository.";
 
 /**
@@ -80,10 +97,7 @@ export async function resolveLogicalRepositoryIdentity(opts: {
   create_if_missing?: boolean;
 }): Promise<string> {
   const base = taskExecutionBaseFromExtensions(opts.task.extensions);
-  const commonDir = await gitRevParse(opts.git_root, [
-    "--path-format=absolute",
-    "--git-common-dir",
-  ]);
+  const commonDir = await resolveCommonDir(opts.git_root);
   const identityPath = path.join(commonDir, "agentplane", "repository-identity.json");
   const persisted = await readFile(identityPath, "utf8")
     .then((raw) => JSON.parse(raw) as { repository_identity?: unknown })
