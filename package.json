@@ -119,6 +119,7 @@
     "schemas:sync": "bun scripts/generate/sync-schemas.mjs sync",
     "spec:examples:check": "node scripts/checks/check-spec-examples.mjs",
     "hotspots:check": "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000",
+    "check": "node scripts/checks/run-check.mjs",
     "check:types-files": "node scripts/checks/check-types-files.mjs",
     "typescript:toolchain:check": "node scripts/checks/check-typescript-toolchain.mjs",
     "vitest:projects:check": "node scripts/checks/check-vitest-projects.mjs",
