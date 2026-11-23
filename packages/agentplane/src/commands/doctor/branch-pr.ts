@@ -1,11 +1,10 @@
-import { readFile, readdir } from "node:fs/promises";
-import type { Dirent } from "node:fs";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { listWorktrees } from "@agentplaneorg/core/git";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { scanTaskReadmes } from "./task-readme-scan.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import { parsePrMeta, resolvePrBatchIncludedTaskIds } from "../shared/pr-meta.js";
 import {
@@ -258,22 +257,6 @@ async function readTaskPrMeta(ctx: CommandContext, taskId: string) {
 
 async function readTaskReadmeSnapshot(ctx: CommandContext): Promise<TaskData[]> {
   const tasksDir = path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir);
-  let entries: Dirent[];
-  try {
-    entries = await readdir(tasksDir, { withFileTypes: true });
-  } catch {
-    return [];
-  }
-
-  const tasks: TaskData[] = [];
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    try {
-      const text = await readFile(path.join(tasksDir, entry.name, "README.md"), "utf8");
-      tasks.push(parseTaskReadme(text).frontmatter as TaskData);
-    } catch {
-      continue;
-    }
-  }
-  return tasks;
+  const scanned = await scanTaskReadmes(tasksDir);
+  return scanned.map((entry) => entry.frontmatter as TaskData);
 }

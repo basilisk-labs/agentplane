@@ -1,12 +1,9 @@
-import fs from "node:fs/promises";
-import type { Dirent } from "node:fs";
 import path from "node:path";
 
 import { GitContext } from "@agentplaneorg/core/git";
 import {
   type taskKernel,
   normalizeTaskStatus,
-  parseTaskReadme,
   renderTaskDocFromSections,
   taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
@@ -22,6 +19,7 @@ import {
   quarantineMarker,
 } from "../task/migration-apply-conversion.js";
 import { resolveLogicalRepositoryIdentity } from "../task/execution-authority-context.js";
+import { scanTaskReadmes } from "./task-readme-scan.js";
 
 export type TaskDocSnapshot = {
   id?: unknown;
@@ -61,25 +59,8 @@ async function readTaskDocSnapshotsFromReadmes(
   ctx?: CommandContext,
 ): Promise<TaskDocSnapshot[]> {
   const workflowDir = path.join(repoRoot, ctx?.config.paths.workflow_dir ?? ".agentplane/tasks");
-  let entries: Dirent[];
-  try {
-    entries = await fs.readdir(workflowDir, { withFileTypes: true });
-  } catch {
-    return [];
-  }
-
-  const tasks: TaskDocSnapshot[] = [];
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    try {
-      const text = await fs.readFile(path.join(workflowDir, entry.name, "README.md"), "utf8");
-      const parsed = parseTaskReadme(text);
-      tasks.push(parsed.frontmatter as TaskDocSnapshot);
-    } catch {
-      continue;
-    }
-  }
-  return tasks;
+  const scanned = await scanTaskReadmes(workflowDir);
+  return scanned.map((entry) => entry.frontmatter as TaskDocSnapshot);
 }
 
 function buildTaskReadmeMigrationFindings(tasks: TaskDocSnapshot[]): string[] {
@@ -412,31 +393,8 @@ export async function checkTaskProjectionDrift(
   ctx?: CommandContext,
 ): Promise<string[]> {
   const workflowDir = path.join(repoRoot, ctx?.config.paths.workflow_dir ?? ".agentplane/tasks");
-  let entries;
-  try {
-    entries = await fs.readdir(workflowDir, { withFileTypes: true });
-  } catch {
-    return [];
-  }
-
   const drifted: { id: string; status: string }[] = [];
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    const readmePath = path.join(workflowDir, entry.name, "README.md");
-    let text = "";
-    try {
-      text = await fs.readFile(readmePath, "utf8");
-    } catch {
-      continue;
-    }
-
-    let parsed;
-    try {
-      parsed = parseTaskReadme(text);
-    } catch {
-      continue;
-    }
-
+  for (const parsed of await scanTaskReadmes(workflowDir)) {
     const sections = normalizeCanonicalSections(parsed.frontmatter.sections);
     if (!sections) continue;
 
@@ -450,7 +408,7 @@ export async function checkTaskProjectionDrift(
     const taskId =
       typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim()
         ? parsed.frontmatter.id.trim()
-        : entry.name;
+        : parsed.dirName;
     const status = normalizeTaskStatus(parsed.frontmatter.status);
     drifted.push({ id: taskId, status });
   }

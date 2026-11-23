@@ -1,13 +1,12 @@
-import fs from "node:fs/promises";
-import type { Dirent } from "node:fs";
 import path from "node:path";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
-import { normalizeTaskStatus, parseTaskReadme } from "@agentplaneorg/core/tasks";
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { listTasksMemo } from "../shared/task-backend.js";
+import { scanTaskReadmes } from "./task-readme-scan.js";
 
 const DEFAULT_RECENT_DONE_TASK_LIMIT = 200;
 
@@ -170,24 +169,8 @@ function summarizeHistoricalFindings(
 
 async function readTaskReadmeSnapshots(repoRoot: string): Promise<TaskSnapshotRecord[]> {
   const tasksDir = path.join(repoRoot, ".agentplane", "tasks");
-  let entries: Dirent[];
-  try {
-    entries = await fs.readdir(tasksDir, { withFileTypes: true });
-  } catch {
-    return [];
-  }
-
-  const tasks: TaskSnapshotRecord[] = [];
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    try {
-      const text = await fs.readFile(path.join(tasksDir, entry.name, "README.md"), "utf8");
-      tasks.push(parseTaskReadme(text).frontmatter as TaskSnapshotRecord);
-    } catch {
-      continue;
-    }
-  }
-  return tasks;
+  const scanned = await scanTaskReadmes(tasksDir);
+  return scanned.map((entry) => entry.frontmatter as TaskSnapshotRecord);
 }
 
 export async function checkDoneTaskCommitInvariants(

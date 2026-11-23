@@ -4,9 +4,9 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { gitRevParse } from "@agentplaneorg/core/git";
-import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { parse as parseYaml } from "yaml";
 
+import { parseTaskReadmeCached } from "../../backends/task-backend/parsed-readme-cache.js";
 import type {
   CompatibilityRetirementAdapter,
   CompatibilityRetirementManifest,
@@ -135,7 +135,8 @@ async function probeTaskReadmes(repoRoot: string): Promise<ProbeResult> {
     for (const taskId of await sortedDirectoryNames(tasksRoot)) {
       const readmePath = path.join(tasksRoot, taskId, "README.md");
       if ((await pathKind(readmePath)) === "absent") continue;
-      const parsed = parseTaskReadme(await readRegularText(readmePath));
+      const text = await readRegularText(readmePath);
+      const parsed = await parseTaskReadmeCached({ tasksDir: tasksRoot, readmePath, text });
       scanned += 1;
       if (parsed.frontmatter.doc_version !== 3 && legacy.length < EVIDENCE_LIMIT) {
         legacy.push(taskId);
