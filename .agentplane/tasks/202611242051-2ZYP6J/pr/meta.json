@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:2005523798d790debf3bd8fbdd831f04d7e314dfc1093c995366a5f16b1d06b4",
   "pr_number": 6983,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6983",
+  "pre_merge_closure": {
+    "basis_commit": "1c1a4695939fc0368f61b94c3600bdff4136543b",
+    "branch": "task/202611242051-2ZYP6J/keep-agentplane-managed-git-hooks-when-bun-insta",
+    "pr_number": 6983,
+    "recorded_at": "2026-11-24T21:10:17.028Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

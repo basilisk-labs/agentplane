@@ -1,10 +1,11 @@
 ---
 id: "202611242051-2ZYP6J"
 title: "Keep AgentPlane-managed git hooks when bun install runs the postinstall lefthook step"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "criterion-5 met: bun run docs:scripts:check reports scripts/README.md up to date; eslint is clean on both new files."
     - "Marker string and HOOK_NAMES (commit-msg, pre-commit, pre-push, post-merge) match scripts/workflow/bootstrap-framework-dev.mjs; hooks dir resolution uses git rev-parse --git-path hooks, verified to honor core.hooksPath and a subdirectory cwd."
     - "Root package.json is private, so the root postinstall is not published; no packaging regression."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:b513f7dd8c44cc87044ffbe0c61661b6a4b9a8f36d43d2d3369fa3ed76f80514"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-24T21:10:16.974Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -289,9 +306,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "da5883c8fe0e814dc0450901d6385ec265f6a673"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "1c1a4695939fc0368f61b94c3600bdff4136543b"
+  message: "🧩 2ZYP6J task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -299,9 +319,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-24T21:10:16.974Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "1c1a4695939fc0368f61b94c3600bdff4136543b"
 doc_version: 3
-doc_updated_at: "2026-11-24T21:08:09.325Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-24T21:10:16.974Z"
+doc_updated_by: "CODER"
 description: "The root postinstall script runs lefthook install on every bun install. It replaces the AgentPlane-managed hook shims in .git/hooks that framework bootstrap installs and treats lefthook hooks as legacy. Run lefthook install from postinstall only when no AgentPlane-managed hook is present, so bun install keeps the active hook owner. Add node:test coverage and keep the scripts README and hook docs in sync."
 sections:
   Summary: |-
@@ -502,6 +530,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:440b29189e3bfd58adcf78785796397238da925788176ab60605588528927c8f"
     work_order_id: "sha256:98c83d2993ca5539b9533c683ac62a74494334607562bc95364e1e545e82c067"
+  implementation_commit:
+    hash: "da5883c8fe0e814dc0450901d6385ec265f6a673"
+    message: "🚧 2ZYP6J task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "0582344612d4d68bb6e3255637f0e086934ac19c"
@@ -1279,3 +1310,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b513f7dd8c44cc87044ffbe0c61661b6a4b9a8f36d43d2d3369fa3ed76f80514`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-24T21:10:16.974Z`
