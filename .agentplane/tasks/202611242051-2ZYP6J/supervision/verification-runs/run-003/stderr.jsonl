@@ -1,0 +1,1 @@
+"$ node scripts/generate/generate-scripts-readme.mjs --check"
