@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202611241717-AH4MKJ/verify-only-git-reported-changed-files-in-repo-l",
+  "created_at": "2026-11-24T17:24:39.893Z",
+  "diffstat_sha256": "sha256:fe8b380d9b9172838335327b335941a1a082c063b808a04ae259bf1d8f7e9257",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202611241717-AH4MKJ",
+  "updated_at": "2026-11-24T17:24:39.893Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

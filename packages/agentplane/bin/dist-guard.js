@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import path from "node:path";
-import { readFile, stat } from "node:fs/promises";
+import { lstat, readFile, stat } from "node:fs/promises";
 import {
   collectWatchedRuntimeSnapshot,
   compareWatchedRuntimeSnapshots,
@@ -197,6 +198,53 @@ function parseManifestSnapshot(manifest) {
   };
 }
 
+function resolveGitPrefix(cwd) {
+  try {
+    return execFileSync("git", ["rev-parse", "--show-prefix"], {
+      cwd,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return null;
+  }
+}
+
+async function readRegularFileSha256(absolutePath) {
+  let fileStat;
+  try {
+    fileStat = await lstat(absolutePath);
+  } catch (error) {
+    if (error?.code === "ENOENT") return { kind: "missing" };
+    return { kind: "ambiguous" };
+  }
+  if (!fileStat.isFile()) return { kind: "ambiguous" };
+  const content = await readFile(absolutePath);
+  return { kind: "file", sha256: createHash("sha256").update(content).digest("hex") };
+}
+
+// Verifies only the git-reported changed paths against the per-file hashes in the
+// build manifest. Unreported paths are trusted exactly as the zero-change quick
+// check trusts them. Returns null when git output is ambiguous, so the caller can
+// fall back to the full watched-tree snapshot.
+async function compareChangedFilesWithManifest(packageRoot, manifestSnapshot, repoChangedPaths) {
+  const prefix = resolveGitPrefix(packageRoot);
+  if (prefix === null) return null;
+  const recorded = new Map(manifestSnapshot.files.map((file) => [file.path, file.sha256]));
+  const changedPaths = [];
+  for (const repoPath of repoChangedPaths) {
+    if (repoPath.startsWith('"') || repoPath.includes(" -> ")) return null;
+    if (!repoPath.startsWith(prefix)) return null;
+    const packagePath = repoPath.slice(prefix.length);
+    if (!packagePath) return null;
+    const current = await readRegularFileSha256(path.join(packageRoot, packagePath));
+    if (current.kind === "ambiguous") return null;
+    const currentSha = current.kind === "file" ? current.sha256 : undefined;
+    if (recorded.get(packagePath) !== currentSha) changedPaths.push(packagePath);
+  }
+  return uniqueSorted(changedPaths);
+}
+
 export async function isPackageBuildFresh(packageRoot, options = {}) {
   const watchedPaths = options.watchedPaths ?? ["src"];
   const manifestPath = path.join(packageRoot, "dist", ".build-manifest.json");
@@ -228,11 +276,17 @@ export async function isPackageBuildFresh(packageRoot, options = {}) {
       return { ok: true, reason: "fresh", changedPaths: [] };
     }
 
-    const currentSnapshot = await collectWatchedRuntimeSnapshot(
-      packageRoot,
-      manifestSnapshot.watchedPaths,
-    );
-    const comparison = compareWatchedRuntimeSnapshots(manifestSnapshot, currentSnapshot);
+    const incrementalChangedPaths =
+      committedQuickCheck.ok && workingTreeQuickCheck.ok
+        ? await compareChangedFilesWithManifest(packageRoot, manifestSnapshot, changedPaths)
+        : null;
+    const comparison =
+      incrementalChangedPaths === null
+        ? compareWatchedRuntimeSnapshots(
+            manifestSnapshot,
+            await collectWatchedRuntimeSnapshot(packageRoot, manifestSnapshot.watchedPaths),
+          )
+        : { ok: incrementalChangedPaths.length === 0, changedPaths: incrementalChangedPaths };
     if (!comparison.ok) {
       return {
         ok: false,
