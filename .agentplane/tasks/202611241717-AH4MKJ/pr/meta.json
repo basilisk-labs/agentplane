@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:8c65ae8dddbad9a433756899c3a08604b4dc8e6ab6854da8f6638aed0b336fd9",
   "pr_number": 6982,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6982",
+  "pre_merge_closure": {
+    "basis_commit": "ec06447223a8ed67157e203251d03886865f0421",
+    "branch": "task/202611241717-AH4MKJ/verify-only-git-reported-changed-files-in-repo-l",
+    "pr_number": 6982,
+    "recorded_at": "2026-11-24T20:48:53.179Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

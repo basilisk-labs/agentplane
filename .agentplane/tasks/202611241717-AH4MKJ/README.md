@@ -1,10 +1,11 @@
 ---
 id: "202611241717-AH4MKJ"
 title: "Verify only git-reported changed files in repo-local CLI dist freshness guard"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on: []
@@ -39,6 +40,22 @@ quality_review:
     - "criterion-1: Commit 539a837e7 changes only packages/agentplane/src/cli/dist-guard.test.ts (11 insertions, 11 deletions). The diff is a verbatim move of tamperRecordedHash to module scope. packages/agentplane/bin/dist-guard.js is unchanged from 1335841b0. Prior test cases and evidence are preserved."
     - "criterion-2: The evaluator ran `bun run lint:core`: 0 errors, 5 warnings in unrelated files. The evaluator ran `bunx vitest run --config vitest.workspace.ts --project agentplane packages/agentplane/src/cli/dist-guard.test.ts packages/agentplane/src/cli/runtime-watch.test.ts`: 2 files, 22 tests passed."
     - "criterion-3: The correction adds no eslint-disable comments. It changes no ESLint config, package.json or bun.lock. Its only non-task-artifact path is the test file inside the approved writable roots."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:3edae7b5ac51a6da814e8d3b6791370720722eca5d7218c89a6aa10aae824356"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-11-24T20:48:53.128Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -211,9 +228,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "539a837e7322b418409d268ce9535d609de00227"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "ec06447223a8ed67157e203251d03886865f0421"
+  message: "🧩 AH4MKJ task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -221,9 +241,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-11-24T20:48:53.128Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "ec06447223a8ed67157e203251d03886865f0421"
 doc_version: 3
-doc_updated_at: "2026-11-24T18:11:07.207Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-11-24T20:48:53.128Z"
+doc_updated_by: "CODER"
 description: "In the framework checkout every agentplane invocation runs bin/dist-guard.js isPackageBuildFresh. When git reports any changed watched path, it walks and SHA-256 hashes all ~1518 watched runtime files, adding about 300 ms to every CLI call. Compare only the git-reported changed files against the per-file hashes already recorded in dist/.build-manifest.json, fall back to the full snapshot only for ambiguous git output, and add regression tests. Supersedes 202611241658-HZ1TA6, whose intake scope omitted the test file."
 sections:
   Summary: |-
@@ -337,6 +365,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:a453f97bca7f9e6f73afc5a3be3f98c0a4a3102f4a6d8521f969cc2f3a67b5c5"
     work_order_id: "sha256:6b0f792ffb6f016f99b0e6fe0020d3b1df9e9184b86907c6bc59364231f86e4e"
+  implementation_commit:
+    hash: "539a837e7322b418409d268ce9535d609de00227"
+    message: "🚧 AH4MKJ task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "0582344612d4d68bb6e3255637f0e086934ac19c"
@@ -1714,3 +1745,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:3edae7b5ac51a6da814e8d3b6791370720722eca5d7218c89a6aa10aae824356`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-11-24T20:48:53.128Z`
