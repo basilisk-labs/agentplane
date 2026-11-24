@@ -84,6 +84,17 @@ async function rewriteManifestWithSnapshot(packageRoot: string, watchedPaths: st
   await writeFile(manifestPath, `${JSON.stringify(nextManifest, null, 2)}\n`, "utf8");
 }
 
+async function tamperRecordedHash(packageRoot: string, filePath: string) {
+  const manifestPath = path.join(packageRoot, "dist", ".build-manifest.json");
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
+    watched_runtime_files: { path: string; sha256: string }[];
+  };
+  const entry = manifest.watched_runtime_files.find((file) => file.path === filePath);
+  if (!entry) throw new Error(`missing manifest entry ${filePath}`);
+  entry.sha256 = "0".repeat(64);
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+}
+
 afterEach(async () => {
   while (tempRoots.length > 0) {
     const root = tempRoots.pop();
@@ -343,4 +354,127 @@ describe("dist-guard", () => {
       expect(result.changedPaths).toEqual([]);
     },
   );
+
+  describe("incremental changed-file comparison", () => {
+    const watchedPaths = [
+      "src",
+      "bin/agentplane.js",
+      "bin/runtime-context.js",
+      "bin/stale-dist-policy.js",
+    ];
+
+    it(
+      "hashes only git-reported changed files when they match the manifest",
+      { timeout: DIST_GUARD_TIMEOUT_MS },
+      async () => {
+        const { packageRoot } = await setupPackageRepo();
+        const policyPath = path.join(packageRoot, "bin", "stale-dist-policy.js");
+        await writeFile(policyPath, "export const policy = 2;\n", "utf8");
+        await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+        // A full-tree snapshot would flag this untouched file; the incremental path must not read it.
+        await tamperRecordedHash(packageRoot, "src/index.ts");
+
+        const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+        expect(result).toEqual({
+          ok: true,
+          reason: "fresh_after_snapshot_match",
+          changedPaths: [],
+        });
+      },
+    );
+
+    it(
+      "reports added and deleted runtime files with package-relative paths",
+      { timeout: DIST_GUARD_TIMEOUT_MS },
+      async () => {
+        const { packageRoot } = await setupPackageRepo();
+        await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+        await rm(path.join(packageRoot, "src", "index.ts"));
+        await writeFile(
+          path.join(packageRoot, "src", "added.ts"),
+          "export const added = 1;\n",
+          "utf8",
+        );
+
+        const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+        expect(result).toEqual({
+          ok: false,
+          reason: "watched_runtime_snapshot_changed",
+          changedPaths: ["src/added.ts", "src/index.ts"],
+        });
+      },
+    );
+
+    it("reports both paths of a committed rename", { timeout: DIST_GUARD_TIMEOUT_MS }, async () => {
+      const { repoRoot, packageRoot } = await setupPackageRepo();
+      await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+      await execFileAsync(
+        "git",
+        ["mv", "packages/agentplane/src/index.ts", "packages/agentplane/src/main.ts"],
+        { cwd: repoRoot },
+      );
+      await execFileAsync("git", ["commit", "-m", "refactor: rename index"], { cwd: repoRoot });
+
+      const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+      expect(result).toEqual({
+        ok: false,
+        reason: "watched_runtime_snapshot_changed",
+        changedPaths: ["src/index.ts", "src/main.ts"],
+      });
+    });
+
+    it(
+      "reports both paths of a staged rename, including a rename to a test file",
+      { timeout: DIST_GUARD_TIMEOUT_MS },
+      async () => {
+        const { repoRoot, packageRoot } = await setupPackageRepo();
+        await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+        await execFileAsync(
+          "git",
+          ["mv", "packages/agentplane/src/index.ts", "packages/agentplane/src/index.test.ts"],
+          { cwd: repoRoot },
+        );
+        await writeFile(
+          path.join(packageRoot, "src", "new.ts"),
+          "export const fresh = 1;\n",
+          "utf8",
+        );
+
+        const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+        expect(result).toEqual({
+          ok: false,
+          reason: "watched_runtime_snapshot_changed",
+          changedPaths: ["src/index.ts", "src/new.ts"],
+        });
+      },
+    );
+
+    it(
+      "keeps leading and trailing spaces in reported file names",
+      { timeout: DIST_GUARD_TIMEOUT_MS },
+      async () => {
+        const { repoRoot, packageRoot } = await setupPackageRepo();
+        await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+        await writeFile(
+          path.join(packageRoot, "src", "cli.ts "),
+          "export const spaced = 1;\n",
+          "utf8",
+        );
+        await execFileAsync("git", ["add", "."], { cwd: repoRoot });
+        await execFileAsync("git", ["commit", "-m", "feat: add spaced file"], { cwd: repoRoot });
+
+        const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+        expect(result).toEqual({
+          ok: false,
+          reason: "watched_runtime_snapshot_changed",
+          changedPaths: ["src/cli.ts "],
+        });
+      },
+    );
+  });
 });
