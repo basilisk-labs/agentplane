@@ -6,7 +6,7 @@ Created: 2026-11-24T20:53:41.621Z
 
 - Task: `202611242051-2ZYP6J`
 - Title: Keep AgentPlane-managed git hooks when bun install runs the postinstall lefthook step
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611242051-2ZYP6J/keep-agentplane-managed-git-hooks-when-bun-insta`
 - Canonical task record: `.agentplane/tasks/202611242051-2ZYP6J/README.md`
 

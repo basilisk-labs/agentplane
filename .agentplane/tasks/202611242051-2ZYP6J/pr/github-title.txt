@@ -1,1 +1,1 @@
-🚧 2ZYP6J task: Keep AgentPlane-managed git hooks when bun install runs the postinstall lefthook step [202611242051-2ZYP6J]
+✅ 2ZYP6J task: Keep AgentPlane-managed git hooks when bun install runs the postinstall lefthook step [202611242051-2ZYP6J]
