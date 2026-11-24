@@ -4,11 +4,6 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, vi } from "vitest";
 
-import {
-  cmdScenarioInfoParsed,
-  cmdScenarioListParsed,
-  cmdScenarioRunParsed,
-} from "../../agentplane/src/commands/scenario.js";
 import { exitCodeForError } from "../../agentplane/src/cli/exit-codes.js";
 import { parseCommandArgv } from "../../agentplane/src/cli/spec/parse.js";
 import { captureStdIO, createRecipeArchive, mkGitRepoRoot, writeDefaultConfig } from "./cli.js";
@@ -34,9 +29,6 @@ import { cmdRecipeListRemoteParsed } from "../../agentplane/src/commands/recipes
 import { cmdRecipeRemoveParsed } from "../../agentplane/src/commands/recipes/impl/commands/remove.js";
 import { cmdRecipeUpdateParsed } from "../../agentplane/src/commands/recipes/impl/commands/update.js";
 import { hashRecipeTree } from "../../agentplane/src/commands/recipes/impl/project-recipe-state.js";
-import { scenarioInfoSpec } from "../../agentplane/src/commands/scenario/info.command.js";
-import { scenarioListSpec } from "../../agentplane/src/commands/scenario/list.command.js";
-import { scenarioRunSpec } from "../../agentplane/src/commands/scenario/run.command.js";
 import { resetRecipeArchiveCache } from "./cli-harness/recipe-archives.js";
 
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
@@ -548,53 +540,6 @@ export async function runRecipesTest(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: `Unknown recipes subcommand: ${opts.command}`,
-      });
-    }
-  }
-}
-
-export async function runScenarioTest(opts: {
-  cwd: string;
-  rootOverride?: string;
-  command: string | undefined;
-  args: string[];
-}): Promise<number> {
-  if (!opts.command) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_USAGE"),
-      code: "E_USAGE",
-      message: "Missing scenario subcommand.",
-    });
-  }
-
-  switch (opts.command) {
-    case "list": {
-      parseCommandArgv(scenarioListSpec, opts.args);
-      return await cmdScenarioListParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride });
-    }
-    case "info": {
-      const parsed = parseCommandArgv(scenarioInfoSpec, opts.args).parsed;
-      return await cmdScenarioInfoParsed({
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        recipeId: parsed.recipeId,
-        scenarioId: parsed.scenarioId,
-      });
-    }
-    case "run": {
-      const parsed = parseCommandArgv(scenarioRunSpec, opts.args).parsed;
-      return await cmdScenarioRunParsed({
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        recipeId: parsed.recipeId,
-        scenarioId: parsed.scenarioId,
-      });
-    }
-    default: {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Unknown scenario subcommand: ${opts.command}`,
       });
     }
   }
