@@ -1,0 +1,6 @@
+ docs/developer/code-quality.mdx             |  2 +-
+ package.json                                |  2 +-
+ scripts/README.md                           |  2 +-
+ scripts/workflow/postinstall-hooks.mjs      | 66 +++++++++++++++++++++
+ scripts/workflow/postinstall-hooks.test.mjs | 91 +++++++++++++++++++++++++++++
+ 5 files changed, 160 insertions(+), 3 deletions(-)

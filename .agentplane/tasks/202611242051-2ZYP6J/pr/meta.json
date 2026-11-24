@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202611242051-2ZYP6J/keep-agentplane-managed-git-hooks-when-bun-insta",
+  "created_at": "2026-11-24T20:53:41.621Z",
+  "diffstat_sha256": "sha256:2005523798d790debf3bd8fbdd831f04d7e314dfc1093c995366a5f16b1d06b4",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202611242051-2ZYP6J",
+  "updated_at": "2026-11-24T20:53:41.621Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

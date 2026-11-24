@@ -9,7 +9,7 @@
   },
   "packageManager": "bun@1.4.2",
   "scripts": {
-    "postinstall": "lefthook install",
+    "postinstall": "node scripts/workflow/postinstall-hooks.mjs",
     "build": "node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle",
     "typecheck": "node scripts/checks/run-typescript-build.mjs",
     "test": "bun run test:fast",
