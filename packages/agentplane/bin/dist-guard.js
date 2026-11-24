@@ -136,9 +136,12 @@ function committedChangedPathsSince(cwd, fromGitHead, watchedPaths) {
 
 function tryCommittedChangedPathsSince(cwd, fromGitHead, watchedPaths) {
   if (!fromGitHead) return { ok: false, paths: [] };
+  // --no-renames reports a committed rename as a deletion plus an addition, so the
+  // incremental manifest comparison sees both paths.
   const result = tryListGitPaths(cwd, [
     "diff",
     "--name-only",
+    "--no-renames",
     `${fromGitHead}..HEAD`,
     "--",
     ...watchedPaths,

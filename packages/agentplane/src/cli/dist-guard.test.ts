@@ -407,6 +407,25 @@ describe("dist-guard", () => {
       },
     );
 
+    it("reports both paths of a committed rename", { timeout: DIST_GUARD_TIMEOUT_MS }, async () => {
+      const { repoRoot, packageRoot } = await setupPackageRepo();
+      await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+      await execFileAsync(
+        "git",
+        ["mv", "packages/agentplane/src/index.ts", "packages/agentplane/src/main.ts"],
+        { cwd: repoRoot },
+      );
+      await execFileAsync("git", ["commit", "-m", "refactor: rename index"], { cwd: repoRoot });
+
+      const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+      expect(result).toEqual({
+        ok: false,
+        reason: "watched_runtime_snapshot_changed",
+        changedPaths: ["src/index.ts", "src/main.ts"],
+      });
+    });
+
     it(
       "falls back to the full snapshot for staged renames",
       { timeout: DIST_GUARD_TIMEOUT_MS },
