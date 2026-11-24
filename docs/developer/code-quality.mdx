@@ -82,7 +82,7 @@ pre-push:
 - bun run test:full on release/tag pushes (or with `AGENTPLANE_HOOKS_RELEASE=1` / `AGENTPLANE_HOOKS_FULL=1`)
 ```
 
-Hooks are installed automatically on `bun install` (via the root `postinstall` script). If you ever need to reinstall them:
+Hooks are installed automatically on `bun install` (via the root `postinstall` script, `scripts/workflow/postinstall-hooks.mjs`). If the checkout already has AgentPlane-managed hooks (installed by `bun run framework:dev:bootstrap` or `agentplane hooks install`), `postinstall` keeps them and skips `lefthook install`. To install the lefthook hooks explicitly:
 
 ```bash
 bun run hooks:install
