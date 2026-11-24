@@ -1,13 +1,17 @@
 {
   "checks": [
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
       "command": "bunx vitest run --config vitest.workspace.ts --project agentplane packages/agentplane/src/cli/dist-guard.test.ts packages/agentplane/src/cli/runtime-watch.test.ts",
-      "duration_ms": 2257,
+      "duration_ms": 2356,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:84e9a5bf0e6d407a1893fda066b73268fc0ec4c6947b94753b8e2d940cbf1909",
-        "manifest_path": "/Volumes/WorkspaceSSD/Projects/agentplane/.agentplane/worktrees/202611241717-AH4MKJ-verify-only-git-reported-changed-files-in-repo-l/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-001/manifest.json",
+        "digest": "sha256:b4083428b83553c5e1aaa3cea704acf5a68edb535aa6844af4ee9de8680049c5",
+        "manifest_path": "/Volumes/WorkspaceSSD/Projects/agentplane/.agentplane/worktrees/202611241717-AH4MKJ-verify-only-git-reported-changed-files-in-repo-l/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-005/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -19,12 +23,38 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  2 passed (2)\n      Tests  21 passed (21)\n   Start at  20:28:33\n   Duration  1.59s (tests 95%, transform 3%, setup 1%)\n\n"
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n\n Test Files  2 passed (2)\n      Tests  22 passed (22)\n   Start at  20:42:16\n   Duration  1.58s (tests 94%, transform 3%, setup 1%, import 1%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 167630,
+      "exit_code": 1,
+      "observation": {
+        "digest": "sha256:05dab97ce19ec0145e2ba64c66e5cc0f4581a918290ce822f854bc169947722c",
+        "manifest_path": "/Volumes/WorkspaceSSD/Projects/agentplane/.agentplane/worktrees/202611241717-AH4MKJ-verify-only-git-reported-changed-files-in-repo-l/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-006/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:5496a86efb9427d6dfd190c67893bf61fcbb3c932b8cce799c4e3066903b9e7c",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "s/check-policy-routing.mjs\n$ node scripts/release/check-release-parity.mjs\n$ node scripts/checks/check-cli-reference-fresh.mjs\n$ node scripts/checks/check-recipes-inventory-fresh.mjs\n$ node scripts/generate/generate-scripts-readme.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n$ node scripts/checks/check-vitest-projects.mjs\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\nerror: script \"lint:core\" exited with code 1\nnode:internal/errors:985\n  const err = new Error(message);\n              ^\n\nError: Command failed: bun run lint:core\n    at genericNodeError (node:internal/errors:985:15)\n    at wrappedFn (node:internal/errors:539:14)\n    at checkExecSyncError (node:child_process:925:11)\n    at execFileSync (node:child_process:961:15)\n    at run (file://<repo>/scripts/checks/run-local-ci-group.mjs:9:3)\n    at bunScript (file://<repo>/scripts/checks/run-local-ci-group.mjs:10:34)\n    at Object.core (file://<repo>/scripts/checks/run-local-ci-group.mjs:35:5)\n    at file://<repo>/scripts/checks/run-local-ci-group.mjs:88:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26 {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 31166,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.18.0\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n{\"schema_version\":1,\"kind\":\"verification_group_failure_classification\",\"groups\":[{\"id\":\"core\",\"failure_kind\":\"command_failure\",\"failure_kinds\":[\"command_failure\"]}]}\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":41103,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-006/children/run-001/manifest.json\",\"digest\":\"sha256:ff21885e96788cefac49fe9525f85f64d5b7dd8a81e3f07837c400d8a9509118\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":23281,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-006/children/run-002/manifest.json\",\"digest\":\"sha256:cf9e8195b8d45c80d0240bfbd8b0a8219d8c5277ceb968748a217b2159d01f35\"}},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":54087,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-006/children/run-003/manifest.json\",\"digest\":\"sha256:6c7e51466b957e8b640664dbdc4c2508a802f10fb1a37ddd119a5ee812e1174e\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":40677,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-006/children/run-004/manifest.json\",\"digest\":\"sha256:72b4189a00f4aa617194174e27ff3a8549e032a15bd8bde1c2d8eb6385a32e24\"}}]}\nfile:///private/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-verification-4NIzgE/scripts/checks/run-local-ci.mjs:548\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///private/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-verification-4NIzgE/scripts/checks/run-local-ci.mjs:548:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///private/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-verification-4NIzgE/scripts/checks/run-local-ci.mjs:623:7\n\nNode.js v24.18.0\nerror: script \"ci:local:full\" exited with code 1\n",
+      "stdout_tail": "mes  import/no-duplicates\n\n<repo>/packages/agentplane/src/runner/process-supervision/run.ts\n  266:13  warning  Avoid using promises inside of callbacks  promise/no-promise-in-callback\n\n✖ 6 problems (1 error, 5 warnings)\n\n\n== cli (40677ms) ==\nCLI cold-start baseline OK using fixture local-basic (quickstart median=245.49ms (threshold=5000ms, p95=245.49ms); task_list median=271.66ms (threshold=10000ms, p95=271.66ms); task_search median=238.28ms (threshold=6000ms, p95=238.28ms); task_next median=264.577ms (threshold=8000ms, p95=264.577ms); preflight_quick median=263.346ms (threshold=6000ms, p95=263.346ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 6131ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  5.90s (tests 82%, transform 11%, import 7%))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 2312ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  2.14s (tests 70%, import 15%, transform 15%))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 2471ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  2.30s (tests 70%, import 15%, transform 14%))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 22454ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  22.27s (tests 95%, import 2%, transform 2%))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 4852ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.64s (tests 86%, transform 8%, import 6%))\n{\"schema_version\":1,\"kind\":\"verification_group_failure_classification\",\"groups\":[{\"id\":\"core\",\"failure_kind\":\"command_failure\",\"failure_kinds\":[\"command_failure\"]}]}\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":41103,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-006/children/run-001/manifest.json\",\"digest\":\"sha256:ff21885e96788cefac49fe9525f85f64d5b7dd8a81e3f07837c400d8a9509118\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":23281,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-006/children/run-002/manifest.json\",\"digest\":\"sha256:cf9e8195b8d45c80d0240bfbd8b0a8219d8c5277ceb968748a217b2159d01f35\"}},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":54087,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-006/children/run-003/manifest.json\",\"digest\":\"sha256:6c7e51466b957e8b640664dbdc4c2508a802f10fb1a37ddd119a5ee812e1174e\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":40677,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-006/children/run-004/manifest.json\",\"digest\":\"sha256:72b4189a00f4aa617194174e27ff3a8549e032a15bd8bde1c2d8eb6385a32e24\"}}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":166524,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":false}\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": null,
+  "reason": "Declared check failed: bun run ci:local:full",
   "schema_version": 1,
-  "status": "passed",
+  "status": "failed",
   "task_id": "202611241717-AH4MKJ"
 }

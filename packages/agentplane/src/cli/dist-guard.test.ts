@@ -84,6 +84,17 @@ async function rewriteManifestWithSnapshot(packageRoot: string, watchedPaths: st
   await writeFile(manifestPath, `${JSON.stringify(nextManifest, null, 2)}\n`, "utf8");
 }
 
+async function tamperRecordedHash(packageRoot: string, filePath: string) {
+  const manifestPath = path.join(packageRoot, "dist", ".build-manifest.json");
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
+    watched_runtime_files: { path: string; sha256: string }[];
+  };
+  const entry = manifest.watched_runtime_files.find((file) => file.path === filePath);
+  if (!entry) throw new Error(`missing manifest entry ${filePath}`);
+  entry.sha256 = "0".repeat(64);
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+}
+
 afterEach(async () => {
   while (tempRoots.length > 0) {
     const root = tempRoots.pop();
@@ -351,17 +362,6 @@ describe("dist-guard", () => {
       "bin/runtime-context.js",
       "bin/stale-dist-policy.js",
     ];
-
-    async function tamperRecordedHash(packageRoot: string, filePath: string) {
-      const manifestPath = path.join(packageRoot, "dist", ".build-manifest.json");
-      const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
-        watched_runtime_files: { path: string; sha256: string }[];
-      };
-      const entry = manifest.watched_runtime_files.find((file) => file.path === filePath);
-      if (!entry) throw new Error(`missing manifest entry ${filePath}`);
-      entry.sha256 = "0".repeat(64);
-      await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-    }
 
     it(
       "hashes only git-reported changed files when they match the manifest",
