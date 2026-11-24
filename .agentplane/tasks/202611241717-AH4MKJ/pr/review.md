@@ -6,7 +6,7 @@ Created: 2026-11-24T17:24:39.893Z
 
 - Task: `202611241717-AH4MKJ`
 - Title: Verify only git-reported changed files in repo-local CLI dist freshness guard
-- Status: DOING
+- Status: DONE
 - Branch: `task/202611241717-AH4MKJ/verify-only-git-reported-changed-files-in-repo-l`
 - Canonical task record: `.agentplane/tasks/202611241717-AH4MKJ/README.md`
 
