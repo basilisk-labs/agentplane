@@ -16,7 +16,7 @@ In the framework checkout every agentplane invocation runs bin/dist-guard.js isP
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:7b49f8f38a7b793beecaee8941d4a973c1a72b512d7aae94d4844f70fc9d05b1
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
