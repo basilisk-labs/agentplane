@@ -62,21 +62,16 @@ function listGitPaths(cwd, args, options = {}) {
   }
 }
 
-function tryListGitPaths(cwd, args, options = {}) {
-  const trimLines = options.trimLines ?? true;
+// Reads NUL-separated git output (-z). Paths stay verbatim: git does not quote them
+// and no whitespace is trimmed, so every entry maps to exactly one file.
+function tryListGitPaths(cwd, args) {
   try {
     const out = execFileSync("git", args, {
       cwd,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     });
-    return {
-      ok: true,
-      paths: out
-        .split(/\r?\n/u)
-        .map((line) => (trimLines ? line.trim() : line))
-        .filter(Boolean),
-    };
+    return { ok: true, paths: out.split("\0").filter(Boolean) };
   } catch {
     return { ok: false, paths: [] };
   }
@@ -103,19 +98,22 @@ function workingTreeChangedPaths(cwd, watchedPaths) {
 }
 
 function tryWorkingTreeChangedPaths(cwd, watchedPaths) {
-  const result = tryListGitPaths(
-    cwd,
-    ["status", "--porcelain", "--untracked-files=all", "--", ...watchedPaths],
-    { trimLines: false },
-  );
+  // --no-renames reports a staged rename as a deletion plus an addition, so each
+  // NUL-separated porcelain entry is exactly "XY <path>".
+  const result = tryListGitPaths(cwd, [
+    "status",
+    "--porcelain",
+    "-z",
+    "--no-renames",
+    "--untracked-files=all",
+    "--",
+    ...watchedPaths,
+  ]);
   return {
     ok: result.ok,
     paths: uniqueSorted(
       result.paths
-        .map((line) => {
-          const normalized = String(line ?? "");
-          return normalized.length > 3 ? normalized.slice(3).trim() : "";
-        })
+        .map((entry) => (entry.length > 3 ? entry.slice(3) : ""))
         .filter((filePath) => Boolean(filePath) && isRuntimeRelevantWatchedFile(filePath)),
     ),
   };
@@ -137,10 +135,11 @@ function committedChangedPathsSince(cwd, fromGitHead, watchedPaths) {
 function tryCommittedChangedPathsSince(cwd, fromGitHead, watchedPaths) {
   if (!fromGitHead) return { ok: false, paths: [] };
   // --no-renames reports a committed rename as a deletion plus an addition, so the
-  // incremental manifest comparison sees both paths.
+  // incremental manifest comparison sees both paths. -z keeps paths verbatim.
   const result = tryListGitPaths(cwd, [
     "diff",
     "--name-only",
+    "-z",
     "--no-renames",
     `${fromGitHead}..HEAD`,
     "--",
@@ -236,7 +235,6 @@ async function compareChangedFilesWithManifest(packageRoot, manifestSnapshot, re
   const recorded = new Map(manifestSnapshot.files.map((file) => [file.path, file.sha256]));
   const changedPaths = [];
   for (const repoPath of repoChangedPaths) {
-    if (repoPath.startsWith('"') || repoPath.includes(" -> ")) return null;
     if (!repoPath.startsWith(prefix)) return null;
     const packagePath = repoPath.slice(prefix.length);
     if (!packagePath) return null;

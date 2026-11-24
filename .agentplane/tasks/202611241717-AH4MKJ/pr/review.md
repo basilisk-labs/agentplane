@@ -29,9 +29,9 @@ Created: 2026-11-24T17:24:39.893Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- packages/agentplane/bin/dist-guard.js          |  69 ++++++++++++++--
- packages/agentplane/src/cli/dist-guard.test.ts | 107 +++++++++++++++++++++++++
- 2 files changed, 170 insertions(+), 6 deletions(-)
+ packages/agentplane/bin/dist-guard.js          | 103 ++++++++++++++-----
+ packages/agentplane/src/cli/dist-guard.test.ts | 134 +++++++++++++++++++++++++
+ 2 files changed, 213 insertions(+), 24 deletions(-)
 ```
 
 </details>

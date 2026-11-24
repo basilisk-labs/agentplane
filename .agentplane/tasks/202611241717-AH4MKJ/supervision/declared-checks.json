@@ -3,11 +3,11 @@
     {
       "check_ids": [],
       "command": "bunx vitest run --config vitest.workspace.ts --project agentplane packages/agentplane/src/cli/dist-guard.test.ts packages/agentplane/src/cli/runtime-watch.test.ts",
-      "duration_ms": 2044,
+      "duration_ms": 2257,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:78f08bbfd5e157572d9ed9f7d7a3e678f612da6f94480c159da3e80099812431",
-        "manifest_path": "/Volumes/WorkspaceSSD/Projects/agentplane/.agentplane/worktrees/202611241717-AH4MKJ-verify-only-git-reported-changed-files-in-repo-l/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-000/manifest.json",
+        "digest": "sha256:84e9a5bf0e6d407a1893fda066b73268fc0ec4c6947b94753b8e2d940cbf1909",
+        "manifest_path": "/Volumes/WorkspaceSSD/Projects/agentplane/.agentplane/worktrees/202611241717-AH4MKJ-verify-only-git-reported-changed-files-in-repo-l/.agentplane/tasks/202611241717-AH4MKJ/supervision/verification-runs/run-001/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -19,7 +19,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  2 passed (2)\n      Tests  20 passed (20)\n   Start at  20:24:51\n   Duration  1.44s (tests 94%, transform 4%, setup 1%, import 1%)\n\n"
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  2 passed (2)\n      Tests  21 passed (21)\n   Start at  20:28:33\n   Duration  1.59s (tests 95%, transform 3%, setup 1%)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",

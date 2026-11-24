@@ -427,26 +427,53 @@ describe("dist-guard", () => {
     });
 
     it(
-      "falls back to the full snapshot for staged renames",
+      "reports both paths of a staged rename, including a rename to a test file",
       { timeout: DIST_GUARD_TIMEOUT_MS },
       async () => {
         const { repoRoot, packageRoot } = await setupPackageRepo();
         await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
-        await tamperRecordedHash(packageRoot, "src/cli.ts");
         await execFileAsync(
           "git",
-          ["mv", "packages/agentplane/src/index.ts", "packages/agentplane/src/main.ts"],
-          {
-            cwd: repoRoot,
-          },
+          ["mv", "packages/agentplane/src/index.ts", "packages/agentplane/src/index.test.ts"],
+          { cwd: repoRoot },
+        );
+        await writeFile(
+          path.join(packageRoot, "src", "new.ts"),
+          "export const fresh = 1;\n",
+          "utf8",
         );
 
         const result = await readBuildFreshness(packageRoot, { watchedPaths });
 
-        expect(result.ok).toBe(false);
-        expect(result.reason).toBe("watched_runtime_snapshot_changed");
-        // Only the full snapshot sees the tampered untouched file.
-        expect(result.changedPaths).toEqual(["src/cli.ts", "src/index.ts", "src/main.ts"]);
+        expect(result).toEqual({
+          ok: false,
+          reason: "watched_runtime_snapshot_changed",
+          changedPaths: ["src/index.ts", "src/new.ts"],
+        });
+      },
+    );
+
+    it(
+      "keeps leading and trailing spaces in reported file names",
+      { timeout: DIST_GUARD_TIMEOUT_MS },
+      async () => {
+        const { repoRoot, packageRoot } = await setupPackageRepo();
+        await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+        await writeFile(
+          path.join(packageRoot, "src", "cli.ts "),
+          "export const spaced = 1;\n",
+          "utf8",
+        );
+        await execFileAsync("git", ["add", "."], { cwd: repoRoot });
+        await execFileAsync("git", ["commit", "-m", "feat: add spaced file"], { cwd: repoRoot });
+
+        const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+        expect(result).toEqual({
+          ok: false,
+          reason: "watched_runtime_snapshot_changed",
+          changedPaths: ["src/cli.ts "],
+        });
       },
     );
   });
